@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package tictactoe;
+
+service Game {
+    rpc Start (google.protobuf.Empty) returns (StatusReply) {}
+}
+
+message StatusReply {
+    string status = 1;
+    string error = 2;
+    int32 errorCode = 3;
+}
