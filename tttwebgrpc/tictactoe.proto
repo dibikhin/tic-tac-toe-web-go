@@ -1,11 +1,15 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-
 package tictactoe;
 
+option go_package = "github.com/dibikhin/tic-tac-toe-web-go/tttwebgrpc";
+
 service Game {
-    rpc Start (google.protobuf.Empty) returns (StatusReply) {}
+    rpc GetStatus (Empty) returns (StatusReply) {}
+}
+
+message Empty {
+
 }
 
 message StatusReply {
