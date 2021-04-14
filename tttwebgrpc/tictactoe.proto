@@ -8,9 +8,7 @@ service Game {
     rpc GetStatus (Empty) returns (StatusReply) {}
 }
 
-message Empty {
-
-}
+message Empty {}
 
 message StatusReply {
     string status = 1;
