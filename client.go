@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -30,10 +31,26 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	log.Print("Running GetStatus()...")
-	r, err := c.GetStatus(ctx, &pb.Empty{})
+	err = statusLoop(c, ctx)
 	if err != nil {
 		log.Fatalf("could not get status: %v", err)
 	}
+}
+
+func statusLoop(c pb.GameClient, ctx context.Context) error {
+	log.Print("Running GetStatus()...")
+	r, err := c.GetStatus(ctx, &pb.Empty{})
+	if err != nil {
+		return err
+	}
 	log.Printf("GetStatus(): %v", r)
+	switch r.Action {
+	case "do auth":
+		fmt.Println("Are you Player1 or Player2?")
+	case "ask mark":
+		fmt.Println("Choose your mark: 'X' or 'O'")
+	case "ask turn":
+		fmt.Println("Player 123, choose turn from 1 to 9:")
+	}
+	return nil
 }

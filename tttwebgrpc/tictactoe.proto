@@ -12,6 +12,5 @@ message Empty {}
 
 message StatusReply {
     string status = 1;
-    string error = 2;
-    int32 errorCode = 3;
+    string action = 2;
 }

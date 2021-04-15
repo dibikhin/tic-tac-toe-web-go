@@ -5,8 +5,9 @@ import (
 	"log"
 	"net"
 
-	"google.golang.org/grpc"
 	pb "tictactoeweb/tttwebgrpc"
+
+	"google.golang.org/grpc"
 )
 
 const (
@@ -18,8 +19,13 @@ type server struct {
 }
 
 func (s *server) GetStatus(ctx context.Context, _ *pb.Empty) (*pb.StatusReply, error) {
-	log.Print("Recieved: GetStatus()")
-	return &pb.StatusReply{Status: "ok"}, nil
+	log.Print("Repcieved: GetStatus()")
+	sr := &pb.StatusReply{Status: "waiting turn p1", Action: "ask turn"}
+	// sr := &pb.StatusReply{Status: "not started", Action: "do auth"}
+	// sr := &pb.StatusReply{Status: "not started", Action: "do auth"}
+
+	log.Print(sr)
+	return sr, nil
 }
 
 func main() {

@@ -24,7 +24,9 @@ Server:
 - Sessions: ? TODO:
 - Caching: no
 - Timeouts: ? TODO:
-- Passive (IoC, client controls server)
+- Passive (IoC, client pulls server)
+  - BUT server rules client
+  - fat
 - Stateless
 - https://12factor.net/ TODO:
 - Longrunning (not a FaaS)
@@ -39,4 +41,7 @@ Client:
 - gRPC (v1.37+)
 - Protobuf (v3)
 - Active
+  - BUT server rules client (to keep client simple)
+  - thin, w/o logic)
 - CLI
+
