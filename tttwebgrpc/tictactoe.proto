@@ -5,12 +5,58 @@ package tictactoe;
 option go_package = "github.com/dibikhin/tic-tac-toe-web-go/tttwebgrpc";
 
 service Game {
-    rpc GetStatus (Empty) returns (StatusReply) {}
+  rpc GetStatus (Empty) returns (StatusReply) {}
 }
 
 message Empty {}
 
+/*
+{
+  state = IDLE | WAITING | ENDED
+  message = ""
+
+  for = AUTH | MARK | TURN
+  player = ONE | TWO
+  board = { { "X" "_" "O" }, ... }
+
+  outcome = WON | DRAW // TIMEOUT ?
+}
+*/
 message StatusReply {
-    string status = 1;
-    string action = 2;
+  reserved 9 to 15;
+
+  State state = 1;
+  string message = 2;
+
+  For for = 3; // optional
+  Player player = 4; // optional
+  string board = 5; // optional
+
+  Outcome outcome = 6; // optional
+}
+
+enum State {
+  UNKNOWN = 0; // safe default
+  WAITING = 1;
+  IDLE = 2;
+  ENDED = 3;
+}
+
+enum For {
+  NOTHING = 0; // safe default
+  AUTH = 1;
+  MARK = 2;
+  TURN = 3;
+}
+
+enum Player {
+  NOBODY = 0; // safe default
+  ONE = 1;
+  TWO = 2;
+}
+
+enum Outcome {
+  DEFAULT = 0; // safe default
+  WON = 1;
+  DRAW = 2;
 }

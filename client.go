@@ -44,6 +44,11 @@ func statusLoop(c pb.GameClient, ctx context.Context) error {
 		return err
 	}
 	log.Printf("GetStatus(): %v", r)
+	act(r)
+	return nil
+}
+
+func act(r *pb.StatusReply) {
 	switch r.Action {
 	case "do auth":
 		fmt.Println("Are you Player1 or Player2?")
@@ -52,5 +57,4 @@ func statusLoop(c pb.GameClient, ctx context.Context) error {
 	case "ask turn":
 		fmt.Println("Player 123, choose turn from 1 to 9:")
 	}
-	return nil
 }
