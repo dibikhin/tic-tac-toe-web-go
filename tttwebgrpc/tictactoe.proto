@@ -6,40 +6,40 @@ option go_package = "github.com/dibikhin/tic-tac-toe-web-go/tttwebgrpc";
 
 service Game {
   rpc GetStatus (Empty) returns (StatusReply) {}
+  rpc Run (CommandRequest) returns (StatusReply);
 }
 
 message Empty {}
 
-/*
-{
-  state = IDLE | WAITING | ENDED
-  message = ""
-
-  for = AUTH | MARK | TURN
-  player = ONE | TWO
-  board = { { "X" "_" "O" }, ... }
-
-  outcome = WON | DRAW // TIMEOUT ?
+message CommandRequest {
+  Actions action = 1;
 }
+
+/*
+
+TODO: Fill example
+
 */
 message StatusReply {
   reserved 9 to 15;
 
   State state = 1;
-  string message = 2;
+  repeated Actions actions = 2;
+  repeated Opts opts = 3;
+  string message = 4;
 
-  For for = 3; // optional
-  Player player = 4; // optional
-  string board = 5; // optional
+  For for = 5; // optional
+  // Player player = 6; // optional
+  string board = 7; // optional
 
-  Outcome outcome = 6; // optional
+  Outcome outcome = 8; // optional
 }
 
 enum State {
-  UNKNOWN = 0; // safe default
+  UNDEFINED = 0; // safe default
   WAITING = 1;
   IDLE = 2;
-  ENDED = 3;
+  GAME_OVER = 3;
 }
 
 enum For {
@@ -49,10 +49,31 @@ enum For {
   TURN = 3;
 }
 
-enum Player {
-  NOBODY = 0; // safe default
+enum Actions {
+  NOOP = 0; // safe default
+  GET_STATUS = 1;
+  START_GAME = 2;
+  LOG_IN = 3;
+  SET_MARK = 4;
+  DO_TURN = 5;
+  STOP_GAME = 6;
+}
+
+enum Opts {
+  ZERO = 0; // safe default
+
   ONE = 1;
   TWO = 2;
+  THREE = 3;
+  FOUR = 4;
+  FIVE = 5;
+  SIX = 6;
+  SEVEN = 7;
+  EIGHT = 8;
+  NINE = 9;
+
+  O_MARK = 10;
+  X_MARK = 11;
 }
 
 enum Outcome {

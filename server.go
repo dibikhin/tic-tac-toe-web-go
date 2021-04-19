@@ -18,12 +18,30 @@ type server struct {
 	pb.UnimplementedGameServer
 }
 
-func (s *server) GetStatus(ctx context.Context, _ *pb.Empty) (*pb.StatusReply, error) {
-	log.Print("Repcieved: GetStatus()")
-	sr := &pb.StatusReply{Status: "waiting turn p1", Action: "ask turn"}
-	// sr := &pb.StatusReply{Status: "not started", Action: "do auth"}
-	// sr := &pb.StatusReply{Status: "not started", Action: "do auth"}
+func (s *server) GetStatus(ctx context.Context, m *pb.Empty) (*pb.StatusReply, error) {
+	log.Printf("Recieved: GetStatus(), args: %v", m)
+	sr := &pb.StatusReply{
+		State: pb.State_IDLE,
+		Actions: []pb.Actions{
+			pb.Actions_START_GAME,
+			pb.Actions_GET_STATUS,
+		},
+		Message: "You can:",
+	}
+	log.Print(sr)
+	return sr, nil
+}
 
+func (s *server) Run(ctx context.Context, cr *pb.CommandRequest) (*pb.StatusReply, error) {
+	log.Printf("Recieved: Run(), args: %v", cr)
+	sr := &pb.StatusReply{
+		State: pb.State_WAITING,
+		For:   pb.For_AUTH,
+		Actions: []pb.Actions{
+			pb.Actions_GET_STATUS,
+		},
+		Message: "You can:",
+	}
 	log.Print(sr)
 	return sr, nil
 }

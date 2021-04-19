@@ -50,25 +50,36 @@ func statusLoop(c pb.GameClient, ctx context.Context) error {
 		return err
 	}
 	log.Printf("GetStatus(): %v", r)
-	err = act(r)
+	r, err = act(c, ctx, r)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func act(r *pb.StatusReply) error {
-	switch r.Action {
-	case "do auth":
-		fmt.Println("Are you Player1 or Player2?")
-	case "ask mark":
-		fmt.Println("Choose your mark: 'X' or 'O'")
-	case "ask turn":
-		fmt.Println("Player 123, choose turn from 1 to 9:")
+func act(c pb.GameClient, ctx context.Context, sr *pb.StatusReply) (*pb.StatusReply, error) {
+	var err error
+	var r *pb.StatusReply
+
+	switch sr.State {
+	case pb.State_IDLE:
+		fmt.Println(sr.Message)
+		fmt.Println(sr.Actions)
+
+		cr := &pb.CommandRequest{Action: pb.Actions_START_GAME}
+		log.Printf("Running: Run()..., args: %v", cr)
+		return c.Run(ctx, cr)
+
+	// case "do auth":
+	// 	fmt.Println("Are you Player1 or Player2?")
+	// case "ask mark":
+	// 	fmt.Println("Choose your mark: 'X' or 'O'")
+	// case "ask turn":
+	// 	fmt.Println("Player 123, choose turn from 1 to 9:")
 	default:
-		return errors.New("unknown action: " + r.Action)
+		return nil, errors.New("unknown action: " + sr.State.String())
 	}
-	return nil
+	return r, err
 }
 
 func onExit(done func()) {
