@@ -29,11 +29,19 @@ func (s *server) GetStatus(ctx context.Context, _ *pb.Empty) (*pb.StatusReply, e
 }
 
 func main() {
+	err := bootstrap()
+	if err != nil {
+		log.Fatalf("Failed to bootstrap: %v", err)
+	}
+	log.Print("Started ok.")
+}
+
+func bootstrap() error {
 	log.Print("Starting server...")
 
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
+		return err
 	}
 	log.Print("Listening...")
 
@@ -42,6 +50,7 @@ func main() {
 
 	log.Print("Serving gRPC...")
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		return err
 	}
+	return nil
 }
