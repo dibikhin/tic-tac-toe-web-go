@@ -42,6 +42,6 @@ Client:
 - Protobuf (v3)
 - Active
   - BUT server rules client (to keep client simple)
-  - thin, w/o logic)
+  - thin, w/o logic
 - CLI
 

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package tictactoe;
 
-option go_package = "github.com/dibikhin/tic-tac-toe-web-go/tttwebgrpc";
+option go_package = "github.com/dibikhin/tic-tac-toe-web-go/api";
 
 service Game {
   rpc GetStatus (Empty) returns (StatusReply) {}
