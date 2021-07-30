@@ -11,11 +11,11 @@ import (
 	api "tictactoeweb/api"
 )
 
-func Start() (*grpc.ClientConn, api.GameClient, context.Context, context.CancelFunc, error) {
+func Start() (func(), api.GameClient, context.Context, error) {
 	conn, err := grpc.Dial(cfg.Address, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(time.Second*8))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
-		return nil, nil, nil, nil, err
+		return func() { conn.Close() }, nil, nil, err
 	}
 	log.Print("Dialed address")
 
@@ -23,5 +23,9 @@ func Start() (*grpc.ClientConn, api.GameClient, context.Context, context.CancelF
 	log.Print("Connected client")
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	return conn, cli, ctx, cancel, nil
+	teardown := func() {
+		conn.Close()
+		cancel()
+	}
+	return teardown, cli, ctx, nil
 }

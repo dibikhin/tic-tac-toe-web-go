@@ -1,17 +1,16 @@
 // Package internal implements 3x3 Tic-tac-toe for 2 friends (cannot play with computer yet).
-// Players choose their marks, put them, the game checks winner or draw.
+// Players choose their marks, put them, the Game checks winner or draw.
 package internal
 
 import (
 	"errors"
-	"fmt"
 )
 
 // Constants, Private
-var (
-	// errCouldNotStart arises when `Loop()` is run without running `Setup()` first.
-	errCouldNotStart = errors.New("game: couldn't start the game loop, set up the game first")
-)
+// ErrCouldNotStart arises when `Loop()` is run without running `Setup()` first.
+func ErrCouldNotStart() error {
+	return errors.New("Game: couldn't start the Game loop, set up the Game first")
+}
 
 // Public
 
@@ -20,9 +19,9 @@ var (
 type again = bool
 
 // Loop prompts players to take turns.
-func Loop(g game) (game, again, error) {
+func Loop(g Game) (Game, again, error) {
 	if !g.isReady() {
-		return _deadGame(), false, errCouldNotStart
+		return DeadGame(), false, ErrCouldNotStart()
 	}
 	gam, more := turn(g, g.player1)
 	if !more {
@@ -34,23 +33,23 @@ func Loop(g game) (game, again, error) {
 
 // Private
 
-func turn(g game, playr player) (game, bool) {
+func turn(g Game, playr player) (Game, bool) {
 	c := inputLoop(g, playr)
 	brd := setCell(g.board, c, playr.mark)
 	brd.print()
 
 	if brd.isWinner(playr.mark) {
-		fmt.Printf("%v won!\n", playr)
+		printWinner(playr)
 		return setBoard(g, brd), false
 	}
 	if !brd.hasEmpty() {
-		fmt.Println("Draw!")
+		printDraw()
 		return setBoard(g, brd), false
 	}
 	return setBoard(g, brd), true
 }
 
-func inputLoop(g game, them player) cell {
+func inputLoop(g Game, them player) cell {
 	prompt(them)
 	for {
 		turn := key(g.read())

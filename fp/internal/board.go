@@ -5,34 +5,28 @@ import (
 )
 
 type (
-	mark  = string // to avoid conversions
-	board [_size][_size]mark
+	Board [_size][_size]mark
+
+	mark = string // to avoid conversions
 )
 
 // Constants, Private
 
 const (
-	__    = "_"
+	__    = "-"
 	x_X   = "x_X"
 	_size = 3
 )
 
-func _logo() board {
-	return board{
-		{"X", " ", "X"},
-		{"O", "X", "O"},
-		{"X", " ", "O"}}
-}
-
-func _blankBoard() board {
-	return board{
+func _blankBoard() Board {
+	return Board{
 		{__, __, __},
 		{__, __, __},
 		{__, __, __}}
 }
 
-func _deadBoard() board {
-	return board{
+func _deadBoard() Board {
+	return Board{
 		{x_X, x_X, x_X},
 		{x_X, x_X, x_X},
 		{x_X, x_X, x_X}}
@@ -40,7 +34,7 @@ func _deadBoard() board {
 
 // Public
 
-func (b board) String() string {
+func (b Board) String() string {
 	var dump []string
 	for _, row := range b {
 		s := strings.Join(row[:], " ")
@@ -51,18 +45,17 @@ func (b board) String() string {
 
 // Private
 
-func setCell(b board, c cell, m mark) board {
+func setCell(b Board, c cell, m mark) Board {
 	// WARN: possible out of range
 	b[c.row][c.col] = m
 	return b
 }
 
 // Pure
-func (b board) isEmpty() bool {
-	return b == board{} ||
+func (b Board) isEmpty() bool {
+	return b == Board{} ||
 		b == _deadBoard() ||
 
-		// TODO: magic constants
 		len(b) != _size ||
 		len(b[0]) != _size ||
 		len(b[1]) != _size ||
@@ -70,13 +63,13 @@ func (b board) isEmpty() bool {
 }
 
 // Pure
-func (b board) isFilled(c cell) bool {
+func (b Board) isFilled(c cell) bool {
 	// WARN: possible out of range
 	return b[c.row][c.col] != __
 }
 
 // Pure
-func (b board) hasEmpty() bool {
+func (b Board) hasEmpty() bool {
 	for _, row := range b {
 		for _, m := range row {
 			if m == __ {
@@ -88,7 +81,7 @@ func (b board) hasEmpty() bool {
 }
 
 // Pure
-func (b board) isWinner(m mark) bool {
+func (b Board) isWinner(m mark) bool {
 	// Something better needed, too naive
 
 	// Horizontal

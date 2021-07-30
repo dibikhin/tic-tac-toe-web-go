@@ -20,7 +20,7 @@ General:
 - 1 server + (0 to max 2) clients
 
 Server:
-- Data: in-memory db
+- Data: in-memory db (survives clients' disconnects)
 - Sessions: ? TODO:
 - Caching: no
 - Timeouts: ? TODO:
@@ -42,6 +42,5 @@ Client:
 - Protobuf (v3)
 - Active
   - BUT server rules client (to keep client simple)
-  - thin, w/o logic
+  - thin, w/o logic, status loop only
 - CLI
-

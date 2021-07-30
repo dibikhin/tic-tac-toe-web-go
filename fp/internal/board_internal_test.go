@@ -8,19 +8,19 @@ import (
 func Test_board_isFilled(t *testing.T) {
 	tests := []struct {
 		name string
-		b    board
+		b    Board
 		args cell
 		want bool
 	}{
-		{"filled", board{
-			{"X", "_", "X"},
+		{"filled", Board{
+			{"X", __, "X"},
 			{"O", "X", "O"},
-			{"X", "_", "O"},
+			{"X", __, "O"},
 		}, cell{0, 0}, true},
-		{"empty", board{
-			{"X", "_", "X"},
-			{"O", "_", "O"},
-			{"X", "_", "O"},
+		{"empty", Board{
+			{"X", __, "X"},
+			{"O", __, "O"},
+			{"X", __, "O"},
 		}, cell{0, 1}, false},
 	}
 	for _, tt := range tests {
@@ -35,15 +35,15 @@ func Test_board_isFilled(t *testing.T) {
 func Test_board_hasEmpty(t *testing.T) {
 	tests := []struct {
 		name string
-		b    board
+		b    Board
 		want bool
 	}{
-		{"has empty", board{
-			{"X", "_", "X"},
-			{"O", "_", "O"},
-			{"X", "_", "O"},
+		{"has empty", Board{
+			{"X", __, "X"},
+			{"O", __, "O"},
+			{"X", __, "O"},
 		}, true},
-		{"all filled", board{
+		{"all filled", Board{
 			{"X", "O", "X"},
 			{"O", "X", "O"},
 			{"O", "X", "O"},
@@ -61,26 +61,26 @@ func Test_board_hasEmpty(t *testing.T) {
 func Test_board_isWinner(t *testing.T) {
 	tests := []struct {
 		name string
-		b    board
+		b    Board
 		arg  string
 		want bool
 	}{
-		{"first row, X", board{
+		{"first row, X", Board{
 			{"X", "X", "X"},
-			{"O", "_", "_"},
-			{"O", "_", "_"},
+			{"O", __, __},
+			{"O", __, __},
 		}, "X", true},
-		{"last col, O", board{
+		{"last col, O", Board{
 			{"X", "X", "O"},
-			{"_", "_", "O"},
-			{"_", "_", "O"},
+			{__, __, "O"},
+			{__, __, "O"},
 		}, "O", true},
-		{"left diagonal, O", board{
+		{"left diagonal, O", Board{
 			{"X", "X", "O"},
-			{"_", "O", "_"},
-			{"O", "_", "_"},
+			{__, "O", __},
+			{"O", __, __},
 		}, "O", true},
-		{"draw", board{
+		{"draw", Board{
 			{"X", "O", "O"},
 			{"O", "X", "X"},
 			{"O", "X", "O"},
@@ -102,22 +102,22 @@ func Test_board_setCell(t *testing.T) {
 	}
 	tests := []struct {
 		name string
-		b    board
+		b    Board
 		args args
-		want board
+		want Board
 	}{
 		{
 			"1,1",
-			board{
-				{"_", "_", "_"},
-				{"_", "_", "_"},
-				{"_", "_", "_"},
+			Board{
+				{__, __, __},
+				{__, __, __},
+				{__, __, __},
 			},
 			args{key("5").toCell(), "X"},
-			board{
-				{"_", "_", "_"},
-				{"_", "X", "_"},
-				{"_", "_", "_"},
+			Board{
+				{__, __, __},
+				{__, "X", __},
+				{__, __, __},
 			},
 		},
 	}

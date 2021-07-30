@@ -4,11 +4,15 @@ import "fmt"
 
 type player struct {
 	mark mark
-	num  int
+	num  int // 1 or 2; -1 is a dead player
 }
 
 func (p player) String() string {
 	return fmt.Sprintf(`Player %v ("%v")`, p.num, p.mark)
+}
+
+func _deadPlayer() player {
+	return player{"X_x", -1}
 }
 
 func (p player) isEmpty() bool {
@@ -22,7 +26,7 @@ func prompt(s fmt.Stringer) { // otherwise `type not defined in this package`
 	fmt.Printf("%v, your turn: ", s)
 }
 
-func (b board) print() {
+func (b Board) print() {
 	// Explicit check for the interface
 	var _ fmt.Stringer = b
 

@@ -15,28 +15,25 @@ func main() {
 
 	onExit(sayBye)
 
-	conn, cli, ctx, cancel, err := Start()
+	teardown, cli, ctx, err := Start()
 	if err != nil {
 		log.Fatalf("could not get start: %v", err)
 	}
+	defer teardown()
 
-	defer conn.Close()
-	defer cancel()
-
-	err = StatusLoop(cli, ctx)
-	if err != nil {
+	if err = StatusLoop(cli, ctx); err != nil {
 		log.Fatalf("could not get status: %v", err)
 	}
 }
 
 func onExit(done func()) {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	go func(f func()) {
+	cs := make(chan os.Signal, 1)
+	signal.Notify(cs, os.Interrupt, syscall.SIGTERM)
+	go func(f func(), c chan os.Signal) {
 		<-c
 		f()
 		os.Exit(0)
-	}(done)
+	}(done, cs)
 }
 
 func sayBye() {
