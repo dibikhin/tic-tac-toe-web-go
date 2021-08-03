@@ -1,4 +1,4 @@
-package internal
+package client
 
 import (
 	"errors"
@@ -11,8 +11,6 @@ import (
 func ErrNilReader() error {
 	return errors.New("game: the reader is nil, use a non-nil reader or nothing for the default one while setting up")
 }
-
-type reader = func() string
 
 // Game
 

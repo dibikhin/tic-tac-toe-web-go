@@ -11,18 +11,20 @@ import (
 )
 
 func main() {
-	log.Print("Starting client...")
+	log.Print("Hi!")
+	log.Print("This is 3x3 Tic-tac-toe for 2 friends :)")
 
 	onExit(sayBye)
 
+	log.Print("Trying to connect...")
 	teardown, cli, ctx, err := Start()
-	if err != nil {
-		log.Fatalf("could not get start: %v", err)
-	}
 	defer teardown()
 
+	if err != nil {
+		log.Fatalf("error: start failed: %v", err)
+	}
 	if err = StatusLoop(cli, ctx); err != nil {
-		log.Fatalf("could not get status: %v", err)
+		log.Fatalf("error: status loop failed: %v", err)
 	}
 }
 

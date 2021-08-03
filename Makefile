@@ -1,4 +1,4 @@
-.PHONY: all test lint serve build start clean list
+.PHONY: all clean test build fmt lint serve connect start list
 
 ttt = tictactoe.bin
 
@@ -7,29 +7,35 @@ all: clean test build
 clean:
 	@echo "\nCleaning up..."
 	rm -f ${ttt}
+	@echo "Done."
 
 test:
+	@echo "\nTODO:..."
 	@echo "\nTesting..."
 	go test -v -coverpkg=./internal ./internal
 
 build:
+	@echo "\nTODO:..."
 	@echo "\nBuilding..."
 	@go version
 	go build -o ${ttt}
+	@echo "Done."
 
-fmt:
+fmt format:
 	go fmt ./...
+	@echo "Done."
 
 lint:
 	golangci-lint run -v
+	@echo "Done."
 
-serve:
-	@echo "\nRunning..."
-	go run ./cmd/server/main.go
+serve server:
+	@echo "\nServing..."
+	@go run ./cmd/server/main.go
 
-connect:
-	@echo "\nRunning..."
-	go run ./cmd/client/main.go
+conn connect cli client:
+	@echo "\nConnecting..."
+	@go run ./cmd/client/main.go
 
 start: ${ttt}
 	@echo "\nStarting..."
@@ -37,3 +43,8 @@ start: ${ttt}
 
 list:
 	@grep '^[^#[:space:]].*:' Makefile
+
+regen regenerate:
+	@echo "\nRegenerating .proto..."
+	./scripts/regen_proto.sh tictactoe.proto
+	@echo "Done."
