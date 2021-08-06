@@ -12,7 +12,21 @@ import (
 	api "tictactoeweb/api"
 )
 
-func Start() (func(), api.GameClient, context.Context, error) {
+type (
+	Client = api.GameClient
+	_Repo  = struct {
+		SetById func()
+	}
+	Repo = struct {
+		Client
+		_Repo
+	}
+)
+
+var _cli Client
+var _repo Repo
+
+func Start() (Ctx, func(), error) {
 	conn, err := grpc.Dial(cfg.Address, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(time.Second*8))
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	teardown := func() {
@@ -20,11 +34,15 @@ func Start() (func(), api.GameClient, context.Context, error) {
 		cancel()
 	}
 	if err != nil {
-		return teardown, nil, nil, fmt.Errorf("did not connect: %w", err)
+		return nil, teardown, fmt.Errorf("did not connect: %w", err)
 	}
 	log.Print("Dialed address")
-	cli := api.NewGameClient(conn)
+
+	// globals
+	_cli = api.NewGameClient(conn)
+	_repo = Repo{Client: _cli}
+
 	log.Print("Connected client")
 
-	return teardown, cli, ctx, nil
+	return ctx, teardown, nil
 }

@@ -1,22 +1,34 @@
-package client
+package game
 
 import "fmt"
 
-type player struct {
-	mark mark
-	num  int // 1 or 2; -1 is a dead player
+type Player struct {
+	mark Mark
+	num  int // 1 or 2; -1 is a dead Player
 }
 
-func (p player) String() string {
-	return fmt.Sprintf(`Player %v ("%v")`, p.num, p.mark)
+func (p Player) String() string {
+	return fmt.Sprintf(`Player %v ("%v")`, p.Num(), p.Mark())
 }
 
-func _deadPlayer() player {
-	return player{"X_x", -1}
+func NewPlayer(m Mark, n int) Player {
+	return Player{m, n}
 }
 
-func (p player) isEmpty() bool {
-	return p == player{}
+func DeadPlayer() Player {
+	return Player{"X_x", -1}
+}
+
+func (p Player) IsEmpty() bool {
+	return p == Player{}
+}
+
+func (p Player) Mark() Mark {
+	return p.mark
+}
+
+func (p Player) Num() int {
+	return p.num
 }
 
 // IO

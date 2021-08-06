@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"log"
 
 	api "tictactoeweb/api"
@@ -13,7 +12,7 @@ type server struct {
 
 // Public
 
-func (s *server) GetStatus(ctx context.Context, m *api.Empty) (*api.StatusReply, error) {
+func (s *server) GetStatus(ctx Ctx, m *api.Empty) (*api.StatusReply, error) {
 	log.Printf("Recieved: GetStatus(), args: %v", m)
 	sr := &api.StatusReply{
 		State: api.State_IDLE,
@@ -27,7 +26,7 @@ func (s *server) GetStatus(ctx context.Context, m *api.Empty) (*api.StatusReply,
 	return sr, nil
 }
 
-func (s *server) Run(ctx context.Context, cr *api.CommandRequest) (*api.StatusReply, error) {
+func (s *server) Run(ctx Ctx, cr *api.CommandRequest) (*api.StatusReply, error) {
 	log.Printf("Recieved: Run(), args: %v", cr)
 	sr := &api.StatusReply{
 		State: api.State_WAITING,

@@ -3,15 +3,12 @@ package client
 import (
 	"fmt"
 	. "tictactoe/internal"
+	"tictactoeweb/internal/domain"
+	"tictactoeweb/internal/domain/game"
 )
 
 // Constants, Private
-func _logo() Board {
-	return Board{
-		{"X", " ", "X"},
-		{"O", "X", "O"},
-		{"X", " ", "O"}}
-}
+
 
 // Setup initializes the game and helps players to choose marks.
 // The param is a strategy for user input to be stubbed.
@@ -22,7 +19,7 @@ func _logo() Board {
 // ctx, err := Setup(DefaultReader)
 // OR
 // ctx, err := Setup(yourReaderFunc)
-func Setup(rs ...reader) (Game, error) {
+func Setup(rs ...reader) (game, error) {
 	alt, err := extractReader(rs)
 	if err != nil {
 		return DeadGame(), err
@@ -31,7 +28,7 @@ func Setup(rs ...reader) (Game, error) {
 	if err != nil {
 		return DeadGame(), err
 	}
-	printLogo(_logo())
+	printLogo(domain.Board.Logo())
 
 	defer gam.Print()
 	p1, p2, err := gam.ChooseMarks()
@@ -56,11 +53,11 @@ func printLogo(s fmt.Stringer) {
 
 // Factory, Pure
 func makeGame(def, alt reader) (Game, error) {
-	gam := NewGame()
+	g := domain.Game.NewGame()
 	switch {
 	case alt != nil:
-		return SetReader(gam, alt)
+		return domain.Game.SetReader(g, alt)
 	default:
-		return SetReader(gam, def)
+		return SetReader(g, def)
 	}
 }

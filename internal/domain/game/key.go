@@ -1,10 +1,10 @@
-package client
+package game
 
 import "strconv"
 
 // Cell
 
-type cell struct {
+type Cell struct {
 	row, col int
 }
 
@@ -12,7 +12,7 @@ type cell struct {
 
 type (
 	key    string
-	coords map[key]cell
+	coords map[key]Cell
 )
 
 // Constants
@@ -26,7 +26,7 @@ func _coords() coords {
 }
 
 // Pure
-func (k key) toCell() cell {
+func (k key) toCell() Cell {
 	return _coords()[k] // TODO: detect and propagate errors?
 }
 

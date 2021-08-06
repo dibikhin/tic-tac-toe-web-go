@@ -2,6 +2,9 @@ package client
 
 import (
 	"errors"
+
+	"tictactoeweb/internal/domain"
+	. "tictactoeweb/internal/domain/game"
 )
 
 // Constants, Private
@@ -18,36 +21,36 @@ type again = bool
 
 // Loop prompts players to take turns.
 func Loop(g Game) (Game, again, error) {
-	if !g.isReady() {
-		return DeadGame(), false, ErrCouldNotStart()
+	if !domain.Game.IsReady(g) {
+		return domain.Game.DeadGame(), false, ErrCouldNotStart()
 	}
-	gam, more := turn(g, g.player1)
+	gam, more := turn(g, g.Player1())
 	if !more {
 		return gam, false, nil
 	}
-	gam, more = turn(gam, gam.player2)
+	gam, more = turn(gam, gam.Player2())
 	return gam, more, nil
 }
 
 // Private
 
-func turn(g Game, playr player) (Game, bool) {
+func turn(g Game, playr Player) (Game, bool) {
 	c := inputLoop(g, playr)
-	brd := setCell(g.board, c, playr.mark)
+	brd := domain.Board.SetCell(g.Board().Id(), c, playr.Mark())
 	brd.print()
 
-	if brd.isWinner(playr.mark) {
+	if brd.IsWinner(playr.Mark()) {
 		printWinner(playr)
-		return setBoard(g, brd), false
+		return domain.Board.SetBoard(g, brd), false
 	}
 	if !brd.hasEmpty() {
 		printDraw()
-		return setBoard(g, brd), false
+		return domain.Board.SetBoard(g, brd), false
 	}
 	return setBoard(g, brd), true
 }
 
-func inputLoop(g Game, them player) cell {
+func inputLoop(g game, them Player) cell {
 	prompt(them)
 	for {
 		turn := key(g.read())

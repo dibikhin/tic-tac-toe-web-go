@@ -29,7 +29,7 @@ message StatusReply {
   string message = 4;
 
   For for = 5; // optional
-  // Player player = 6; // optional
+  // Player Player = 6; // optional
   string board = 7; // optional
 
   Outcome outcome = 8; // optional

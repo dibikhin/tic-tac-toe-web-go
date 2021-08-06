@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"tictactoeweb/api"
 	. "tictactoeweb/internal/client"
 )
 
@@ -17,13 +18,13 @@ func main() {
 	onExit(sayBye)
 
 	log.Print("Trying to connect...")
-	teardown, cli, ctx, err := Start()
+	ctx, teardown, err := Start()
 	defer teardown()
 
 	if err != nil {
 		log.Fatalf("error: start failed: %v", err)
 	}
-	if err = StatusLoop(cli, ctx); err != nil {
+	if err = StatusLoop(ctx); err != nil {
 		log.Fatalf("error: status loop failed: %v", err)
 	}
 }

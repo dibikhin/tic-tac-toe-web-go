@@ -409,7 +409,7 @@ type StatusReply struct {
 	Opts    []Opts    `protobuf:"varint,3,rep,packed,name=opts,proto3,enum=tictactoe.Opts" json:"opts,omitempty"`
 	Message string    `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
 	For     For       `protobuf:"varint,5,opt,name=for,proto3,enum=tictactoe.For" json:"for,omitempty"` // optional
-	// Player player = 6; // optional
+	// Player Player = 6; // optional
 	Board   string  `protobuf:"bytes,7,opt,name=board,proto3" json:"board,omitempty"`                             // optional
 	Outcome Outcome `protobuf:"varint,8,opt,name=outcome,proto3,enum=tictactoe.Outcome" json:"outcome,omitempty"` // optional
 }
