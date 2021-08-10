@@ -7,6 +7,8 @@ type Player struct {
 	num  int // 1 or 2; -1 is a dead Player
 }
 
+// Public, Pure
+
 func (p Player) String() string {
 	return fmt.Sprintf(`Player %v ("%v")`, p.Num(), p.Mark())
 }
@@ -22,6 +24,8 @@ func DeadPlayer() Player {
 func (p Player) IsEmpty() bool {
 	return p == Player{}
 }
+
+// Properties
 
 func (p Player) Mark() Mark {
 	return p.mark

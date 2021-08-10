@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"os"
 	"strings"
+
+	irn "tictactoeweb/internal"
 )
 
 // User input strategy for stubbing in tests.
@@ -27,7 +29,7 @@ func DefaultReader() string {
 
 // Private
 
-func extractReader(rs []reader) (reader, error) {
+func extractReader(rs []Reader) (Reader, error) {
 	switch {
 	case len(rs) < 1:
 		return nil, nil

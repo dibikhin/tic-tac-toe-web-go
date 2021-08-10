@@ -11,11 +11,11 @@ type Cell struct {
 // Key
 
 type (
-	key    string
-	coords map[key]Cell
+	Key    string
+	coords map[Key]Cell
 )
 
-// Constants
+// Constants, Private
 
 func _coords() coords {
 	return coords{
@@ -25,13 +25,25 @@ func _coords() coords {
 	}
 }
 
-// Pure
-func (k key) toCell() Cell {
+// Public, Pure
+
+// Properties
+
+func (c Cell) Row() int {
+	return c.row
+}
+
+func (c Cell) Col() int {
+	return c.col
+}
+
+// Other
+
+func (k Key) ToCell() Cell {
 	return _coords()[k] // TODO: detect and propagate errors?
 }
 
-// Pure
-func (k key) isKey() bool {
+func (k Key) IsKey() bool {
 	n, err := strconv.Atoi(string(k))
 	if err != nil {
 		return false

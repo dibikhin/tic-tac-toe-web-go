@@ -21,8 +21,8 @@ type again = bool
 
 // Loop prompts players to take turns.
 func Loop(g Game) (Game, again, error) {
-	if !domain.Game.IsReady(g) {
-		return domain.Game.DeadGame(), false, ErrCouldNotStart()
+	if !domain.Games.IsReady(g) {
+		return domain.Games.Dead(), false, ErrCouldNotStart()
 	}
 	gam, more := turn(g, g.Player1())
 	if !more {
@@ -36,32 +36,32 @@ func Loop(g Game) (Game, again, error) {
 
 func turn(g Game, playr Player) (Game, bool) {
 	c := inputLoop(g, playr)
-	brd := domain.Board.SetCell(g.Board().Id(), c, playr.Mark())
+	brd := domain.Boards.SetCell(g.Board(), c, playr.Mark())
 	brd.print()
 
-	if brd.IsWinner(playr.Mark()) {
+	if domain.Boards.IsWinner(brd, playr.Mark()) {
 		printWinner(playr)
-		return domain.Board.SetBoard(g, brd), false
+		return domain.Boards.SetBoard(g, brd), false
 	}
-	if !brd.hasEmpty() {
+	if !domain.Boards.HasEmpty(brd) {
 		printDraw()
-		return domain.Board.SetBoard(g, brd), false
+		return domain.Boards.SetBoard(g, brd), false
 	}
-	return setBoard(g, brd), true
+	return domain.Boards.SetBoard(g, brd), true
 }
 
-func inputLoop(g game, them Player) cell {
+func inputLoop(g Game, them Player) Cell {
 	prompt(them)
 	for {
-		turn := key(g.read())
-		if !turn.isKey() {
+		turn := Key(g.Reader()()) // TODO: .Read()
+		if !turn.IsKey() {
 			g.board.print()
 			prompt(them)
 
 			continue
 		}
-		cel := turn.toCell()
-		if g.board.isFilled(cel) {
+		cel := turn.ToCell()
+		if domain.Boards.IsFilled(g.Board(), cel) {
 			g.board.print()
 			prompt(them)
 

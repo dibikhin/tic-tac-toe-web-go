@@ -5,90 +5,139 @@ import (
 	"strings"
 
 	irn "tictactoeweb/internal"
-	g "tictactoeweb/internal/domain/game"
+	. "tictactoeweb/internal/domain/game"
 )
 
 type (
-	_Game  struct{}
-	_Board struct{}
+	_Games  struct{} // see the `Games` var below
+	_Boards struct{}
 
 	reader = func() string
 )
 
 // Public
 
-var Game = _Game{}
-var Board = _Board{}
+var Games = _Games{} // to call imported fns as `domain.Games.IsReady(g)`
+var Boards = _Boards{}
 
 // Checks
 
-func (_Game) IsReady(g g.Game) bool {
+func (_Games) IsReady(g Game) bool {
 	return g.Reader() != nil &&
 		!g.Player1().IsEmpty() &&
 		!g.Player2().IsEmpty() &&
-		!g.Board().IsEmpty()
+		!Boards.IsEmpty(g.Board())
 }
 
 // Constants
 
-func (_Game) DeadGame() g.Game {
-	return g.NewGame(g.DeadBoard())
+func (_Games) Dead() Game {
+	return NewGame(NewBoard, DeadBoard())
 }
 
-func (_Game) NewGame() g.Game {
-	return g.NewGame()
+func (_Games) NewGame() Game {
+	return NewGame(NewBoard)
 }
 
-func (_Board) DeadBoard() g.Board {
-	return g.NewBoard(g.DeadBoard())
+func (_Boards) DeadBoard() Board {
+	return NewBoard(DeadBoard())
 }
 
-func (_Board) NewBoard() g.Game {
-	return g.NewBoard()
+func (_Boards) NewBoard() Game {
+	return Game{}
 }
 
 // Commands
 
-func (_Game) SetPlayers(gm g.Game, p1, p2 g.Player) g.Game {
+func (_Games) SetPlayers(g Game, p1, p2 Player) Game {
 	// TODO: send to server
-	return gm
+	return Game{}
 }
 
-func (_Board) SetBoard(gm g.Game, b g.Board) g.Game {
+func (_Boards) SetBoard(g Game, b Board) Game {
 	// TODO: send to server
-	return /*updated*/ gm
+	return /*updated*/ Game{}
 }
 
-func (_Board) SetCell(boardId irn.Id, c g.Cell, m g.Mark) g.Board {
+func (_Boards) SetCell(b Board, c Cell, m Mark) Board {
 	// WARN: possible out of range
 	// b[c.row][c.col] = m
 	// TODO: send to server
 
-	return g.Board{}
+	return Board{}
 }
 
-// Local
+// Local Properties
 
-func (_Game) SetReader(gm g.Game, r reader) (g.Game, error) {
-	return gm.SetReader(r, Game.DeadGame())
+func (_Games) SetReader(g Game, r reader) (Game, error) {
+	return g.SetReader(r, Games.Dead())
 }
 
-func (_Game) ChooseMarks(gm g.Game) (g.Player, g.Player, error) {
+// IO
+
+func (_Games) ChooseMarks(g Game) (Player, Player, error) {
 	fmt.Print("Press 'x' or 'o' to choose mark for Player 1: ")
 
-	if gm.Reader() == nil {
-		return g.DeadPlayer(), g.DeadPlayer(), irn.ErrNilReader()
+	if g.Reader() == nil {
+		return DeadPlayer(), DeadPlayer(), irn.ErrNilReader()
 	}
-	m := gm.Reader()()
-	p1, p2 := Game.ArrangePlayers(m)
+	m := g.Reader()()
+	p1, p2 := Games.ArrangePlayers(m)
 	return p1, p2, nil
 }
 
 // Pure
 
-func (_Game) ArrangePlayers(m g.Mark) (g.Player, g.Player) {
+func (_Games) ArrangePlayers(m Mark) (Player, Player) {
 	if strings.ToLower(m) == "x" {
-		return g.NewPlayer("X", 1), g.NewPlayer("O", 2)
+		return NewPlayer("X", 1), NewPlayer("O", 2)
 	}
-	return g.NewPlayer("O", 1), g.NewPlayer("X", 2)
+	return NewPlayer("O", 1), NewPlayer("X", 2)
+}
+
+func (_Boards) IsEmpty(b Board) bool {
+	bb := b.Board()
+	return b == Board{} ||
+		b == DeadBoard() ||
+		len(bb) != Size ||
+		len(bb[0]) != Size ||
+		len(bb[1]) != Size ||
+		len(bb[2]) != Size
+}
+
+func (_Boards) IsFilled(b Board, c Cell) bool {
+	// WARN: possible out of range
+	return b.Board()[c.Row()][c.Col()] != Gap
+}
+
+func (_Boards) HasEmpty(b Board) bool {
+	for _, row := range b.Board() {
+		for _, m := range row {
+			if m == Gap {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (_Boards) IsWinner(b Board, m Mark) bool {
+	bb := b.Board()
+	// Something better needed, too naive
+
+	// Horizontal
+	h0 := bb[0][0] == m && bb[0][1] == m && bb[0][2] == m
+	h1 := bb[1][0] == m && bb[1][1] == m && bb[1][2] == m
+	h2 := bb[2][0] == m && bb[2][1] == m && bb[2][2] == m
+
+	// Vertical
+	v0 := bb[0][0] == m && bb[1][0] == m && bb[2][0] == m
+	v1 := bb[0][1] == m && bb[1][1] == m && bb[2][1] == m
+	v2 := bb[0][2] == m && bb[1][2] == m && bb[2][2] == m
+
+	// Diagonal
+	d0 := bb[0][0] == m && bb[1][1] == m && bb[2][2] == m
+	d1 := bb[0][2] == m && bb[1][1] == m && bb[2][0] == m
+
+	return h0 || h1 || h2 || v0 || v1 || v2 || d0 || d1
 }

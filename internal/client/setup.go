@@ -2,13 +2,9 @@ package client
 
 import (
 	"fmt"
-	. "tictactoe/internal"
 	"tictactoeweb/internal/domain"
-	"tictactoeweb/internal/domain/game"
+	game "tictactoeweb/internal/domain/game"
 )
-
-// Constants, Private
-
 
 // Setup initializes the game and helps players to choose marks.
 // The param is a strategy for user input to be stubbed.
@@ -19,23 +15,24 @@ import (
 // ctx, err := Setup(DefaultReader)
 // OR
 // ctx, err := Setup(yourReaderFunc)
-func Setup(rs ...reader) (game, error) {
+func Setup(rs ...Reader) (game.Game, error) {
 	alt, err := extractReader(rs)
 	if err != nil {
-		return DeadGame(), err
+		return domain.Games.Dead(), err
 	}
 	gam, err := makeGame(DefaultReader, alt)
 	if err != nil {
-		return DeadGame(), err
+		return domain.Games.Dead(), err
 	}
-	printLogo(domain.Board.Logo())
+	printLogo(game.Logo())
 
 	defer gam.Print()
-	p1, p2, err := gam.ChooseMarks()
+
+	p1, p2, err := domain.Games.ChooseMarks(gam)
 	if err != nil {
-		return DeadGame(), err
+		return domain.Games.Dead(), err
 	}
-	return SetPlayers(gam, p1, p2), nil
+	return domain.Games.SetPlayers(gam, p1, p2), nil
 }
 
 // IO
@@ -52,12 +49,12 @@ func printLogo(s fmt.Stringer) {
 // Private
 
 // Factory, Pure
-func makeGame(def, alt reader) (Game, error) {
-	g := domain.Game.NewGame()
+func makeGame(def, alt Reader) (game.Game, error) {
+	g := domain.Games.NewGame()
 	switch {
 	case alt != nil:
-		return domain.Game.SetReader(g, alt)
+		return domain.Games.SetReader(g, alt)
 	default:
-		return SetReader(g, def)
+		return g.SetReader(def, domain.Games.Dead())
 	}
 }

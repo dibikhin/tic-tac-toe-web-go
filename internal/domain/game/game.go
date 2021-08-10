@@ -8,6 +8,8 @@ import (
 // Aliasing preventing circular deps
 type Reader = func() string
 
+type MakeBoard = func(b ...Board) Board
+
 // Game
 
 type Game struct {
@@ -20,12 +22,12 @@ type Game struct {
 	reader Reader
 }
 
-func NewGame(bs ...Board) Game {
-	if len(bs) == 0 {
-		return Game{id: irn.NewId(), board: BlankBoard()}
+func NewGame(makeBoard MakeBoard, bs ...Board) Game {
+	if len(bs) == 1 {
+		return Game{board: bs[0]}
 	}
 	return Game{
-		board: bs[0],
+		id: irn.NewId(), board: makeBoard(),
 	}
 }
 
@@ -47,7 +49,9 @@ func (g Game) Player2() Player {
 	return g.player2
 }
 
-func (g Game) Reader() func() string {
+// Reader
+
+func (g Game) Reader() Reader {
 	return g.reader
 }
 
