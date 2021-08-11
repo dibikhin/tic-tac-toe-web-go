@@ -22,7 +22,7 @@ type again = bool
 // Loop prompts players to take turns.
 func Loop(g Game) (Game, again, error) {
 	if !domain.Games.IsReady(g) {
-		return domain.Games.Dead(), false, ErrCouldNotStart()
+		return domain.Games.MakeDead(), false, ErrCouldNotStart()
 	}
 	gam, more := turn(g, g.Player1())
 	if !more {
@@ -39,11 +39,11 @@ func turn(g Game, playr Player) (Game, bool) {
 	brd := domain.Boards.SetCell(g.Board(), c, playr.Mark())
 	brd.print()
 
-	if domain.Boards.IsWinner(brd, playr.Mark()) {
+	if brd.IsWinner(playr.Mark()) {
 		printWinner(playr)
 		return domain.Boards.SetBoard(g, brd), false
 	}
-	if !domain.Boards.HasEmpty(brd) {
+	if !brd.HasEmpty() {
 		printDraw()
 		return domain.Boards.SetBoard(g, brd), false
 	}
@@ -61,7 +61,7 @@ func inputLoop(g Game, them Player) Cell {
 			continue
 		}
 		cel := turn.ToCell()
-		if domain.Boards.IsFilled(g.Board(), cel) {
+		if g.Board().IsFilled(cel) {
 			g.board.print()
 			prompt(them)
 

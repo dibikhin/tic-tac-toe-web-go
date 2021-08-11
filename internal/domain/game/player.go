@@ -13,19 +13,17 @@ func (p Player) String() string {
 	return fmt.Sprintf(`Player %v ("%v")`, p.Num(), p.Mark())
 }
 
+// Factories
+
 func NewPlayer(m Mark, n int) Player {
 	return Player{m, n}
 }
 
 func DeadPlayer() Player {
-	return Player{"X_x", -1}
+	return Player{X_x, -1}
 }
 
-func (p Player) IsEmpty() bool {
-	return p == Player{}
-}
-
-// Properties
+// Props
 
 func (p Player) Mark() Mark {
 	return p.mark
@@ -33,6 +31,12 @@ func (p Player) Mark() Mark {
 
 func (p Player) Num() int {
 	return p.num
+}
+
+// Checks
+
+func (p Player) IsEmpty() bool {
+	return p == Player{}
 }
 
 // IO

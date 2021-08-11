@@ -5,12 +5,7 @@ import (
 	irn "tictactoeweb/internal"
 )
 
-// Aliasing preventing circular deps
-type Reader = func() string
-
-type MakeBoard = func(b ...Board) Board
-
-// Game
+type reader = irn.Reader
 
 type Game struct {
 	id irn.Id
@@ -19,19 +14,21 @@ type Game struct {
 	player1 Player
 	player2 Player
 
-	reader Reader
+	reader reader
 }
 
-func NewGame(makeBoard MakeBoard, bs ...Board) Game {
+func NewGame(gameId irn.Id, bs ...Board) Game {
 	if len(bs) == 1 {
-		return Game{board: bs[0]}
+		return Game{
+			id: gameId, board: bs[0],
+		}
 	}
 	return Game{
-		id: irn.NewId(), board: makeBoard(),
+		id: gameId, board: NewBoard(),
 	}
 }
 
-// Properties
+// Props
 
 func (g Game) Id() irn.Id {
 	return g.id
@@ -51,15 +48,15 @@ func (g Game) Player2() Player {
 
 // Reader
 
-func (g Game) Reader() Reader {
+func (g Game) Reader() reader {
 	return g.reader
 }
 
-func (g Game) SetReader(r Reader, def Game) (Game, error) {
-	if r == nil {
+func (g Game) SetReader(rdr reader, def Game) (Game, error) {
+	if rdr == nil {
 		return def, irn.ErrNilReader()
 	}
-	g.reader = r
+	g.reader = rdr
 	return g, nil
 }
 

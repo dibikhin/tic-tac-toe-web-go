@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	irn "tictactoeweb/internal"
 	"tictactoeweb/internal/domain"
 	game "tictactoeweb/internal/domain/game"
 )
@@ -15,14 +16,14 @@ import (
 // ctx, err := Setup(DefaultReader)
 // OR
 // ctx, err := Setup(yourReaderFunc)
-func Setup(rs ...Reader) (game.Game, error) {
-	alt, err := extractReader(rs)
+func Setup(rs ...irn.Reader) (game.Game, error) {
+	alt, err := irn.ExtractReader(rs)
 	if err != nil {
-		return domain.Games.Dead(), err
+		return domain.Games.MakeDead(), err
 	}
-	gam, err := makeGame(DefaultReader, alt)
+	gam, err := setupReader(irn.DefaultReader, alt)
 	if err != nil {
-		return domain.Games.Dead(), err
+		return domain.Games.MakeDead(), err
 	}
 	printLogo(game.Logo())
 
@@ -30,7 +31,7 @@ func Setup(rs ...Reader) (game.Game, error) {
 
 	p1, p2, err := domain.Games.ChooseMarks(gam)
 	if err != nil {
-		return domain.Games.Dead(), err
+		return domain.Games.MakeDead(), err
 	}
 	return domain.Games.SetPlayers(gam, p1, p2), nil
 }
@@ -49,12 +50,13 @@ func printLogo(s fmt.Stringer) {
 // Private
 
 // Factory, Pure
-func makeGame(def, alt Reader) (game.Game, error) {
-	g := domain.Games.NewGame()
+func setupReader(def, alt irn.Reader) (game.Game, error) {
+	dead := domain.Games.MakeDead()
+	gam := domain.Games.Make()
 	switch {
 	case alt != nil:
-		return domain.Games.SetReader(g, alt)
+		return gam.SetReader(alt, dead)
 	default:
-		return g.SetReader(def, domain.Games.Dead())
+		return gam.SetReader(def, dead)
 	}
 }
