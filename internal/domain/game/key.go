@@ -38,12 +38,12 @@ func (k Key) IsKey() bool {
 }
 
 func (k Key) ToCell() Cell {
-	return crds()[k] // TODO: detect and propagate errors?
+	return _coords()[k] // TODO: detect and propagate errors?
 }
 
 // Constants, Private
 
-func crds() coords {
+func _coords() coords {
 	return coords{
 		"1": {0, 0}, "2": {0, 1}, "3": {0, 2},
 		"4": {1, 0}, "5": {1, 1}, "6": {1, 2},

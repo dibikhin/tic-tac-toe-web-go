@@ -5,8 +5,6 @@ import (
 	irn "tictactoeweb/internal"
 )
 
-type reader = irn.Reader
-
 type Game struct {
 	id irn.Id
 
@@ -14,7 +12,7 @@ type Game struct {
 	player1 Player
 	player2 Player
 
-	reader reader
+	reader irn.Reader
 }
 
 func NewGame(gameId irn.Id, bs ...Board) Game {
@@ -24,7 +22,7 @@ func NewGame(gameId irn.Id, bs ...Board) Game {
 		}
 	}
 	return Game{
-		id: gameId, board: NewBoard(),
+		id: gameId, board: NewBoard(irn.NewId()),
 	}
 }
 
@@ -46,18 +44,27 @@ func (g Game) Player2() Player {
 	return g.player2
 }
 
-// Reader
+// Props: Reader
 
-func (g Game) Reader() reader {
+func (g Game) Reader() irn.Reader {
 	return g.reader
 }
 
-func (g Game) SetReader(rdr reader, def Game) (Game, error) {
+func (g Game) SetReader(rdr irn.Reader, def Game) (Game, error) {
 	if rdr == nil {
 		return def, irn.ErrNilReader()
 	}
 	g.reader = rdr
 	return g, nil
+}
+
+// Checks
+
+func (g Game) IsReady() bool {
+	return g.reader != nil &&
+		!g.player1.IsEmpty() &&
+		!g.player2.IsEmpty() &&
+		!g.board.IsEmpty()
 }
 
 // IO

@@ -12,7 +12,7 @@ import (
 // NOTE: An interface is more idiomatic in this case. BUT it's overkill to define
 // a type with constructor, an interface and its fake implementation in tests vs. this
 // func, its impl and its fake impl in tests.
-type Reader = func() string // TODO: reader
+type Reader = func() string
 
 // ErrNilReader() arises when `Setup()` is run with nil reader.
 func ErrNilReader() error {

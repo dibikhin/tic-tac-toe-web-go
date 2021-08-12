@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+
 	irn "tictactoeweb/internal"
 	"tictactoeweb/internal/domain"
 	game "tictactoeweb/internal/domain/game"
@@ -25,7 +26,7 @@ func Setup(rs ...irn.Reader) (game.Game, error) {
 	if err != nil {
 		return domain.Games.MakeDead(), err
 	}
-	printLogo(game.Logo())
+	printLogo(domain.Logo())
 
 	defer gam.Print()
 

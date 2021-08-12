@@ -13,12 +13,24 @@ type (
 	_Boards struct{}
 
 	reader = irn.Reader
+	grid   = [Size][Size]Mark
 )
 
 // Public
 
-var Games = _Games{} // to call like `domain.Games.IsReady(g)`
+var Games = _Games{} // to call like `domain.Games.SetBoard(g, b)`
 var Boards = _Boards{}
+
+// Constants
+func Logo() Board {
+	return NewBoard(
+		"logo",
+		grid{
+			{X, " ", X},
+			{O, X, O},
+			{X, " ", O}},
+	)
+}
 
 // Factorys: Games etc.
 
@@ -32,18 +44,9 @@ func (_Games) MakeDead() Game {
 
 func (_Games) ArrangePlayers(m Mark) (Player, Player) {
 	if strings.ToLower(m) == "x" {
-		return NewPlayer("X", 1), NewPlayer("O", 2)
+		return NewPlayer(X, 1), NewPlayer(O, 2)
 	}
-	return NewPlayer("O", 1), NewPlayer("X", 2)
-}
-
-// Checks
-
-func (_Games) IsReady(g Game) bool {
-	return g.Reader() != nil &&
-		!g.Player1().IsEmpty() &&
-		!g.Player2().IsEmpty() &&
-		!g.Board().IsEmpty()
+	return NewPlayer(O, 1), NewPlayer(X, 2)
 }
 
 // Commands: Remote (IO)
@@ -53,7 +56,7 @@ func (_Games) SetPlayers(g Game, p1, p2 Player) Game {
 	return Game{}
 }
 
-func (_Boards) SetBoard(g Game, b Board) Game {
+func (_Games) SetBoard(g Game, b Board) Game {
 	// TODO: send to server
 	return /*updated*/ Game{}
 }
@@ -68,6 +71,7 @@ func (_Boards) SetCell(b Board, c Cell, m Mark) Board {
 
 // Commands: Local (IO)
 
+// ChooseMarks chooses players' marks as in a Google's TicTacToe doodle
 func (_Games) ChooseMarks(g Game) (Player, Player, error) {
 	fmt.Print("Press 'x' or 'o' to choose mark for Player 1: ")
 

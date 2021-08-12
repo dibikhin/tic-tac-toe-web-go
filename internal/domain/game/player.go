@@ -10,10 +10,10 @@ type Player struct {
 // Public, Pure
 
 func (p Player) String() string {
-	return fmt.Sprintf(`Player %v ("%v")`, p.Num(), p.Mark())
+G	return fmt.Sprintf(`Player %v ("%v")`, p.num, p.mark)
 }
 
-// Factories
+// Factorys
 
 func NewPlayer(m Mark, n int) Player {
 	return Player{m, n}

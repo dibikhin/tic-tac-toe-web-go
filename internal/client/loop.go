@@ -7,7 +7,9 @@ import (
 	. "tictactoeweb/internal/domain/game"
 )
 
-// Constants, Private
+type again = bool
+
+// Constants, Public
 // ErrCouldNotStart arises when `Loop()` is run without running `Setup()` first.
 func ErrCouldNotStart() error {
 	return errors.New("Game: couldn't start the Game loop, set up the Game first")
@@ -17,11 +19,9 @@ func ErrCouldNotStart() error {
 
 // Game Loop()
 
-type again = bool
-
 // Loop prompts players to take turns.
 func Loop(g Game) (Game, again, error) {
-	if !domain.Games.IsReady(g) {
+	if !g.IsReady() {
 		return domain.Games.MakeDead(), false, ErrCouldNotStart()
 	}
 	gam, more := turn(g, g.Player1())
@@ -41,19 +41,20 @@ func turn(g Game, playr Player) (Game, bool) {
 
 	if brd.IsWinner(playr.Mark()) {
 		printWinner(playr)
-		return domain.Boards.SetBoard(g, brd), false
+		return domain.Games.SetBoard(g, brd), false
 	}
 	if !brd.HasEmpty() {
 		printDraw()
-		return domain.Boards.SetBoard(g, brd), false
+		return domain.Games.SetBoard(g, brd), false
 	}
-	return domain.Boards.SetBoard(g, brd), true
+	return domain.Games.SetBoard(g, brd), true
 }
 
 func inputLoop(g Game, them Player) Cell {
 	prompt(them)
 	for {
-		turn := Key(g.Reader()()) // TODO: .Read()
+		read := g.Reader()
+		turn := Key(read())
 		if !turn.IsKey() {
 			g.board.print()
 			prompt(them)
