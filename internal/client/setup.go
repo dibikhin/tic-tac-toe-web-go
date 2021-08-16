@@ -5,7 +5,7 @@ import (
 
 	irn "tictactoeweb/internal"
 	"tictactoeweb/internal/domain"
-	game "tictactoeweb/internal/domain/game"
+	"tictactoeweb/internal/domain/game"
 )
 
 // Setup initializes the game and helps players to choose marks.
@@ -28,24 +28,12 @@ func Setup(rs ...irn.Reader) (game.Game, error) {
 	}
 	printLogo(domain.Logo())
 
-	defer gam.Print()
-
+	defer domain.PrintGame(gam)
 	p1, p2, err := domain.Games.ChooseMarks(gam)
 	if err != nil {
 		return domain.Games.MakeDead(), err
 	}
 	return domain.Games.SetPlayers(gam, p1, p2), nil
-}
-
-// IO
-
-func printLogo(s fmt.Stringer) {
-	fmt.Println()
-	fmt.Println(s)
-	fmt.Println()
-
-	fmt.Println("(Use `ctrl+c` to exit)")
-	fmt.Println()
 }
 
 // Private
@@ -60,4 +48,15 @@ func setupReader(def, alt irn.Reader) (game.Game, error) {
 	default:
 		return gam.SetReader(def, dead)
 	}
+}
+
+// IO
+
+func printLogo(s fmt.Stringer) {
+	fmt.Println()
+	fmt.Println(s)
+	fmt.Println()
+
+	fmt.Println("(Use `ctrl+c` to exit)")
+	fmt.Println()
 }

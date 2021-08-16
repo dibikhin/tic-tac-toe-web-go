@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	irn "tictactoeweb/internal"
 )
 
@@ -12,6 +11,7 @@ type Game struct {
 	player1 Player
 	player2 Player
 
+	// Party:Client
 	reader irn.Reader
 }
 
@@ -44,6 +44,8 @@ func (g Game) Player2() Player {
 	return g.player2
 }
 
+// Party:Client
+
 // Props: Reader
 
 func (g Game) Reader() irn.Reader {
@@ -60,28 +62,10 @@ func (g Game) SetReader(rdr irn.Reader, def Game) (Game, error) {
 
 // Checks
 
+// Party:Client
 func (g Game) IsReady() bool {
 	return g.reader != nil &&
 		!g.player1.IsEmpty() &&
 		!g.player2.IsEmpty() &&
 		!g.board.IsEmpty()
-}
-
-// IO
-
-func (g Game) Print() {
-	fmt.Println()
-
-	fmt.Println(g.player1)
-	fmt.Println(g.player2)
-
-	g.board.print()
-}
-
-func printWinner(p Player) {
-	fmt.Printf("%v won!\n", p)
-}
-
-func printDraw() {
-	fmt.Println("Draw!")
 }

@@ -42,6 +42,7 @@ func (_Games) MakeDead() Game {
 	return NewGame(X_x, Dead())
 }
 
+// Party: Server
 func (_Games) ArrangePlayers(m Mark) (Player, Player) {
 	if strings.ToLower(m) == "x" {
 		return NewPlayer(X, 1), NewPlayer(O, 2)
@@ -61,7 +62,7 @@ func (_Games) SetBoard(g Game, b Board) Game {
 	return /*updated*/ Game{}
 }
 
-func (_Boards) SetCell(b Board, c Cell, m Mark) Board {
+func (_Boards) Turn(b Board, t Turn) Board {
 	// WARN: possible out of range
 	// b[c.row][c.col] = m
 	// TODO: send to server
@@ -69,10 +70,10 @@ func (_Boards) SetCell(b Board, c Cell, m Mark) Board {
 	return Board{}
 }
 
-// Commands: Local (IO)
+// Commands: Local + IO
 
 // ChooseMarks chooses players' marks as in a Google's TicTacToe doodle
-func (_Games) ChooseMarks(g Game) (Player, Player, error) {
+func (_Games) ChooseMarks(g Game) (Player, Player /*Game? TODO:*/, error) {
 	fmt.Print("Press 'x' or 'o' to choose mark for Player 1: ")
 
 	if g.Reader() == nil {
@@ -82,4 +83,41 @@ func (_Games) ChooseMarks(g Game) (Player, Player, error) {
 	m := read()
 	p1, p2 := Games.ArrangePlayers(m)
 	return p1, p2, nil
+}
+
+// IO
+
+func PrintGame(g Game) {
+	fmt.Println()
+
+	fmt.Println(g.Player1())
+	fmt.Println(g.Player2())
+
+	PrintBoard(g.Board())
+}
+
+func PrintBoard(b Board) {
+	// Explicit check for the interface
+	var _ fmt.Stringer = b
+
+	fmt.Println()
+	fmt.Println()
+	fmt.Println("Press 1 to 9 to mark an empty cell (5 is center), then press ENTER. Board:")
+	fmt.Println()
+
+	fmt.Println(b)
+	fmt.Println()
+}
+
+func PrintWinner(p Player) {
+	fmt.Printf("%v won!\n", p)
+}
+
+func PrintDraw() {
+	fmt.Println("Draw!")
+}
+
+// Implicit check for `fmt.Stringer` impl
+func Prompt(s fmt.Stringer) { // otherwise `type not defined in this package`
+	fmt.Printf("%v, your turn: ", s)
 }

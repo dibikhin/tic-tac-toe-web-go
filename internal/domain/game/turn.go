@@ -2,20 +2,33 @@ package game
 
 import "strconv"
 
-// Key
+// Public
+type (
+	Turn struct {
+		cel  Cell
+		mark Mark
+	}
+	Cell struct {
+		row, col int
+	}
+	Key string
+)
+
+// Private
 
 type (
-	Key    string
 	coords map[Key]Cell
 )
 
-// Cell
+// Public
 
-type Cell struct {
-	row, col int
+func NewTurn(m Mark, c Cell) Turn {
+	return Turn{c, m}
 }
 
-// Public
+func (k Key) ToCell() Cell {
+	return _coords()[k] // TODO: detect and propagate errors?
+}
 
 // Props
 
@@ -29,6 +42,7 @@ func (c Cell) Col() int {
 
 // Other
 
+// Party:Server
 func (k Key) IsKey() bool {
 	n, err := strconv.Atoi(string(k))
 	if err != nil {
@@ -37,12 +51,9 @@ func (k Key) IsKey() bool {
 	return n >= 1 && n <= 9
 }
 
-func (k Key) ToCell() Cell {
-	return _coords()[k] // TODO: detect and propagate errors?
-}
-
 // Constants, Private
 
+// Party:Server
 func _coords() coords {
 	return coords{
 		"1": {0, 0}, "2": {0, 1}, "3": {0, 2},

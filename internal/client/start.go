@@ -26,6 +26,8 @@ type (
 var _cli Client
 var _repo Repo
 
+// Repo.Start() ? TODO:
+
 func Start() (Ctx, func(), error) {
 	conn, err := grpc.Dial(cfg.Address, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(time.Second*8))
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)

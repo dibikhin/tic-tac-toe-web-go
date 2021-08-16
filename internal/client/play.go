@@ -22,13 +22,12 @@ func Play(ctx Ctx, sr *api.StatusReply) error {
 }
 
 func run(ctx Ctx) (err error) {
-	gam, more := game{}, true //get_status()
+	game, more := game{}, true //get_status()
 	for more {
-		gam, more, err = Loop(gam)
+		game, more, err = Loop(game)
 		if err != nil {
 			return err
 		}
-		more = false
 	}
 	return nil
 }

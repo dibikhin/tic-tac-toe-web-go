@@ -53,6 +53,7 @@ func Dead() Board {
 
 // Other, Public
 
+// Party:Server
 func (b Board) String() string {
 	var dump []string
 	for _, row := range b.grid {
@@ -86,6 +87,7 @@ func (b Board) SetBoard(gr grid) Board {
 
 // Checks
 
+// Party:Server
 func (b Board) IsEmpty() bool {
 	grd := b.grid
 	return b == Board{} || b == Dead() || len(grd) != Size ||
@@ -94,11 +96,13 @@ func (b Board) IsEmpty() bool {
 		len(grd[2]) != Size
 }
 
+// Party:Server
 func (b Board) IsFilled(c Cell) bool {
 	// WARN: possible out of range
 	return b.grid[c.Row()][c.Col()] != Gap
 }
 
+// Party:Server
 func (b Board) HasEmpty() bool {
 	for _, row := range b.grid {
 		for _, m := range row {
@@ -110,6 +114,7 @@ func (b Board) HasEmpty() bool {
 	return false
 }
 
+// Party:Server
 func (b Board) IsWinner(m Mark) bool {
 	gg := b.grid
 	// Horizontal
