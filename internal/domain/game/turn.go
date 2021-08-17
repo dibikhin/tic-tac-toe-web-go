@@ -9,9 +9,10 @@ type (
 		mark Mark
 	}
 	Cell struct {
-		row, col int
+		row, col Len
 	}
-	Key string
+	Key string // "1".."9"
+	Len = int    // 1..3
 )
 
 // Private
@@ -24,6 +25,10 @@ type (
 
 func NewTurn(m Mark, c Cell) Turn {
 	return Turn{c, m}
+}
+
+func NoTurn() Turn {
+	return Turn{Cell{-1, -1}, "No"}
 }
 
 func (k Key) ToCell() Cell {

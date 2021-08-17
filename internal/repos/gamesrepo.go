@@ -8,7 +8,7 @@ import (
 type GamesRepo interface {
 }
 
-type State int
+type State = int
 
 const (
 	Unknown State = iota

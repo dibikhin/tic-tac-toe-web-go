@@ -7,14 +7,14 @@ import (
 )
 
 type (
-	Mark = string // to avoid conversions
-	grid [Size][Size]Mark
-
+	Mark = string // "X" or "O" (or "No")
 	Board struct {
 		id   irn.Id
 		grid grid
 	}
 )
+
+type grid [Size][Size]Mark
 
 // Constants, Public
 

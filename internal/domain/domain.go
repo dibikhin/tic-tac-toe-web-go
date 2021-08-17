@@ -13,7 +13,6 @@ type (
 	_Boards struct{}
 
 	reader = irn.Reader
-	grid   = [Size][Size]Mark
 )
 
 // Public
@@ -25,7 +24,7 @@ var Boards = _Boards{}
 func Logo() Board {
 	return NewBoard(
 		"logo",
-		grid{
+		[Size][Size]Mark{
 			{X, " ", X},
 			{O, X, O},
 			{X, " ", O}},
@@ -44,7 +43,7 @@ func (_Games) MakeDead() Game {
 
 // Party: Server
 func (_Games) ArrangePlayers(m Mark) (Player, Player) {
-	if strings.ToLower(m) == "x" {
+	if strings.ToUpper(m) == X {
 		return NewPlayer(X, 1), NewPlayer(O, 2)
 	}
 	return NewPlayer(O, 1), NewPlayer(X, 2)

@@ -37,6 +37,9 @@ func Loop(g Game) (Game, again, error) {
 
 func turn(plr Player, gam Game) (Game, bool) {
 	t := takeTurn(plr, gam)
+	if t == NoTurn() {
+		return domain.Games.MakeDead(), false
+	}
 	brd := domain.Boards.Turn(gam.Board(), t)
 	printOutcome(brd || remote_game)
 	return remote_game
@@ -44,10 +47,14 @@ func turn(plr Player, gam Game) (Game, bool) {
 
 func takeTurn(plr Player, gam Game) Turn {
 	domain.Prompt(plr)
-	for {
-		turn := readKey(gam, plr)
-		return readTurn(turn, gam, plr)
+	more, t := true, NoTurn()
+	for more {
+		t, more = readTurn(gam, plr)
+		if !more {
+			return t
+		}
 	}
+	return NoTurn()
 }
 
 func printOutcome(gam Game) {
@@ -74,31 +81,20 @@ func printOutcome(gam Game) {
 	// return domain.Games.SetBoard(gam, brd), true
 }
 
-func readKey(g Game, plr Player) Key {
-	for {
-		read := g.Reader()
-		turn := Key(read())
-
-		// Party: Server ?
-		if !turn.IsKey() {
-			domain.PrintBoard(g.Board())
-			domain.Prompt(plr)
-
-			continue
-		}
-		return turn
+func readTurn(gam Game, plr Player) (Turn, again) {
+	read := gam.Reader()
+	turn := Key(read())
+	// Party: Server ?
+	if !turn.IsKey() {
+		domain.PrintBoard(gam.Board())
+		domain.Prompt(plr)
+		return NoTurn(), true
 	}
-}
-
-func readTurn(turn Key, g Game, plr Player) Turn {
-	for {
-		cel := turn.ToCell()
-		if g.Board().IsFilled(cel) {
-			domain.PrintBoard(g.Board())
-			domain.Prompt(plr)
-
-			continue
-		}
-		return NewTurn(plr.Mark(), cel)
+	cel := turn.ToCell()
+	if gam.Board().IsFilled(cel) {
+		domain.PrintBoard(gam.Board())
+		domain.Prompt(plr)
+		return NoTurn(), true
 	}
+	return NewTurn(plr.Mark(), cel), false
 }
