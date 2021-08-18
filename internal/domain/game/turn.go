@@ -1,7 +1,5 @@
 package game
 
-import "strconv"
-
 // Public
 type (
 	Turn struct {
@@ -12,7 +10,7 @@ type (
 		row, col Len
 	}
 	Key string // "1".."9"
-	Len = int    // 1..3
+	Len = int  // 1..3
 )
 
 // Private
@@ -45,24 +43,12 @@ func (c Cell) Col() int {
 	return c.col
 }
 
-// Other
-
-// Party:Server
-func (k Key) IsKey() bool {
-	n, err := strconv.Atoi(string(k))
-	if err != nil {
-		return false
+// "3" IsIn {"1", "3", "5"}
+func (k Key) IsIn(kk []Key) bool {
+	for _, v := range kk {
+		if v == k {
+			return true
+		}
 	}
-	return n >= 1 && n <= 9
-}
-
-// Constants, Private
-
-// Party:Server
-func _coords() coords {
-	return coords{
-		"1": {0, 0}, "2": {0, 1}, "3": {0, 2},
-		"4": {1, 0}, "5": {1, 1}, "6": {1, 2},
-		"7": {2, 0}, "8": {2, 1}, "9": {2, 2},
-	}
+	return false
 }

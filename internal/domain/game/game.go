@@ -4,13 +4,13 @@ import (
 	irn "tictactoeweb/internal"
 )
 
+// Party:Server
 type Game struct {
 	id irn.Id
 
 	board   Board
 	player1 Player
 	player2 Player
-
 	// Party:Client
 	reader irn.Reader
 }
@@ -42,6 +42,10 @@ func (g Game) Player1() Player {
 
 func (g Game) Player2() Player {
 	return g.player2
+}
+
+func (g Game) Keys() []Key {
+	return []Key{}
 }
 
 // Party:Client

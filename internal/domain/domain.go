@@ -2,7 +2,6 @@ package domain
 
 import (
 	"fmt"
-	"strings"
 
 	irn "tictactoeweb/internal"
 	. "tictactoeweb/internal/domain/game"
@@ -17,19 +16,8 @@ type (
 
 // Public
 
-var Games = _Games{} // to call like `domain.Games.SetBoard(g, b)`
+var Games = _Games{} // to call like `domain.Games.SetPlayers(g, p1, p2)`
 var Boards = _Boards{}
-
-// Constants
-func Logo() Board {
-	return NewBoard(
-		"logo",
-		[Size][Size]Mark{
-			{X, " ", X},
-			{O, X, O},
-			{X, " ", O}},
-	)
-}
 
 // Factorys: Games etc.
 
@@ -41,24 +29,20 @@ func (_Games) MakeDead() Game {
 	return NewGame(X_x, Dead())
 }
 
-// Party: Server
-func (_Games) ArrangePlayers(m Mark) (Player, Player) {
-	if strings.ToUpper(m) == X {
-		return NewPlayer(X, 1), NewPlayer(O, 2)
-	}
-	return NewPlayer(O, 1), NewPlayer(X, 2)
-}
-
 // Commands: Remote (IO)
+
+func (_Games) ArrangePlayers(m Mark) (Game, error) {
+	// TODO: send to server
+	return Game{}, nil
+}
 
 func (_Games) SetPlayers(g Game, p1, p2 Player) Game {
 	// TODO: send to server
 	return Game{}
 }
 
-func (_Games) SetBoard(g Game, b Board) Game {
-	// TODO: send to server
-	return /*updated*/ Game{}
+func (_Boards) IsFilled(boardId irn.Id, cel Cell) bool {
+	return true
 }
 
 func (_Boards) Turn(b Board, t Turn) Board {
@@ -72,16 +56,12 @@ func (_Boards) Turn(b Board, t Turn) Board {
 // Commands: Local + IO
 
 // ChooseMarks chooses players' marks as in a Google's TicTacToe doodle
-func (_Games) ChooseMarks(g Game) (Player, Player /*Game? TODO:*/, error) {
-	fmt.Print("Press 'x' or 'o' to choose mark for Player 1: ")
-
+func (_Games) ChooseMarks(g Game) (Mark, error) {
 	if g.Reader() == nil {
-		return DeadPlayer(), DeadPlayer(), irn.ErrNilReader()
+		return "", irn.ErrNilReader()
 	}
 	read := g.Reader()
-	m := read()
-	p1, p2 := Games.ArrangePlayers(m)
-	return p1, p2, nil
+	return read(), nil
 }
 
 // IO

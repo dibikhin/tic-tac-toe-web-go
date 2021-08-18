@@ -67,31 +67,18 @@ func printOutcome(gam Game) {
 	case api.Outcome_WON:
 		domain.PrintWinner(gam.Winner())
 	}
-
-	// Party:Server
-
-	// if brd.IsWinner(plr.Mark()) {
-	// 	domain.PrintWinner(plr)
-	// 	return domain.Games.SetBoard(gam, brd), false
-	// }
-	// if !brd.HasEmpty() {
-	// 	domain.PrintDraw()
-	// 	return domain.Games.SetBoard(gam, brd), false
-	// }
-	// return domain.Games.SetBoard(gam, brd), true
 }
 
 func readTurn(gam Game, plr Player) (Turn, again) {
 	read := gam.Reader()
 	turn := Key(read())
-	// Party: Server ?
-	if !turn.IsKey() {
+	if !turn.IsIn(gam.Keys()) {
 		domain.PrintBoard(gam.Board())
 		domain.Prompt(plr)
 		return NoTurn(), true
 	}
 	cel := turn.ToCell()
-	if gam.Board().IsFilled(cel) {
+	if domain.Boards.IsFilled(gam.Board().Id(), cel) {
 		domain.PrintBoard(gam.Board())
 		domain.Prompt(plr)
 		return NoTurn(), true
