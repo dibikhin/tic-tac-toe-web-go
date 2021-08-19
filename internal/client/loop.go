@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"tictactoeweb/api"
+	. "tictactoeweb/internal"
 	"tictactoeweb/internal/domain"
 	. "tictactoeweb/internal/domain/game"
 )
@@ -23,11 +24,11 @@ func ErrCouldNotStart() error {
 // Loop prompts players to take turns.
 func Loop(g Game) (Game, again, error) {
 	if !g.IsReady() {
-		return domain.Games.MakeDead(), false, ErrCouldNotStart()
+		return domain.Games.MakeDead(), No, ErrCouldNotStart()
 	}
 	gam, more := turn(g.Player1(), g)
 	if !more {
-		return gam, false, nil
+		return gam, No, nil
 	}
 	gam, more = turn(gam.Player2(), gam)
 	return gam, more, nil
@@ -35,26 +36,26 @@ func Loop(g Game) (Game, again, error) {
 
 // Private
 
-func turn(plr Player, gam Game) (Game, bool) {
-	t := takeTurn(plr, gam)
-	if t == NoTurn() {
-		return domain.Games.MakeDead(), false
+func turn(plr Player, game Game) (Game, again) {
+	trn := takeTurn(plr, game)
+	if trn == NoTurn() {
+		return game, No
 	}
-	brd := domain.Boards.Turn(gam.Board(), t)
-	printOutcome(brd || remote_game)
-	return remote_game
+	gm := domain.Boards.Turn(game.Board().Id(), trn)
+	printOutcome(gm)
+	return gm, Yes
 }
 
 func takeTurn(plr Player, gam Game) Turn {
 	domain.Prompt(plr)
-	more, t := true, NoTurn()
+	more, t := Yes, NoTurn()
 	for more {
-		t, more = readTurn(gam, plr)
+		t, more = readTurn(plr, gam)
 		if !more {
 			return t
 		}
 	}
-	return NoTurn()
+	return t
 }
 
 func printOutcome(gam Game) {
@@ -63,25 +64,23 @@ func printOutcome(gam Game) {
 	switch o := gam.Outcome(); o {
 	case api.Outcome_DRAW:
 		domain.PrintDraw()
-
 	case api.Outcome_WON:
 		domain.PrintWinner(gam.Winner())
 	}
 }
 
-func readTurn(gam Game, plr Player) (Turn, again) {
-	read := gam.Reader()
-	turn := Key(read())
-	if !turn.IsIn(gam.Keys()) {
-		domain.PrintBoard(gam.Board())
+func readTurn(plr Player, game Game) (Turn, again) {
+	read := game.Reader()
+	key := Key(read())
+	if !key.IsIn(game.Keys()) {
+		domain.PrintBoard(game.Board())
 		domain.Prompt(plr)
-		return NoTurn(), true
+		return NoTurn(), Yes
 	}
-	cel := turn.ToCell()
-	if domain.Boards.IsFilled(gam.Board().Id(), cel) {
-		domain.PrintBoard(gam.Board())
+	if domain.Boards.IsFilled(game.Board().Id(), key) {
+		domain.PrintBoard(game.Board())
 		domain.Prompt(plr)
-		return NoTurn(), true
+		return NoTurn(), Yes
 	}
-	return NewTurn(plr.Mark(), cel), false
+	return NewTurn(plr.Mark(), key), No
 }

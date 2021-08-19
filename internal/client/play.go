@@ -2,6 +2,8 @@ package client
 
 import (
 	api "tictactoeweb/api"
+
+	. "tictactoeweb/internal"
 )
 
 // Public
@@ -22,7 +24,7 @@ func Play(ctx Ctx, sr *api.StatusReply) error {
 }
 
 func run(ctx Ctx) (err error) {
-	game, more := game{}, true //get_status()
+	game, more := game{}, Yes //get_status()
 	for more {
 		game, more, err = Loop(game)
 		if err != nil {

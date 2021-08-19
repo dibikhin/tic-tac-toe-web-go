@@ -3,18 +3,19 @@ package game
 import (
 	"strings"
 
-	irn "tictactoeweb/internal"
+	. "tictactoeweb/internal"
 )
 
 type (
-	Mark  = string // "X" or "O" (or "No")
 	Board struct {
-		id irn.Id
+		id Id
 		grid
 	}
+	Row  = [Size]string
+	Mark = string // "X" or "O" (or "No")
 )
 
-type grid [Size][Size]Mark
+type grid = string
 
 // Constants, Public
 
@@ -23,63 +24,62 @@ const (
 	Gap  = __
 	X    = "X"
 	O    = "O"
-
-	X_x = "X_x"
+	X_x  = "X_x"
 )
 
 const __ = "-" // Private
 
+// Factories
+
 func BlankBoard() Board {
+	row := Row{__, __, __}
+	rows := Row{
+		strings.Join(row[:], " "),
+		strings.Join(row[:], " "),
+		strings.Join(row[:], " "),
+	}
 	return Board{
-		__,
-		grid{
-			{__, __, __},
-			{__, __, __},
-			{__, __, __},
-		},
+		id:   __,
+		grid: strings.Join(rows[:], "\n"),
 	}
 }
 
 func Dead() Board {
+	row := Row{X_x, X_x, X_x}
+	rows := Row{
+		strings.Join(row[:], " "),
+		strings.Join(row[:], " "),
+		strings.Join(row[:], " "),
+	}
 	return Board{
-		X_x,
-		grid{
-			{X_x, X_x, X_x},
-			{X_x, X_x, X_x},
-			{X_x, X_x, X_x},
-		},
+		id:   X_x,
+		grid: strings.Join(rows[:], "\n"),
 	}
 }
 
-// Other, Public
+// Public
 
-// Party:Server
-func (b Board) String() string {
-	var dump []string
-	for _, row := range b.grid {
-		s := strings.Join(row[:], " ")
-		dump = append(dump, s)
-	}
-	return strings.Join(dump, "\n")
-}
-
-func NewBoard(boardId irn.Id, gs ...grid) Board {
+func NewBoard(boardId Id, gs ...grid) Board {
 	if len(gs) == 1 {
 		return Board{
 			boardId, gs[0],
 		}
 	}
 	return Board{
-		irn.NewId(), BlankBoard().grid,
+		NewId(), BlankBoard().grid,
 	}
 }
 
 // Props
 
-func (b Board) Id() irn.Id {
+func (b Board) Id() Id {
 	return b.id
 }
 
-func (b Board) IsEmpty() bool {
+func (b Board) IsEmpty() Empty {
 	return b.grid == ""
+}
+
+func (b Board) String() string {
+	return b.grid
 }

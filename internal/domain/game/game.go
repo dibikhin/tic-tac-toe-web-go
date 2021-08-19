@@ -1,34 +1,34 @@
 package game
 
 import (
-	irn "tictactoeweb/internal"
+	. "tictactoeweb/internal"
 )
 
-// Party:Server
 type Game struct {
-	id irn.Id
+	id Id
 
-	board   Board
+	board Board
+
 	player1 Player
 	player2 Player
-	// Party:Client
-	reader irn.Reader
+
+	reader Reader
 }
 
-func NewGame(gameId irn.Id, bs ...Board) Game {
+func NewGame(gameId Id, bs ...Board) Game {
 	if len(bs) == 1 {
 		return Game{
 			id: gameId, board: bs[0],
 		}
 	}
 	return Game{
-		id: gameId, board: NewBoard(irn.NewId()),
+		id: gameId, board: NewBoard(NewId()),
 	}
 }
 
 // Props
 
-func (g Game) Id() irn.Id {
+func (g Game) Id() Id {
 	return g.id
 }
 
@@ -48,17 +48,15 @@ func (g Game) Keys() []Key {
 	return []Key{}
 }
 
-// Party:Client
-
 // Props: Reader
 
-func (g Game) Reader() irn.Reader {
+func (g Game) Reader() Reader {
 	return g.reader
 }
 
-func (g Game) SetReader(rdr irn.Reader, def Game) (Game, error) {
+func (g Game) SetReader(rdr Reader, def Game) (Game, error) {
 	if rdr == nil {
-		return def, irn.ErrNilReader()
+		return def, ErrNilReader()
 	}
 	g.reader = rdr
 	return g, nil
@@ -66,7 +64,6 @@ func (g Game) SetReader(rdr irn.Reader, def Game) (Game, error) {
 
 // Checks
 
-// Party:Client
 func (g Game) IsReady() bool {
 	return g.reader != nil &&
 		!g.player1.IsEmpty() &&

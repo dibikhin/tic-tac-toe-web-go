@@ -33,7 +33,7 @@ func DefaultReader() string {
 
 // Private
 
-func ExtractReader(rs []Reader) (Reader, error) {
+func ExtractReader(rs ...Reader) (Reader, error) {
 	switch {
 	case len(rs) < 1:
 		return nil, nil

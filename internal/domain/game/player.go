@@ -1,13 +1,17 @@
 package game
 
-import "fmt"
+import (
+	"fmt"
+
+	. "tictactoeweb/internal"
+)
 
 type Player struct {
 	mark Mark
 	num  int // 1 or 2; -1 is a dead Player
 }
 
-// Public, Pure
+// Public
 
 func (p Player) String() string {
 	return fmt.Sprintf(`Player %v ("%v")`, p.num, p.mark)
@@ -35,6 +39,6 @@ func (p Player) Num() int {
 
 // Checks
 
-func (p Player) IsEmpty() bool {
+func (p Player) IsEmpty() Empty {
 	return p == Player{}
 }

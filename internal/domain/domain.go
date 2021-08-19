@@ -3,7 +3,7 @@ package domain
 import (
 	"fmt"
 
-	irn "tictactoeweb/internal"
+	. "tictactoeweb/internal"
 	. "tictactoeweb/internal/domain/game"
 )
 
@@ -11,46 +11,41 @@ type (
 	_Games  struct{} // see the `Games` var below
 	_Boards struct{}
 
-	reader = irn.Reader
+	reader = Reader
 )
 
 // Public
 
-var Games = _Games{} // to call like `domain.Games.SetPlayers(g, p1, p2)`
+var Games = _Games{} // to call like `domain.Games.ArrangePlayers(m)`
 var Boards = _Boards{}
 
 // Factorys: Games etc.
 
 func (_Games) Make() Game {
-	return NewGame(irn.NewId())
+	return NewGame(NewId())
 }
 
 func (_Games) MakeDead() Game {
 	return NewGame(X_x, Dead())
 }
 
-// Commands: Remote (IO)
+// IO
+
+// Commands: Remote
 
 func (_Games) ArrangePlayers(m Mark) (Game, error) {
-	// TODO: send to server
 	return Game{}, nil
 }
 
-func (_Games) SetPlayers(g Game, p1, p2 Player) Game {
-	// TODO: send to server
+func (_Boards) Turn(boardId Id, trn Turn) Game {
+	// WARN: possible out of range
+	// b[c.row][c.col] = m
 	return Game{}
 }
 
-func (_Boards) IsFilled(boardId irn.Id, cel Cell) bool {
-	return true
-}
-
-func (_Boards) Turn(b Board, t Turn) Board {
-	// WARN: possible out of range
-	// b[c.row][c.col] = m
-	// TODO: send to server
-
-	return Board{}
+// Querys: Remote
+func (_Boards) IsFilled(boardId Id, key Key) bool {
+	return Yes
 }
 
 // Commands: Local + IO
@@ -58,13 +53,13 @@ func (_Boards) Turn(b Board, t Turn) Board {
 // ChooseMarks chooses players' marks as in a Google's TicTacToe doodle
 func (_Games) ChooseMarks(g Game) (Mark, error) {
 	if g.Reader() == nil {
-		return "", irn.ErrNilReader()
+		return "", ErrNilReader()
 	}
 	read := g.Reader()
 	return read(), nil
 }
 
-// IO
+// Local
 
 func PrintGame(g Game) {
 	fmt.Println()
@@ -75,16 +70,16 @@ func PrintGame(g Game) {
 	PrintBoard(g.Board())
 }
 
-func PrintBoard(b Board) {
+func PrintBoard(brd Board) {
 	// Explicit check for the interface
-	var _ fmt.Stringer = b
+	var _ fmt.Stringer = brd
 
 	fmt.Println()
 	fmt.Println()
 	fmt.Println("Press 1 to 9 to mark an empty cell (5 is center), then press ENTER. Board:")
 	fmt.Println()
 
-	fmt.Println(b)
+	fmt.Println(brd)
 	fmt.Println()
 }
 
