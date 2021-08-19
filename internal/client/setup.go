@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	. "tictactoeweb/internal"
-	"tictactoeweb/internal/domain"
-	. "tictactoeweb/internal/domain/game"
+	"tictactoeweb/internal/client/domain"
+	. "tictactoeweb/internal/client/domain/game"
 )
 
 var deadGame = domain.Games.MakeDead

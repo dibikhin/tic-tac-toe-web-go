@@ -7,7 +7,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"tictactoeweb/api"
 	. "tictactoeweb/internal/client"
 )
 

@@ -4,9 +4,10 @@ import (
 	"errors"
 
 	"tictactoeweb/api"
+	
 	. "tictactoeweb/internal"
-	"tictactoeweb/internal/domain"
-	. "tictactoeweb/internal/domain/game"
+	"tictactoeweb/internal/client/domain"
+	. "tictactoeweb/internal/client/domain/game"
 )
 
 type again = bool

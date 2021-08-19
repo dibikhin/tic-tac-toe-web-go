@@ -2,7 +2,7 @@ package internal
 
 import (
 	irn "tictactoeweb/internal"
-	. "tictactoeweb/internal/domain/game"
+	. "tictactoeweb/internal/client/domain/game"
 )
 
 type GamesRepo interface {

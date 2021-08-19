@@ -12,7 +12,7 @@ import (
 // It's a default bootstrapper.
 // Other public functions are exposed for testing purposes.
 func Play(ctx Ctx, sr *api.StatusReply) error {
-	// ctx, err := Setup(response)
+	// ctx, err := Setup()
 	// if err != nil {
 	// 	return err
 	// }

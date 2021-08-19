@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	. "tictactoeweb/internal"
-	. "tictactoeweb/internal/domain/game"
+	. "tictactoeweb/internal/client/domain/game"
 )
 
 type (
