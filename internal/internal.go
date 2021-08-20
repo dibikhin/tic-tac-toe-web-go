@@ -1,5 +1,9 @@
 package internal
 
+import "context"
+
+type Ctx = context.Context
+
 type Empty = bool
 
 var (

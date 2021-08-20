@@ -2,46 +2,13 @@ package game
 
 import (
 	. "tictactoeweb/internal"
+	"tictactoeweb/internal/domain"
 )
 
 type Game struct {
-	id Id
-
-	board Board
-
-	player1 Player
-	player2 Player
+	domain.Game
 
 	reader Reader
-}
-
-func NewGame(gameId Id, bs ...Board) Game {
-	if len(bs) == 1 {
-		return Game{
-			id: gameId, board: bs[0],
-		}
-	}
-	return Game{
-		id: gameId, board: NewBoard(NewId()),
-	}
-}
-
-// Props
-
-func (g Game) Id() Id {
-	return g.id
-}
-
-func (g Game) Board() Board {
-	return g.board
-}
-
-func (g Game) Player1() Player {
-	return g.player1
-}
-
-func (g Game) Player2() Player {
-	return g.player2
 }
 
 func (g Game) Keys() []Key {
@@ -66,7 +33,5 @@ func (g Game) SetReader(rdr Reader, def Game) (Game, error) {
 
 func (g Game) IsReady() bool {
 	return g.reader != nil &&
-		!g.player1.IsEmpty() &&
-		!g.player2.IsEmpty() &&
-		!g.board.IsEmpty()
+		g.IsReady()
 }

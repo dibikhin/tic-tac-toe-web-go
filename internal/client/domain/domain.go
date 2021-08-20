@@ -5,6 +5,7 @@ import (
 
 	. "tictactoeweb/internal"
 	. "tictactoeweb/internal/client/domain/game"
+	. "tictactoeweb/internal/domain"
 )
 
 type (
@@ -26,7 +27,7 @@ func (_Games) Make() Game {
 }
 
 func (_Games) MakeDead() Game {
-	return NewGame(X_x, Dead())
+	return NewGame(X_x, DeadBoard())
 }
 
 // IO
@@ -37,15 +38,13 @@ func (_Games) ArrangePlayers(m Mark) (Game, error) {
 	return Game{}, nil
 }
 
-func (_Boards) Turn(boardId Id, trn Turn) Game {
-	// WARN: possible out of range
-	// b[c.row][c.col] = m
-	return Game{}
+func (_Boards) Turn(boardId Id, trn Turn) (Game, error) {
+	return Game{}, nil
 }
 
 // Querys: Remote
-func (_Boards) IsFilled(boardId Id, key Key) bool {
-	return Yes
+func (_Boards) IsFilled(boardId Id, key Key) (bool, error) {
+	return Yes, nil
 }
 
 // Commands: Local + IO

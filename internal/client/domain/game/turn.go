@@ -1,25 +1,11 @@
 package game
 
-import . "tictactoeweb/internal"
-
-// Public
-type (
-	Turn struct {
-		key  Key
-		mark Mark
-	}
-	Key string // "1".."9"
+import (
+	. "tictactoeweb/internal"
+	"tictactoeweb/internal/domain"
 )
 
-// Public
-
-func NewTurn(m Mark, k Key) Turn {
-	return Turn{k, m}
-}
-
-func NoTurn() Turn {
-	return Turn{"-1", "No"}
-}
+type Key domain.Key
 
 // "3" IsIn {"1", "3", "5"}
 func (k Key) IsIn(kk []Key) bool {

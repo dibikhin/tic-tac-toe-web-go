@@ -4,69 +4,58 @@ import (
 	"strings"
 
 	. "tictactoeweb/internal"
+	. "tictactoeweb/internal/domain"
 )
 
 type (
 	Board struct {
 		id Id
+		Board
 		grid
 	}
-	Row  = [Size]string
-	Mark = string // "X" or "O" (or "No")
+	Row = [Size]string
 )
 
 type grid = string
 
-// Constants, Public
-
-const (
-	Size = 3
-	Gap  = __
-	X    = "X"
-	O    = "O"
-	X_x  = "X_x"
-)
-
-const __ = "-" // Private
-
 // Factories
 
 func BlankBoard() Board {
-	row := Row{__, __, __}
-	rows := Row{
-		strings.Join(row[:], " "),
-		strings.Join(row[:], " "),
-		strings.Join(row[:], " "),
-	}
+	// TODO dup
+	row := Row{Gap, Gap, Gap}
 	return Board{
-		id:   __,
-		grid: strings.Join(rows[:], "\n"),
+		id: Gap,
+		grid: strings.Join(Row{
+			strings.Join(row, " "),
+			strings.Join(row, " "),
+			strings.Join(row, " "),
+		}, "\n"),
 	}
 }
 
-func Dead() Board {
+func DeadBoard() Board {
+	// TODO dup
 	row := Row{X_x, X_x, X_x}
-	rows := Row{
-		strings.Join(row[:], " "),
-		strings.Join(row[:], " "),
-		strings.Join(row[:], " "),
-	}
 	return Board{
-		id:   X_x,
-		grid: strings.Join(rows[:], "\n"),
+		id: X_x,
+		grid: strings.Join(Row{
+			strings.Join(row, " "),
+			strings.Join(row, " "),
+			strings.Join(row, " "),
+		}, "\n"),
 	}
 }
-
-// Public
 
 func NewBoard(boardId Id, gs ...grid) Board {
 	if len(gs) == 1 {
 		return Board{
-			boardId, gs[0],
+			boardId,
+			NewBoard(),
+			gs[0],
 		}
 	}
 	return Board{
-		NewId(), BlankBoard().grid,
+		NewId(), NewBoard(), BlankBoard().grid,
 	}
 }
 
@@ -76,10 +65,8 @@ func (b Board) Id() Id {
 	return b.id
 }
 
+// Checks
+
 func (b Board) IsEmpty() Empty {
 	return b.grid == ""
-}
-
-func (b Board) String() string {
-	return b.grid
 }

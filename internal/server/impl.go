@@ -4,6 +4,8 @@ import (
 	"log"
 
 	api "tictactoeweb/api"
+
+	. "tictactoeweb/internal"
 )
 
 type server struct {
@@ -38,4 +40,20 @@ func (s *server) Run(ctx Ctx, cr *api.CommandRequest) (*api.StatusReply, error) 
 	}
 	log.Print(sr)
 	return sr, nil
+}
+
+// Commands
+
+func (s *server) ArrangePlayers(ctx Ctx, cr *api.CommandRequest) (*api.StatusReply, error) {
+	return &api.StatusReply{}, nil
+}
+
+func (s *server) Turn(ctx Ctx, cr *api.CommandRequest) (*api.StatusReply, error) {
+	return &api.StatusReply{}, nil
+}
+
+// Querys
+
+func (s *server) IsFilled(ctx Ctx, cr *api.CommandRequest) (*api.StatusReply, error) {
+	return &api.StatusReply{}, nil
 }
