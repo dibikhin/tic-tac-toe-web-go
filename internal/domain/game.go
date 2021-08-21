@@ -44,10 +44,4 @@ func (g Game) Player2() Player {
 	return g.player2
 }
 
-// Checks
 
-func (g Game) IsReady() bool {
-	return !g.player1.IsEmpty() &&
-		!g.player2.IsEmpty() &&
-		!g.board.IsEmpty()
-}

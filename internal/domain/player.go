@@ -37,8 +37,3 @@ func (p Player) Num() int {
 	return p.num
 }
 
-// Checks
-
-func (p Player) IsEmpty() Empty {
-	return p == Player{}
-}

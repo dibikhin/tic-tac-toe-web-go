@@ -1,4 +1,21 @@
-package game
+package server
+
+import (
+	. "tictactoeweb/internal"
+	"tictactoeweb/internal/domain"
+)
+
+type Game struct {
+	domain.Game
+}
+
+// Checks
+
+func (g Game) IsReady() Yes {
+	return !g.Player1.IsEmpty() &&
+		!g.player2.IsEmpty() &&
+		!g.board.IsEmpty()
+}
 
 // func (b Board) SetBoard(gr grid) Board {
 // 	b.grid = gr
