@@ -3,9 +3,10 @@ package domain
 import (
 	"fmt"
 
+	domain "tictactoeweb/internal/domain/game"
+
 	. "tictactoeweb/internal"
 	. "tictactoeweb/internal/client/domain/game"
-	. "tictactoeweb/internal/domain"
 )
 
 type (
@@ -17,29 +18,31 @@ type (
 
 // Public
 
-var Games = _Games{} // to call like `domain.Games.ArrangePlayers(m)`
-var Boards = _Boards{}
+var (
+	Games  = _Games{} // to call like `domain.Games.ArrangePlayers(m)`
+	Boards = _Boards{}
+)
 
 // Factorys: Games etc.
 
-func (_Games) Make() Game {
+func (_Games) Make() CliGame {
 	return NewGame(NewId())
 }
 
-func (_Games) MakeDead() Game {
-	return NewGame(X_x, DeadBoard())
+func (_Games) MakeDead() CliGame {
+	return NewGame(domain.X_x, DeadBoard())
 }
 
 // IO
 
 // Commands: Remote
 
-func (_Games) ArrangePlayers(m Mark) (Game, error) {
-	return Game{}, nil
+func (_Games) ArrangePlayers(m domain.Mark) (CliGame, error) {
+	return CliGame{}, nil
 }
 
-func (_Boards) Turn(boardId Id, trn Turn) (Game, error) {
-	return Game{}, nil
+func (_Boards) Turn(boardId Id, trn domain.Turn) (CliGame, error) {
+	return CliGame{}, nil
 }
 
 // Querys: Remote
@@ -50,7 +53,7 @@ func (_Boards) IsFilled(boardId Id, key Key) (bool, error) {
 // Commands: Local + IO
 
 // ChooseMarks chooses players' marks as in a Google's TicTacToe doodle
-func (_Games) ChooseMarks(g Game) (Mark, error) {
+func (_Games) ChooseMarks(g CliGame) (domain.Mark, error) {
 	if g.Reader() == nil {
 		return "", ErrNilReader()
 	}
@@ -58,9 +61,9 @@ func (_Games) ChooseMarks(g Game) (Mark, error) {
 	return read(), nil
 }
 
-// Local
+// Local IO
 
-func PrintGame(g Game) {
+func PrintGame(g CliGame) {
 	fmt.Println()
 
 	fmt.Println(g.Player1())
@@ -69,20 +72,20 @@ func PrintGame(g Game) {
 	PrintBoard(g.Board())
 }
 
-func PrintBoard(brd Board) {
+func PrintBoard(s fmt.Stringer) {
 	// Explicit check for the interface
-	var _ fmt.Stringer = brd
+	// var _ fmt.Stringer = brd
 
 	fmt.Println()
 	fmt.Println()
 	fmt.Println("Press 1 to 9 to mark an empty cell (5 is center), then press ENTER. Board:")
 	fmt.Println()
 
-	fmt.Println(brd)
+	fmt.Println(s)
 	fmt.Println()
 }
 
-func PrintWinner(p Player) {
+func PrintWinner(p domain.Player) {
 	fmt.Printf("%v won!\n", p)
 }
 

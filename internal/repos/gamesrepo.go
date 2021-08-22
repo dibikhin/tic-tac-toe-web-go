@@ -17,7 +17,7 @@ const (
 )
 
 type GamesDb struct {
-	games []Game
+	games []CliGame
 	state State
 }
 
@@ -29,15 +29,15 @@ func (GamesDb) Disconnect() GamesDb {
 	return GamesDb{state: Disconnected}
 }
 
-func (db GamesDb) GetById(id irn.Id) Game {
+func (db GamesDb) GetById(id irn.Id) CliGame {
 	return NewGame(id)
 }
 
-func (db GamesDb) SetById(id irn.Id) Game {
+func (db GamesDb) SetById(id irn.Id) CliGame {
 	return NewGame(id)
 }
 
-func (db GamesDb) UpdateById(id irn.Id) Game {
+func (db GamesDb) UpdateById(id irn.Id) CliGame {
 	return NewGame(id)
 }
 

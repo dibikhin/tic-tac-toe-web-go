@@ -11,7 +11,7 @@ import (
 var deadGame = domain.Games.MakeDead
 
 // Constants
-func Logo() Board {
+func Logo() CliBoard {
 	return NewBoard(
 		"logo",
 		`O   X
@@ -29,7 +29,7 @@ func Logo() Board {
 // ctx, err := Setup(DefaultReader)
 // OR
 // ctx, err := Setup(yourReaderFunc)
-func Setup(rs ...Reader) (Game, error) {
+func Setup(rs ...Reader) (CliGame, error) {
 	alt, err := ExtractReader(rs...)
 	if err != nil {
 		return deadGame(), err
@@ -56,7 +56,7 @@ func Setup(rs ...Reader) (Game, error) {
 // Private
 
 // Factory
-func setupReader(def, alt Reader) (Game, error) {
+func setupReader(def, alt Reader) (CliGame, error) {
 	gam := domain.Games.Make()
 	switch {
 	case alt != nil:

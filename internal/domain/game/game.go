@@ -1,4 +1,4 @@
-package domain
+package game
 
 import (
 	. "tictactoeweb/internal"
@@ -43,5 +43,3 @@ func (g Game) Player1() Player {
 func (g Game) Player2() Player {
 	return g.player2
 }
-
-

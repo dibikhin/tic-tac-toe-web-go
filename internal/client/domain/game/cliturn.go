@@ -2,7 +2,7 @@ package game
 
 import (
 	. "tictactoeweb/internal"
-	"tictactoeweb/internal/domain"
+	domain "tictactoeweb/internal/domain/game"
 )
 
 type Key domain.Key

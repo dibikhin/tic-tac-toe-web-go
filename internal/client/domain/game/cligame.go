@@ -2,26 +2,28 @@ package game
 
 import (
 	. "tictactoeweb/internal"
-	"tictactoeweb/internal/domain"
+	domain "tictactoeweb/internal/domain/game"
 )
 
-type Game struct {
+type CliGame struct {
 	domain.Game
 
 	reader Reader
 }
 
-func (g Game) Keys() []Key {
+// Props:
+
+func (g CliGame) Keys() []Key {
 	return []Key{}
 }
 
 // Props: Reader
 
-func (g Game) Reader() Reader {
+func (g CliGame) Reader() Reader {
 	return g.reader
 }
 
-func (g Game) SetReader(rdr Reader, def Game) (Game, error) {
+func (g CliGame) SetReader(rdr Reader, def CliGame) (CliGame, error) {
 	if rdr == nil {
 		return def, ErrNilReader()
 	}
@@ -31,7 +33,7 @@ func (g Game) SetReader(rdr Reader, def Game) (Game, error) {
 
 // Checks
 
-func (g Game) IsReady() bool {
+func (g CliGame) IsReady() bool {
 	return g.reader != nil &&
 		g.IsReady()
 }

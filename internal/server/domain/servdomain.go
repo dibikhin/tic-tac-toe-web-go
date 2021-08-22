@@ -3,8 +3,8 @@ package domain
 import (
 	"strings"
 	. "tictactoeweb/internal"
-	. "tictactoeweb/internal/client/domain/game"
-	. "tictactoeweb/internal/domain"
+	domain "tictactoeweb/internal/domain/game"
+	. "tictactoeweb/internal/server/domain/game"
 )
 
 type (
@@ -16,22 +16,24 @@ type (
 
 // Public
 
-var Games = _Games{} // to call like `domain.Games.ArrangePlayers(m)`
-var Boards = _Boards{}
+var (
+	Games  = _Games{} // to call like `domain.Games.ArrangePlayers(m)`
+	Boards = _Boards{}
+)
 
-func (_Games) ArrangePlayers(m Mark) (Game, error) {
-	if strings.ToUpper(m) == X {
+func (_Games) ArrangePlayers(m Mark) (ServGame, error) {
+	if strings.ToUpper(m) == domain.X {
 		// return NewPlayer(X, 1), NewPlayer(O, 2)
-		return Game{}, nil
+		return ServGame{}, nil
 	}
 	// return NewPlayer(O, 1), NewPlayer(X, 2)
-	return Game{}, nil
+	return ServGame{}, nil
 }
 
-func (_Games) Turn(boardId Id, trn Turn) (Game, error) {
+func (_Games) Turn(boardId Id, trn domain.Turn) (ServGame, error) {
 	// WARN: possible out of range
 	// b[c.row][c.col] = m
-	return Game{}, nil
+	return ServGame{}, nil
 }
 
 func (_Boards) IsFilled(boardId Id, key Key) (bool, error) {

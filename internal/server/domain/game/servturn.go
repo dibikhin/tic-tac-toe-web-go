@@ -1,15 +1,15 @@
-package server
+package game
 
 import (
 	"strconv"
 
-	"tictactoeweb/internal/domain"
+	domain "tictactoeweb/internal/domain/game"
 )
 
 // Public
 
 type (
-	Key domain.Key
+	Key  domain.Key
 	Cell struct {
 		row, col Len
 	}

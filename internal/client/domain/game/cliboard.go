@@ -2,28 +2,30 @@ package game
 
 import (
 	"strings"
-
 	. "tictactoeweb/internal"
-	. "tictactoeweb/internal/domain"
+
+	domain "tictactoeweb/internal/domain/game"
 )
 
 type (
-	Board struct {
+	CliBoard struct {
 		id Id
-		Board
+		domain.Board
 		grid
 	}
-	Row = [Size]string
+	Row = []string
 )
 
 type grid = string
 
+var Gap = domain.Gap
+
 // Factories
 
-func BlankBoard() Board {
+func BlankBoard() CliBoard {
 	// TODO dup
 	row := Row{Gap, Gap, Gap}
-	return Board{
+	return CliBoard{
 		id: Gap,
 		grid: strings.Join(Row{
 			strings.Join(row, " "),
@@ -33,11 +35,11 @@ func BlankBoard() Board {
 	}
 }
 
-func DeadBoard() Board {
+func DeadBoard() CliBoard {
 	// TODO dup
-	row := Row{X_x, X_x, X_x}
-	return Board{
-		id: X_x,
+	row := Row{domain.X_x, domain.X_x, domain.X_x}
+	return CliBoard{
+		id: domain.X_x,
 		grid: strings.Join(Row{
 			strings.Join(row, " "),
 			strings.Join(row, " "),
@@ -46,27 +48,21 @@ func DeadBoard() Board {
 	}
 }
 
-func NewBoard(boardId Id, gs ...grid) Board {
+func NewBoard(boardId Id, gs ...grid) CliBoard {
 	if len(gs) == 1 {
-		return Board{
-			boardId,
-			NewBoard(),
-			gs[0],
+		return CliBoard{
+			boardId, domain.NewBoard(), gs[0],
 		}
 	}
-	return Board{
-		NewId(), NewBoard(), BlankBoard().grid,
+	return CliBoard{
+		NewId(), domain.NewBoard(), BlankBoard().grid,
 	}
 }
 
 // Props
 
-func (b Board) Id() Id {
-	return b.id
-}
-
 // Checks
 
-func (b Board) IsEmpty() Empty {
+func (b CliBoard) IsEmpty() Empty {
 	return b.grid == ""
 }
