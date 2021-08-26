@@ -26,7 +26,7 @@ var Domain = _Domain{} // to call like `Domain.Games.ArrangePlayers(m)`
 // Factorys
 
 func (Games) Make() CliGame {
-	return NewCliGame(NewId())
+	return NewCliGame(New Id())
 }
 
 func (Games) MakeDead() CliGame {
