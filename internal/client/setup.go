@@ -4,15 +4,15 @@ import (
 	"fmt"
 
 	. "tictactoeweb/internal"
-	"tictactoeweb/internal/client/domain"
-	. "tictactoeweb/internal/client/domain/game"
+
+	. "tictactoeweb/internal/client/game"
 )
 
-var deadGame = domain.Games.MakeDead
+var MakeDeadGame = Domain.Games.MakeDead
 
 // Constants
 func Logo() CliBoard {
-	return NewBoard(
+	return NewCliBoard(
 		"logo",
 		`O   X
 	     O X X
@@ -32,37 +32,37 @@ func Logo() CliBoard {
 func Setup(rs ...Reader) (CliGame, error) {
 	alt, err := ExtractReader(rs...)
 	if err != nil {
-		return deadGame(), err
+		return MakeDeadGame(), err
 	}
-	gam, err := setupReader(DefaultReader, alt)
+	game, err := setupReader(DefaultReader, alt)
 	if err != nil {
-		return deadGame(), err
+		return game, err
 	}
-	defer domain.PrintGame(gam)
 	printLogo(Logo())
-	promptMark()
+	Domain.PromptMark()
 
-	mrk, err := domain.Games.ChooseMarks(gam)
+	mark, err := Domain.Games.ChooseMarks(game)
 	if err != nil {
-		return deadGame(), err
+		return game, err
 	}
-	g, err := domain.Games.ArrangePlayers(mrk)
+	gm, err := Domain.Games.ArrangePlayers(mark)
 	if err != nil {
-		return deadGame(), err
+		return gm, err
 	}
-	return g, nil
+	defer Domain.PrintGame(gm)
+	return gm, nil
 }
 
 // Private
 
 // Factory
-func setupReader(def, alt Reader) (CliGame, error) {
-	gam := domain.Games.Make()
+func setupReader(defualt, alt Reader) (CliGame, error) {
+	gm := Domain.Games.Make()
 	switch {
 	case alt != nil:
-		return gam.SetReader(alt, deadGame())
+		return gm.SetReader(alt, MakeDeadGame())
 	default:
-		return gam.SetReader(def, deadGame())
+		return gm.SetReader(defualt, MakeDeadGame())
 	}
 }
 
@@ -75,8 +75,4 @@ func printLogo(s fmt.Stringer) {
 
 	fmt.Println("(Use `ctrl+c` to exit)")
 	fmt.Println()
-}
-
-func promptMark() {
-	fmt.Print("Press 'x' or 'o' to choose mark for Player 1: ")
 }

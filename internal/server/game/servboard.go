@@ -2,19 +2,20 @@ package game
 
 import (
 	"strings"
+
 	. "tictactoeweb/internal"
-	domain "tictactoeweb/internal/domain/game"
+	. "tictactoeweb/internal/domain/game"
 )
 
 // Public
 
 type (
 	ServBoard struct {
-		domain.Board
+		Board
 		grid
 	}
 	Row  [Size]string
-	Mark = domain.Mark
+	Mark = Mark
 )
 
 type grid [Size][Size]Mark // Private
@@ -22,10 +23,10 @@ type grid [Size][Size]Mark // Private
 // Constants
 
 const (
-	Size = domain.Size
-	X_x  = domain.X_x
+	Size = Size
+	X_x  = X_x
 
-	__ = domain.Gap
+	__ = Gap
 )
 
 // Public
@@ -33,7 +34,7 @@ const (
 // Factorys
 
 func BlankBoard() ServBoard {
-	return ServBoard{
+	return NewServBoard{
 		grid: grid{
 			{__, __, __},
 			{__, __, __},
@@ -43,7 +44,7 @@ func BlankBoard() ServBoard {
 }
 
 func DeadBoard() ServBoard {
-	return ServBoard{
+	return NewServBoard{
 		grid: grid{
 			{X_x, X_x, X_x},
 			{X_x, X_x, X_x},
@@ -51,13 +52,6 @@ func DeadBoard() ServBoard {
 		},
 	}
 }
-
-// Props
-
-// func (b ServBoard) SetBoard(gr grid) ServBoard {
-// 	b.grid = gr
-// 	return b
-// }
 
 // Other
 
@@ -74,17 +68,24 @@ func (g grid) String() string {
 	return strings.Join(dump, "\n")
 }
 
+// Props
+
+// func (b ServBoard) SetBoard(gr grid) ServBoard {
+// 	b.grid = gr
+// 	return b
+// }
+
 // Checks, Validation
 
 func (b ServBoard) IsFilled(c Cell) bool {
 	// WARN: possible out of range
-	return b.grid[c.Row()][c.Col()] != domain.Gap
+	return b.grid[c.Row()][c.Col()] != Gap
 }
 
 func (b ServBoard) HasEmpty() bool {
 	for _, row := range b.grid {
 		for _, m := range row {
-			if m == domain.Gap {
+			if m == Gap {
 				return true
 			}
 		}

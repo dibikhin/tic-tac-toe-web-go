@@ -15,14 +15,14 @@ type Game struct {
 	player2 Player
 }
 
-func NewGame(gameId Id, bs ...Board) Game {
+func NewGame(id Id, bs ...Board) Game {
 	if len(bs) == 1 {
 		return Game{
-			id: gameId, board: bs[0],
+			id, bs[0], NoPlayer(), NoPlayer(),
 		}
 	}
 	return Game{
-		id: gameId, board: NewBoard(),
+		id, NewBoard(NewId()), NoPlayer(), NoPlayer(),
 	}
 }
 
@@ -42,4 +42,12 @@ func (g Game) Player1() Player {
 
 func (g Game) Player2() Player {
 	return g.player2
+}
+
+// Checks
+
+func (g Game) IsReady() bool {
+	return !g.Player1().IsEmpty() &&
+		!g.Player2().IsEmpty() &&
+		!g.Board().IsEmpty()
 }

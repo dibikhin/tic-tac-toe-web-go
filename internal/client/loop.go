@@ -3,12 +3,10 @@ package client
 import (
 	"errors"
 	"tictactoeweb/api"
-	"tictactoeweb/internal/client/domain"
-	"tictactoeweb/internal/domain/game"
 
 	. "tictactoeweb/internal"
-
-	. "tictactoeweb/internal/client/domain/game"
+	. "tictactoeweb/internal/client/game"
+	. "tictactoeweb/internal/domain/game"
 )
 
 type again = bool
@@ -26,24 +24,24 @@ func ErrCouldNotStart() error {
 // Loop prompts players to take turns.
 func Loop(g CliGame) (CliGame, again, error) {
 	if !g.IsReady() {
-		return domain.Games.MakeDead(), No, ErrCouldNotStart()
+		return g, No, ErrCouldNotStart()
 	}
-	gam, more := turn(g.Player1(), g)
+	game, more := turn(g.Player1(), g)
 	if !more {
-		return gam, No, nil
+		return game, No, nil
 	}
-	gam, more = turn(gam.Player2(), gam)
-	return gam, more, nil
+	gm, more := turn(game.Player2(), game)
+	return gm, more, nil
 }
 
 // Private
 
-func turn(plr game.Player, gam CliGame) (CliGame, again) {
-	trn := takeTurn(plr, gam)
-	if trn == game.NoTurn() {
-		return gam, No
+func turn(plr Player, game CliGame) (CliGame, again) {
+	trn := takeTurn(plr, game)
+	if trn == NoTurn() {
+		return game, No
 	}
-	gm, err := domain.Boards.Turn(gam.Board().Id(), trn)
+	gm, err := Domain.Boards.Turn(game.Board().Id(), trn)
 	if err != nil {
 		return gm, No
 	}
@@ -51,11 +49,11 @@ func turn(plr game.Player, gam CliGame) (CliGame, again) {
 	return gm, Yes
 }
 
-func takeTurn(plr game.Player, gam CliGame) game.Turn {
-	domain.Prompt(plr)
-	more, t := Yes, game.NoTurn()
+func takeTurn(plr Player, g CliGame) Turn {
+	Domain.Prompt(plr)
+	more, t := Yes, NoTurn()
 	for more {
-		t, more = readTurn(plr, gam)
+		t, more = readTurn(plr, g)
 		if !more {
 			return t
 		}
@@ -63,33 +61,34 @@ func takeTurn(plr game.Player, gam CliGame) game.Turn {
 	return t
 }
 
-func printOutcome(gam CliGame) {
-	domain.PrintBoard(gam.Board())
+func printOutcome(game CliGame) {
+	Domain.PrintBoard(game.Board())
 
-	switch o := gam.Outcome(); o {
+	switch o := game.Outcome(); o {
 	case api.Outcome_DRAW:
-		domain.PrintDraw()
+		Domain.PrintDraw()
 	case api.Outcome_WON:
-		domain.PrintWinner(gam.Winner())
+		Domain.PrintWinner(game.Winner())
 	}
 }
 
-func readTurn(plr game.Player, gam CliGame) (game.Turn, again) {
-	read := gam.Reader()
-	key := Key(read())
-	if !key.IsIn(gam.Keys()) {
-		domain.PrintBoard(gam.Board())
-		domain.Prompt(plr)
-		return game.NoTurn(), Yes
+func readTurn(plr Player, game CliGame) (Turn, again) {
+	read := game.Reader()
+	key := CliKey(read())
+	turn := NewTurn(plr.Mark(), Key(key))
+	if !key.IsIn(game.Keys()) {
+		Domain.PrintBoard(game.Board())
+		Domain.Prompt(plr)
+		return turn, Yes
 	}
-	isFilled, err := domain.Boards.IsFilled(gam.Board().Id(), key)
+	isFilled, err := Domain.Boards.IsFilled(game.Board().Id(), key)
 	if err != nil {
-		return game.NoTurn(), Yes
+		return turn, Yes
 	}
 	if isFilled {
-		domain.PrintBoard(gam.Board())
-		domain.Prompt(plr)
-		return game.NoTurn(), Yes
+		Domain.PrintBoard(game.Board())
+		Domain.Prompt(plr)
+		return turn, Yes
 	}
-	return game.NewTurn(plr.Mark(), game.Key(key)), No
+	return turn, No
 }

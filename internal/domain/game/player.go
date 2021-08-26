@@ -11,20 +11,24 @@ type Player struct {
 	num  int // 1 or 2; -1 is a dead Player
 }
 
-// Public
+// Factorys
 
-func (p Player) String() string {
-	return fmt.Sprintf(`Player %v ("%v")`, p.num, p.mark)
+func NoPlayer() Player {
+	return NewPlayer(Gap, -1)
 }
 
-// Factorys
+func DeadPlayer() Player {
+	return NewPlayer(X_x, -1)
+}
 
 func NewPlayer(m Mark, n int) Player {
 	return Player{m, n}
 }
 
-func DeadPlayer() Player {
-	return Player{X_x, -1}
+// Public
+
+func (p Player) String() string {
+	return fmt.Sprintf(`Player %v ("%v")`, p.num, p.mark)
 }
 
 // Props

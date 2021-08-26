@@ -2,15 +2,14 @@ package game
 
 import (
 	"strconv"
-
-	domain "tictactoeweb/internal/domain/game"
+	. "tictactoeweb/internal/domain/game"
 )
 
 // Public
 
 type (
-	Key  domain.Key
-	Cell struct {
+	ServKey Key
+	Cell    struct {
 		row, col Len
 	}
 	Len = int // 1..3
@@ -19,12 +18,12 @@ type (
 // Private
 
 type (
-	coords map[Key]Cell
+	coords map[ServKey]Cell
 )
 
 // Other
 
-func (k Key) IsKey() bool {
+func (k ServKey) IsKey() bool {
 	n, err := strconv.Atoi(string(k))
 	if err != nil {
 		return false
@@ -42,7 +41,7 @@ func _coords() coords {
 	}
 }
 
-func (k Key) ToCell() Cell {
+func (k ServKey) ToCell() Cell {
 	return _coords()[k] // TODO: detect and propagate errors?
 }
 

@@ -6,7 +6,7 @@ type (
 		key  Key
 		mark Mark
 	}
-	Key string // "1".."9"
+	Key string // "1".."9" | "No"
 )
 
 // Public
@@ -16,5 +16,5 @@ func NewTurn(m Mark, k Key) Turn {
 }
 
 func NoTurn() Turn {
-	return Turn{"-1", "No"}
+	return NewTurn("-1", "No")
 }

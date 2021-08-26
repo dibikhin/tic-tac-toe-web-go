@@ -2,13 +2,13 @@ package game
 
 import (
 	. "tictactoeweb/internal"
-	domain "tictactoeweb/internal/domain/game"
+	. "tictactoeweb/internal/domain/game"
 )
 
-type Key domain.Key
+type CliKey Key
 
 // "3" IsIn {"1", "3", "5"}
-func (k Key) IsIn(kk []Key) bool {
+func (k CliKey) IsIn(kk []CliKey) bool {
 	for _, v := range kk {
 		if v == k {
 			return Yes

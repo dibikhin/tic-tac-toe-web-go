@@ -2,11 +2,10 @@ package internal
 
 import (
 	irn "tictactoeweb/internal"
-	. "tictactoeweb/internal/client/domain/game"
+	. "tictactoeweb/internal/client/game"
 )
 
-type GamesRepo interface {
-}
+type GamesRepo interface{}
 
 type State = int
 
