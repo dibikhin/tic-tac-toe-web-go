@@ -16,7 +16,7 @@ type (
 	Mark = string // "X" or "O" (or "No")
 )
 
-type grid struct{}
+type grid string
 
 // Constants, Public
 const (
@@ -35,6 +35,10 @@ func NewBoard(id Id, gs ...grid) Board {
 		return Board{id, gs[0]}
 	}
 	return Board{id: id}
+}
+
+func DeadMark() Mark {
+	return X_x
 }
 
 // Other
@@ -56,7 +60,7 @@ func (b Board) Grid() grid {
 // Checks
 
 func (g grid) IsEmpty() Empty {
-	return g == grid{}
+	return g == ""
 }
 
 func (b Board) IsEmpty() Empty {

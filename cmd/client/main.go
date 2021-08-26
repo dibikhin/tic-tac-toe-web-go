@@ -13,15 +13,21 @@ import (
 func main() {
 	onExit(sayBye)
 
-	Setup()
-
-	log.Print("Trying to connect...")
-	ctx, teardown, err := Start()
+	log.Print("Starting client...")
+	err := SetupReader()
 	if err != nil {
-		log.Fatalf("error: start failed: %v", err)
+		log.Fatalf("error: start reader failed: %v", err)
+	}
+
+	log.Print("Connecting to server...")
+	ctx, teardown, err := StartClient()
+	if err != nil {
+		log.Fatalf("error: start client failed: %v", err)
 	}
 	defer teardown()
-	err = StatusLoop(ctx)
+
+	log.Print("Running status loop...")
+	err = RunStatusLoop(ctx)
 	if err != nil {
 		log.Fatalf("error: status loop failed: %v", err)
 	}
@@ -40,4 +46,5 @@ func onExit(done func()) {
 func sayBye() {
 	fmt.Println()
 	fmt.Println("Bye!")
+	fmt.Println()
 }

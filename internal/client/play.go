@@ -4,6 +4,7 @@ import (
 	api "tictactoeweb/api"
 
 	. "tictactoeweb/internal"
+	. "tictactoeweb/internal/client/game"
 )
 
 // Public
@@ -12,10 +13,6 @@ import (
 // It's a default bootstrapper.
 // Other public functions are exposed for testing purposes.
 func Play(ctx Ctx, sr *api.StatusReply) error {
-	// ctx, err := Setup()
-	// if err != nil {
-	// 	return err
-	// }
 	err := run(ctx)
 	if err != nil {
 		return err
@@ -24,7 +21,7 @@ func Play(ctx Ctx, sr *api.StatusReply) error {
 }
 
 func run(ctx Ctx) (err error) {
-	game, more := game{}, Yes //get_status()
+	game, more := CliGame{}, Yes // get_status()
 	for more {
 		game, more, err = Loop(game)
 		if err != nil {

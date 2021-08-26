@@ -10,17 +10,11 @@ import (
 
 	api "tictactoeweb/api"
 	cfg "tictactoeweb/configs"
+
+	. "tictactoeweb/internal"
 )
 
-type (
-	Client = api.GameClient
-)
-
-// Globals
-
-var _cli Client
-
-func Start() (Ctx, func(), error) {
+func StartClient() (Ctx, func(), error) {
 	conn, err := grpc.Dial(cfg.Address, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(time.Second*8))
 	log.Print("Dialed address")
 
@@ -28,12 +22,24 @@ func Start() (Ctx, func(), error) {
 	teardown := func() {
 		conn.Close()
 		cancel()
+		log.Print("Disconnected client")
 	}
 	if err != nil {
 		return nil, teardown, fmt.Errorf("did not connect: %w", err)
 	}
-	_cli = api.NewGameClient(conn) // Global
+	Client = api.NewGameClient(conn) // Global
 	log.Print("Connected client")
 
 	return ctx, teardown, nil
+}
+
+func SetupReader(rs ...Reader) error {
+	alt, err := ExtractReader(rs...)
+	if err != nil {
+		return err
+	}
+	if alt != nil {
+		return App.SetReader(alt)
+	}
+	return App.SetReader(DefaultReader)
 }

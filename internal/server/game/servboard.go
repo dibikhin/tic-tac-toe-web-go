@@ -14,8 +14,8 @@ type (
 		Board
 		grid
 	}
-	Row  [Size]string
-	Mark = Mark
+	// Row  [Size]string
+	// Mark = string
 )
 
 type grid [Size][Size]Mark // Private
@@ -23,9 +23,6 @@ type grid [Size][Size]Mark // Private
 // Constants
 
 const (
-	Size = Size
-	X_x  = X_x
-
 	__ = Gap
 )
 
@@ -33,25 +30,25 @@ const (
 
 // Factorys
 
-func BlankBoard() ServBoard {
-	return NewServBoard{
-		grid: grid{
-			{__, __, __},
-			{__, __, __},
-			{__, __, __},
-		},
-	}
-}
+// func BlankBoard() ServBoard {
+// 	return NewServBoard{
+// 		grid: grid{
+// 			{__, __, __},
+// 			{__, __, __},
+// 			{__, __, __},
+// 		},
+// 	}
+// }
 
-func DeadBoard() ServBoard {
-	return NewServBoard{
-		grid: grid{
-			{X_x, X_x, X_x},
-			{X_x, X_x, X_x},
-			{X_x, X_x, X_x},
-		},
-	}
-}
+// func DeadBoard() ServBoard {
+// 	return NewServBoard{
+// 		grid: grid{
+// 			{X_x, X_x, X_x},
+// 			{X_x, X_x, X_x},
+// 			{X_x, X_x, X_x},
+// 		},
+// 	}
+// }
 
 // Other
 

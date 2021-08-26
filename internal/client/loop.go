@@ -2,9 +2,10 @@ package client
 
 import (
 	"errors"
-	"tictactoeweb/api"
+	// "tictactoeweb/api"
 
 	. "tictactoeweb/internal"
+
 	. "tictactoeweb/internal/client/game"
 	. "tictactoeweb/internal/domain/game"
 )
@@ -64,16 +65,16 @@ func takeTurn(plr Player, g CliGame) Turn {
 func printOutcome(game CliGame) {
 	Domain.PrintBoard(game.Board())
 
-	switch o := game.Outcome(); o {
-	case api.Outcome_DRAW:
-		Domain.PrintDraw()
-	case api.Outcome_WON:
-		Domain.PrintWinner(game.Winner())
-	}
+	// switch o := game.Outcome(); o {
+	// case api.Outcome_DRAW:
+	// 	Domain.PrintDraw()
+	// case api.Outcome_WON:
+	// 	Domain.PrintWinner(game.Winner())
+	// }
 }
 
 func readTurn(plr Player, game CliGame) (Turn, again) {
-	read := game.Reader() // checked on top
+	read := App.Reader() // checked on top
 	key := CliKey(read())
 	turn := NewTurn(plr.Mark(), Key(key))
 	if !key.IsIn(game.Keys()) {

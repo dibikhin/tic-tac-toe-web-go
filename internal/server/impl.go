@@ -17,9 +17,10 @@ type server struct {
 func (s *server) GetStatus(ctx Ctx, m *api.Empty) (*api.StatusReply, error) {
 	log.Printf("Recieved: GetStatus(), args: %v", m)
 	sr := &api.StatusReply{
-		State: api.State_IDLE,
+		State: api.State_WAITING,
+		For:   api.For_MARK,
 		Actions: []api.Actions{
-			api.Actions_START_GAME,
+			api.Actions_SET_MARK,
 			api.Actions_GET_STATUS,
 		},
 		Message: "You can:",

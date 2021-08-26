@@ -29,11 +29,11 @@ lint:
 	golangci-lint run -v
 	@echo "Done."
 
-serve server:
+server serv serve:
 	@echo "\nServing..."
 	@go run ./cmd/server/main.go
 
-conn connect cli client:
+client cli connect conn:
 	@echo "\nConnecting..."
 	@go run ./cmd/client/main.go
 

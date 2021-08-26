@@ -21,24 +21,3 @@ func NewCliGame(id Id) CliGame {
 func (g CliGame) Keys() []CliKey {
 	return []CliKey{}
 }
-
-// Props: Reader
-
-func (g CliGame) Reader() Reader {
-	return g.reader
-}
-
-func (g CliGame) SetReader(rdr Reader, def CliGame) (CliGame, error) {
-	if rdr == nil {
-		return def, ErrNilReader()
-	}
-	g.reader = rdr
-	return g, nil
-}
-
-// Checks
-
-func (g CliGame) IsReady() bool {
-	return g.Game.IsReady() &&
-		g.reader != nil
-}
