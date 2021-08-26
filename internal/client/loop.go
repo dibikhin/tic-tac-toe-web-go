@@ -73,7 +73,7 @@ func printOutcome(game CliGame) {
 }
 
 func readTurn(plr Player, game CliGame) (Turn, again) {
-	read := game.Reader()
+	read := game.Reader() // checked on top
 	key := CliKey(read())
 	turn := NewTurn(plr.Mark(), Key(key))
 	if !key.IsIn(game.Keys()) {

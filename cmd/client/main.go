@@ -11,19 +11,18 @@ import (
 )
 
 func main() {
-	log.Print("Hi!")
-	log.Print("This is 3x3 Tic-tac-toe for 2 friends :)")
-
 	onExit(sayBye)
+
+	Setup()
 
 	log.Print("Trying to connect...")
 	ctx, teardown, err := Start()
-	defer teardown()
-
 	if err != nil {
 		log.Fatalf("error: start failed: %v", err)
 	}
-	if err = StatusLoop(ctx); err != nil {
+	defer teardown()
+	err = StatusLoop(ctx)
+	if err != nil {
 		log.Fatalf("error: status loop failed: %v", err)
 	}
 }

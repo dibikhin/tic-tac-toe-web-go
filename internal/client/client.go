@@ -15,8 +15,6 @@ type (
 	}
 	Games  struct{}
 	Boards struct{}
-
-	reader = Reader
 )
 
 // Public
@@ -26,21 +24,19 @@ var Domain = _Domain{} // to call like `Domain.Games.ArrangePlayers(m)`
 // Factorys
 
 func (Games) Make() CliGame {
-	return NewCliGame(New Id())
+	return NewCliGame(NewId())
 }
 
 func (Games) MakeDead() CliGame {
-	return NewCliGame{
-		Game: NewGame(X_x),
-	}
+	return NewCliGame(X_x)
 }
 
 // IO
 
 // Commands: Local
 
-// ChooseMarks chooses players' marks as in a Google's TicTacToe doodle
-func (Games) ChooseMarks(g CliGame) (Mark, error) {
+// ReadMark chooses players' marks as in a Google's TicTacToe doodle
+func (Games) ReadMark(g CliGame) (Mark, error) {
 	if g.Reader() == nil {
 		return "", ErrNilReader()
 	}
@@ -65,7 +61,19 @@ func (Boards) IsFilled(boardId Id, key CliKey) (bool, error) {
 
 // Local IO
 
-func (_Domain) promptMark() {
+func (_Domain) Greet(str fmt.Stringer) {
+	fmt.Print("Hi!")
+	fmt.Print("This is 3x3 Tic-tac-toe for 2 friends :)")
+	fmt.Println()
+
+	fmt.Println(str)
+	fmt.Println()
+
+	fmt.Println("(Use `ctrl+c` to exit)")
+	fmt.Println()
+}
+
+func (_Domain) PromptMark() {
 	fmt.Print("Press 'x' or 'o' to choose mark for Player 1: ")
 }
 

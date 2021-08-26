@@ -12,8 +12,8 @@ type CliGame struct {
 	reader Reader
 }
 
-func NewCliGame(b Board) CliGame {
-	return NewCliGame(NewBoard(NewId()))
+func NewCliGame(id Id) CliGame {
+	return CliGame{Game: NewGame(id)}
 }
 
 // Props:

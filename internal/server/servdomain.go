@@ -13,8 +13,6 @@ import (
 type (
 	_Games  struct{} // see the `Games` var below
 	_Boards struct{}
-
-	reader = Reader
 )
 
 // Public
