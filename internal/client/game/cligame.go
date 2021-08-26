@@ -8,8 +8,6 @@ import (
 
 type CliGame struct {
 	Game
-
-	reader Reader
 }
 
 func NewCliGame(id Id) CliGame {

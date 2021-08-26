@@ -17,8 +17,8 @@ type (
 )
 
 var (
-	App    _App
 	Client api.GameClient
+	App    = &_App{}
 )
 
 // Props: Reader
@@ -27,7 +27,7 @@ func (a _App) Reader() Reader {
 	return a.reader
 }
 
-func (a _App) SetReader(rdr Reader) error {
+func (a *_App) SetReader(rdr Reader) error {
 	if rdr == nil {
 		return ErrNilReader()
 	}
