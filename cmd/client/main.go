@@ -14,22 +14,26 @@ func main() {
 	onExit(sayBye)
 
 	log.Print("Starting client...")
+
 	err := SetupReader()
 	if err != nil {
 		log.Fatalf("error: start reader failed: %v", err)
 	}
 
 	log.Print("Connecting to server...")
+
 	ctx, teardown, err := StartClient()
 	if err != nil {
 		log.Fatalf("error: start client failed: %v", err)
 	}
+	defer log.Print("Client exited.")
 	defer teardown()
 
 	log.Print("Running status loop...")
+
 	err = RunStatusLoop(ctx)
 	if err != nil {
-		log.Fatalf("error: status loop failed: %v", err)
+		log.Fatalf("error: status loop broke: %v", err)
 	}
 }
 

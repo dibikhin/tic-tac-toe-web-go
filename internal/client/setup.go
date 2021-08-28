@@ -28,12 +28,12 @@ X   O`,
 // ctx, err := Setup(DefaultReader)
 // OR
 // ctx, err := Setup(yourReaderFunc)
-func SetupMarks(rs ...Reader) (CliGame, error) {
+func SetupMarks(ctx Ctx) (CliGame, error) {
 	Domain.Greet(Logo())
 	Domain.PromptMark()
 
 	gm := Domain.Games.Make()
-	game, err := chooseMarks(gm)
+	game, err := chooseMarks(ctx, gm)
 
 	defer Domain.PrintGame(game)
 	return game, err
@@ -41,11 +41,11 @@ func SetupMarks(rs ...Reader) (CliGame, error) {
 
 // Private
 
-func chooseMarks(game CliGame) (CliGame, error) {
+func chooseMarks(ctx Ctx, game CliGame) (CliGame, error) {
 	mark, err := Domain.Games.ReadMark(game)
 	if err != nil {
 		return game, err
 	}
-	gm, err := Domain.Games.ArrangePlayers(mark)
+	gm, err := Domain.Games.ArrangePlayers(ctx, mark)
 	return gm, err
 }

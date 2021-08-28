@@ -10,21 +10,10 @@ import (
 // Play starts the game by setting it up and running the game loop.
 // It's a default bootstrapper.
 // Other public functions are exposed for testing purposes.
-func Play() error {
+func Play(ctx Ctx) error {
 	game, more, err := CliGame{}, Yes, error(nil)
 	for more {
-		game, more, err = Loop(game)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func run() (err error) {
-	game, more := CliGame{}, Yes // get_status()
-	for more {
-		game, more, err = Loop(game)
+		game, more, err = Loop(ctx, game)
 		if err != nil {
 			return err
 		}

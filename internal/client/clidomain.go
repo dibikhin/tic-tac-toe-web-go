@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"tictactoeweb/api"
 
 	. "tictactoeweb/internal"
 	. "tictactoeweb/internal/client/game"
@@ -48,17 +49,23 @@ func (_Games) ReadMark(g CliGame) (Mark, error) {
 
 // Commands: Remote
 
-func (_Games) ArrangePlayers(m Mark) (CliGame, error) {
-	return CliGame{}, nil
+func (_Games) ArrangePlayers(ctx Ctx, m Mark) (CliGame, error) {
+	cr := &api.CommandRequest{Action: api.Actions_SET_MARK}
+	resp, err := Client.RunCommand(ctx, cr)
+	return NewCliGame(resp.GetBoard()), err
 }
 
-func (_Boards) Turn(boardId Id, trn Turn) (CliGame, error) {
-	return CliGame{}, nil
+func (_Boards) Turn(ctx Ctx, boardId Id, trn Turn) (CliGame, error) {
+	cr := &api.CommandRequest{Action: api.Actions_DO_TURN}
+	resp, err := Client.RunCommand(ctx, cr)
+	return NewCliGame(resp.GetBoard()), err
 }
 
 // Querys: Remote
-func (_Boards) IsFilled(boardId Id, key CliKey) (bool, error) {
-	return Yes, nil
+func (_Boards) IsFilled(ctx Ctx, boardId Id, key CliKey) (bool, error) {
+	cr := &api.QueryRequest{Query: api.Querys_IS_FILLED}
+	resp, err := Client.RunQuery(ctx, cr)
+	return resp.GetIsFilled(), err
 }
 
 // Local IO

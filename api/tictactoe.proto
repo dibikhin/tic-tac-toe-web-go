@@ -5,14 +5,16 @@ package tictactoe;
 option go_package = "github.com/dibikhin/tic-tac-toe-web-go/api";
 
 service Game {
-  rpc GetStatus (Empty) returns (StatusReply) {}
-  rpc Run (CommandRequest) returns (StatusReply);
+  rpc RunCommand (CommandRequest) returns (StatusReply);
+  rpc RunQuery (QueryRequest) returns (StatusReply);
 }
-
-message Empty {}
 
 message CommandRequest {
   Actions action = 1;
+}
+
+message QueryRequest {
+  Querys query = 1;
 }
 
 /*
@@ -21,7 +23,7 @@ TODO: Fill example
 
 */
 message StatusReply {
-  reserved 9 to 15;
+  reserved 10 to 15;
 
   State state = 1;
   repeated Actions actions = 2;
@@ -29,10 +31,22 @@ message StatusReply {
   string message = 4;
 
   For for = 5; // optional
-  // Player Player = 6; // optional
+  Player player = 6; // optional
   string board = 7; // optional
 
   Outcome outcome = 8; // optional
+
+  bool isFilled = 9; // optional
+}
+
+message Player {
+  int32 num = 1;
+  string mark = 2;
+}
+
+enum Querys {
+  EMPTY = 0;
+  IS_FILLED = 1;
 }
 
 enum State {
@@ -71,9 +85,6 @@ enum Opts {
   SEVEN = 7;
   EIGHT = 8;
   NINE = 9;
-
-  O_MARK = 10;
-  X_MARK = 11;
 }
 
 enum Outcome {

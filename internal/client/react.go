@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"tictactoeweb/internal/domain/game"
 
 	api "tictactoeweb/api"
 
@@ -12,40 +13,60 @@ import (
 
 func RunStatusLoop(ctx Ctx) error {
 	for {
-		log.Print("Calling remote: GetStatus()...")
-		args := &api.Empty{}
-		resp, err := Client.GetStatus(ctx, args)
+		args := &api.CommandRequest{Action: api.Actions_GET_STATUS}
+		log.Printf("Calling remote: %v...", args)
+		resp, err := Client.RunCommand(ctx, args)
 		if err != nil {
 			return err
 		}
-		log.Printf("GetStatus(): Done. args: %T{%v}, res: %v", args, args, resp)
-		_, err = react(resp)
+		log.Printf("Remote call: Done. args: %T{%v}, res: %v", args, args, resp)
+
+		err = react(ctx, resp)
 		if err != nil {
 			return err
 		}
 	}
 }
 
-func react(sr *api.StatusReply) (*api.StatusReply, error) {
-	var err error
-	var r *api.StatusReply
-
+func react(ctx Ctx, sr *api.StatusReply) error {
 	switch sr.State {
+	case api.State_UNDEFINED:
+		return errors.New("default state found: " + sr.State.String())
 	case api.State_WAITING:
 		switch sr.For {
+		case api.For_NOTHING:
+			return errors.New("default 'for' found: " + sr.For.String())
 		case api.For_MARK:
-			SetupMarks()
 			fmt.Printf("%v %v \n", sr.State, sr.For)
+
+			SetupMarks(ctx)
 		case api.For_TURN:
-			Play()
 			fmt.Printf("%v %v \n", sr.State, sr.For)
+
+			Play(ctx)
 		default:
-			return nil, errors.New("unknown 'for': " + sr.For.String())
+			return errors.New("unknown 'for': " + sr.For.String())
+		}
+	case api.State_GAME_OVER:
+		switch sr.Outcome {
+		case api.Outcome_DEFAULT:
+			return errors.New("default outcome found: " + sr.Outcome.String())
+		case api.Outcome_DRAW:
+			fmt.Printf("%v %v \n", sr.Outcome, sr.Player)
+
+			Domain.PrintDraw()
+		case api.Outcome_WON:
+			fmt.Printf("%v %v \n", sr.Outcome, sr.Player)
+
+			p := game.NewPlayer(sr.Player.Mark, int32(sr.Player.Num))
+			Domain.PrintWinner(p)
+		default:
+			return errors.New("unknown outcome: " + sr.Outcome.String())
 		}
 	default:
-		return nil, errors.New("unknown state: " + sr.State.String())
+		return errors.New("unknown state: " + sr.State.String())
 	}
-	return r, err
+	return nil
 }
 
 // fmt.Println(sr.Message)
@@ -56,7 +77,7 @@ func react(sr *api.StatusReply) (*api.StatusReply, error) {
 // log.Printf("Calling remote: Run()...")
 // cr := &api.CommandRequest{Action: api.Actions_START_GAME}
 // log.Printf("Run() args: %v", cr)
-// return Client.Run(ctx, cr)
+// return Client.RunCommand(ctx, cr)
 
 // case "do auth":
 // 	fmt.Println("Are you Player1 or Player2?")

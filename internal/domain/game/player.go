@@ -8,7 +8,7 @@ import (
 
 type Player struct {
 	mark Mark
-	num  int // 1 or 2; -1 is a dead Player
+	num  int32 // 1 or 2; -1 is a dead Player
 }
 
 // Factorys
@@ -21,7 +21,7 @@ func DeadPlayer() Player {
 	return NewPlayer(X_x, -1)
 }
 
-func NewPlayer(m Mark, n int) Player {
+func NewPlayer(m Mark, n int32) Player {
 	return Player{m, n}
 }
 
@@ -37,7 +37,7 @@ func (p Player) Mark() Mark {
 	return p.mark
 }
 
-func (p Player) Num() int {
+func (p Player) Num() int32 {
 	return p.num
 }
 
