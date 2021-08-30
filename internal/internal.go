@@ -1,6 +1,6 @@
 package internal
 
-import "context"
+// Bools
 
 type Empty = bool
 
@@ -9,10 +9,10 @@ const (
 	No  = false
 )
 
+// Id
+
 type Id = string
 
 func NewId() Id {
 	return "1234"
 }
-
-type Ctx = context.Context

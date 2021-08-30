@@ -1,19 +1,19 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
 
+	. "tictactoeweb/internal"
 	. "tictactoeweb/internal/client"
 )
 
 func main() {
-	onExit(sayBye)
+	_, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	OnExit(cancel, SayBye)
 
-	log.Print("Starting client...")
+	log.Print("Starting Client()...")
 
 	err := SetupReader()
 	if err != nil {
@@ -35,20 +35,4 @@ func main() {
 	if err != nil {
 		log.Fatalf("error: status loop broke: %v", err)
 	}
-}
-
-func onExit(done func()) {
-	cs := make(chan os.Signal, 1)
-	signal.Notify(cs, os.Interrupt, syscall.SIGTERM)
-	go func(f func(), c chan os.Signal) {
-		<-c
-		f()
-		os.Exit(0)
-	}(done, cs)
-}
-
-func sayBye() {
-	fmt.Println()
-	fmt.Println("Bye!")
-	fmt.Println()
 }

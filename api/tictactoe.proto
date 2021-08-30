@@ -25,10 +25,10 @@ TODO: Fill example
 message StatusReply {
   reserved 10 to 15;
 
-  State state = 1;
+  Is state = 1;
   repeated Actions actions = 2;
   repeated Opts opts = 3;
-  string message = 4;
+  string message = 4; // TODO: remove
 
   For for = 5; // optional
   Player player = 6; // optional
@@ -49,7 +49,8 @@ enum Querys {
   IS_FILLED = 1;
 }
 
-enum State {
+// State
+enum Is {
   UNDEFINED = 0; // safe default
   WAITING = 1;
   IDLE = 2;

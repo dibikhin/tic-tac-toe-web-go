@@ -27,7 +27,8 @@ func StartClient() (Ctx, func(), error) {
 	if err != nil {
 		return nil, teardown, fmt.Errorf("did not connect: %w", err)
 	}
-	Client = api.NewGameClient(conn) // Global
+	SetClient(api.NewGameClient(conn)) // Global
+
 	log.Print("Connected client")
 
 	return ctx, teardown, nil
@@ -39,7 +40,7 @@ func SetupReader(rs ...Reader) error {
 		return err
 	}
 	if alt != nil {
-		return App.SetReader(alt)
+		return SetReader(alt)
 	}
-	return App.SetReader(DefaultReader)
+	return SetReader(DefaultReader)
 }

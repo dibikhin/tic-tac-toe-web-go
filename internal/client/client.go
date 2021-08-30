@@ -6,31 +6,41 @@ import (
 	. "tictactoeweb/internal"
 )
 
-// Public
-
 // Globals
 
-type (
-	_App struct {
-		reader Reader
-	}
-)
-
+// Private
 var (
-	Client api.GameClient
-	App    = &_App{}
+	_reader Reader
+	_client api.GameClient
 )
 
-// Props: Reader
+// Public
 
-func (a _App) Reader() Reader {
-	return a.reader
+// Props
+
+func Client() api.GameClient {
+	return _client
 }
 
-func (a *_App) SetReader(rdr Reader) error {
+func SetClient(c api.GameClient) error {
+	// TODO: WARN nil check interface
+	if c == nil {
+		return err
+	}
+	_client = c
+	return nil
+}
+
+// Reader
+// to prevent a name collision
+func GetReader() Reader {
+	return _reader
+}
+
+func SetReader(rdr Reader) error {
 	if rdr == nil {
 		return ErrNilReader()
 	}
-	a.reader = rdr
+	_reader = rdr
 	return nil
 }

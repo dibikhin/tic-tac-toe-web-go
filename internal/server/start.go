@@ -11,21 +11,24 @@ import (
 	cfg "tictactoeweb/configs"
 )
 
-func Start() error {
+func Start() (func(), error) {
 	log.Print("Starting server...")
 
 	lis, err := net.Listen("tcp", cfg.Port)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	log.Print("Listening...")
 
 	s := grpc.NewServer()
-	api.RegisterGameServer(s, &server{})
-
-	log.Print("Serving gRPC...")
-	if err := s.Serve(lis); err != nil {
-		return err
+	teardown := func() {
+		s.GracefulStop()
 	}
-	return nil
+	api.RegisterGameServer(s, &server{})
+	log.Print("Serving gRPC...")
+
+	if err := s.Serve(lis); err != nil {
+		return nil, err
+	}
+	return teardown, nil
 }

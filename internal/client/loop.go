@@ -23,11 +23,11 @@ func ErrCouldNotStart() error {
 // Game Loop()
 
 // Loop prompts players to take turns.
-func Loop(ctx Ctx,g CliGame) (CliGame, again, error) {
+func Loop(ctx Ctx, g CliGame) (CliGame, again, error) {
 	if !g.IsReady() {
 		return g, No, ErrCouldNotStart()
 	}
-	game, more := turn(ctx,g.Player1(), g)
+	game, more := turn(ctx, g.Player1(), g)
 	if !more {
 		return game, No, nil
 	}
@@ -37,7 +37,7 @@ func Loop(ctx Ctx,g CliGame) (CliGame, again, error) {
 
 // Private
 
-func turn(ctx Ctx,plr Player, game CliGame) (CliGame, again) {
+func turn(ctx Ctx, plr Player, game CliGame) (CliGame, again) {
 	trn := takeTurn(ctx, plr, game)
 	if trn == NoTurn() {
 		return game, No
@@ -63,7 +63,7 @@ func takeTurn(ctx Ctx, plr Player, g CliGame) Turn {
 }
 
 func readTurn(ctx Ctx, plr Player, game CliGame) (Turn, again) {
-	read := App.Reader() // checked on top
+	read := GetReader() // checked on top
 	key := CliKey(read())
 	turn := NewTurn(plr.Mark(), Key(key))
 	if !key.IsIn(game.Keys()) {

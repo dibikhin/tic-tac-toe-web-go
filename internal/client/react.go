@@ -15,7 +15,10 @@ func RunStatusLoop(ctx Ctx) error {
 	for {
 		args := &api.CommandRequest{Action: api.Actions_GET_STATUS}
 		log.Printf("Calling remote: %v...", args)
-		resp, err := Client.RunCommand(ctx, args)
+		resp, err := Client().RunCommand(ctx, args)
+		if resp == nil {
+			return nilerr
+		}
 		if err != nil {
 			return err
 		}
@@ -30,9 +33,9 @@ func RunStatusLoop(ctx Ctx) error {
 
 func react(ctx Ctx, sr *api.StatusReply) error {
 	switch sr.State {
-	case api.State_UNDEFINED:
+	case api.Is_UNDEFINED:
 		return errors.New("default state found: " + sr.State.String())
-	case api.State_WAITING:
+	case api.Is_WAITING:
 		switch sr.For {
 		case api.For_NOTHING:
 			return errors.New("default 'for' found: " + sr.For.String())
@@ -47,7 +50,7 @@ func react(ctx Ctx, sr *api.StatusReply) error {
 		default:
 			return errors.New("unknown 'for': " + sr.For.String())
 		}
-	case api.State_GAME_OVER:
+	case api.Is_GAME_OVER:
 		switch sr.Outcome {
 		case api.Outcome_DEFAULT:
 			return errors.New("default outcome found: " + sr.Outcome.String())
@@ -77,7 +80,7 @@ func react(ctx Ctx, sr *api.StatusReply) error {
 // log.Printf("Calling remote: Run()...")
 // cr := &api.CommandRequest{Action: api.Actions_START_GAME}
 // log.Printf("Run() args: %v", cr)
-// return Client.RunCommand(ctx, cr)
+// return Client().RunCommand(ctx, cr)
 
 // case "do auth":
 // 	fmt.Println("Are you Player1 or Player2?")
