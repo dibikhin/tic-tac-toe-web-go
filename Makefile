@@ -22,7 +22,8 @@ build:
 	@echo "Done."
 
 fmt format:
-	go fmt ./...
+	# go fmt ./...
+	goimports -l -w .
 	@echo "Done."
 
 lint:

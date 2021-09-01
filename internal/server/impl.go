@@ -25,7 +25,7 @@ func (s *server) RunCommand(ctx Ctx, cr *api.CommandRequest) (*api.StatusReply, 
 	// default:
 	sr := &api.StatusReply{
 		State: api.Is_WAITING,
-		For:   api.For_AUTH,
+		For:   api.For_MARK,
 		Actions: []api.Actions{
 			api.Actions_GET_STATUS,
 		},

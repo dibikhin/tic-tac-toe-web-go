@@ -1,38 +1,39 @@
 package main
 
 import (
-	"context"
 	"log"
+	"sync"
 
 	. "tictactoeweb/internal"
 	. "tictactoeweb/internal/client"
 )
 
 func main() {
-	_, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	OnExit(cancel, SayBye)
+	log.Print("App: starting...")
 
-	log.Print("Starting Client()...")
-
+	log.Print("App: setting up input reader...")
 	err := SetupReader()
 	if err != nil {
 		log.Fatalf("error: start reader failed: %v", err)
 	}
+	wg := sync.WaitGroup{}
 
-	log.Print("Connecting to server...")
-
+	log.Print("Client: connecting to server...")
 	ctx, teardown, err := StartClient()
+
+	done := WrapTeardown(teardown, wg.Done)
+	wg.Add(1)
+	OnExit(done)
+
 	if err != nil {
+		done()
 		log.Fatalf("error: start client failed: %v", err)
 	}
-	defer log.Print("Client exited.")
-	defer teardown()
-
-	log.Print("Running status loop...")
-
+	log.Print("App: running status loop...")
 	err = RunStatusLoop(ctx)
 	if err != nil {
+		done()
 		log.Fatalf("error: status loop broke: %v", err)
 	}
+	wg.Wait()
 }

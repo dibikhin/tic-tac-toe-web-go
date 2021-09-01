@@ -14,16 +14,18 @@ import (
 func RunStatusLoop(ctx Ctx) error {
 	for {
 		args := &api.CommandRequest{Action: api.Actions_GET_STATUS}
-		log.Printf("Calling remote: %v...", args)
+		log.Printf("Client: calling remote. args: %v...", args)
 		resp, err := Client().RunCommand(ctx, args)
-		if resp == nil {
-			return nilerr
-		}
+		// TODO:
+		// if resp == nil {
+		// 	return nilerr
+		// }
 		if err != nil {
 			return err
 		}
-		log.Printf("Remote call: Done. args: %T{%v}, res: %v", args, args, resp)
+		log.Printf("Client: remote call done. args: %T{%v}, res: %v", args, args, resp)
 
+		log.Print("Game: reacting on state...")
 		err = react(ctx, resp)
 		if err != nil {
 			return err

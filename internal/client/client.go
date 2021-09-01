@@ -24,9 +24,9 @@ func Client() api.GameClient {
 
 func SetClient(c api.GameClient) error {
 	// TODO: WARN nil check interface
-	if c == nil {
-		return err
-	}
+	// if c == nil {
+	// 	return err
+	// }
 	_client = c
 	return nil
 }

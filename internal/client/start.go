@@ -14,26 +14,6 @@ import (
 	. "tictactoeweb/internal"
 )
 
-func StartClient() (Ctx, func(), error) {
-	conn, err := grpc.Dial(cfg.Address, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(time.Second*8))
-	log.Print("Dialed address")
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	teardown := func() {
-		conn.Close()
-		cancel()
-		log.Print("Disconnected client")
-	}
-	if err != nil {
-		return nil, teardown, fmt.Errorf("did not connect: %w", err)
-	}
-	SetClient(api.NewGameClient(conn)) // Global
-
-	log.Print("Connected client")
-
-	return ctx, teardown, nil
-}
-
 func SetupReader(rs ...Reader) error {
 	alt, err := ExtractReader(rs...)
 	if err != nil {
@@ -43,4 +23,29 @@ func SetupReader(rs ...Reader) error {
 		return SetReader(alt)
 	}
 	return SetReader(DefaultReader)
+}
+
+func StartClient() (Ctx, func(), error) {
+	log.Print("gRPC: dialing address...")
+	conn, err := grpc.Dial(cfg.Address, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(time.Second*8))
+	log.Print("gRPC: dialed address.")
+
+	// NOTE: should teardown on errors or ctrl-c while `grpc.Dial()`
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	teardown := func() {
+		if conn != nil {
+			log.Print("Client: disconnecting...")
+			conn.Close()
+			log.Print("Client: disconnected.")
+		}
+		cancel()
+	}
+	if err != nil {
+		return nil, teardown, fmt.Errorf("StartClient(): did not connect: %w", err)
+	}
+	SetClient(api.NewGameClient(conn)) // Global
+
+	log.Print("Client: connected.")
+	return ctx, teardown, nil
 }

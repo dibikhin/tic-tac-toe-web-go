@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
 )
 
@@ -16,10 +15,21 @@ type Ctx = context.Context
 
 // App
 
-func OnExit(wg sync.WaitGroup, done func()) {
+func OnExit(done func()) {
 	chos := make(chan os.Signal, 1)
 	signal.Notify(chos, os.Interrupt, syscall.SIGTERM)
-	go exit(wg, done, chos)
+	go handleExit(done, chos)
+}
+
+func WrapTeardown(cancel context.CancelFunc, done func()) func() {
+	return func() {
+		log.Print("Context: cancelling...")
+		cancel()
+		log.Print("Context: cancelled.")
+
+		SayBye()
+		done()
+	}
 }
 
 func SayBye() {
@@ -28,11 +38,10 @@ func SayBye() {
 	fmt.Println()
 }
 
-func exit(wg sync.WaitGroup, f func(), c chan os.Signal) {
+func handleExit(exit func(), c chan os.Signal) {
 	s := <-c
 	log.Printf("App: got signal: %v. Exiting...", s)
-	f()
-	// log.Print("App: exited.")
-	wg.Done()
+	exit()
+	log.Print("App: exited.")
 	os.Exit(0)
 }

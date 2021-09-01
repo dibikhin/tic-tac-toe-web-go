@@ -11,22 +11,19 @@ import (
 
 // clear && go run ./cmd/server/main.go
 func main() {
-	log.Print("Server: starting...")
+	log.Print("App: starting...")
+
 	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	wg := sync.WaitGroup{}
-	teardown := func() {
-		log.Print("Context: cancelling...")
-		cancel()
-		log.Print("Context: cancelled.")
-
-		SayBye()
-	}
-	err := Start(wg, teardown)
+	wg.Add(1)
+	teardown := WrapTeardown(cancel, wg.Done)
+	err := Serve(teardown)
 	if err != nil {
+		wg.Add(1)
 		teardown()
-		log.Fatalf("Server: failed to start: %v", err)
+		log.Fatalf("App: failed to start: %v", err)
 	}
 	wg.Wait()
 }
