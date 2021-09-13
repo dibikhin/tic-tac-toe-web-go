@@ -11,7 +11,7 @@ import (
 // It's a default bootstrapper.
 // Other public functions are exposed for testing purposes.
 func Play(ctx Ctx) error {
-	game, more, err := CliGame{}, Yes, error(nil)
+	game, more, err := NewCliGame(), Yes, error(nil)
 	for more {
 		game, more, err = Loop(ctx, game)
 		if err != nil {

@@ -44,5 +44,5 @@ func (p Player) Num() int32 {
 // Checks
 
 func (p Player) IsEmpty() Empty {
-	return p == Player{}
+	return p == Player{} || p == NoPlayer()
 }

@@ -30,15 +30,15 @@ const (
 
 // Factorys
 
-// func BlankBoard() ServBoard {
-// 	return NewServBoard{
-// 		grid: grid{
-// 			{__, __, __},
-// 			{__, __, __},
-// 			{__, __, __},
-// 		},
-// 	}
-// }
+func BlankBoard() ServBoard {
+	return ServBoard{
+		grid: grid{
+			{__, __, __},
+			{__, __, __},
+			{__, __, __},
+		},
+	}
+}
 
 // func DeadBoard() ServBoard {
 // 	return NewServBoard{
@@ -72,6 +72,10 @@ func (g grid) String() string {
 // 	return b
 // }
 
+func (b ServBoard) Grid() grid {
+	return b.grid
+}
+
 // Checks, Validation
 
 func (b ServBoard) IsFilled(c Cell) bool {
@@ -95,21 +99,4 @@ func (g grid) IsEmpty() Empty {
 		len(g[0]) != Size ||
 		len(g[1]) != Size ||
 		len(g[2]) != Size
-}
-
-func (b ServBoard) IsWinner(m Mark) bool {
-	grd := b.grid
-	// Horizontal
-	h0 := grd[0][0] == m && grd[0][1] == m && grd[0][2] == m // 1 1 1 -> 7
-	h1 := grd[1][0] == m && grd[1][1] == m && grd[1][2] == m // - - -
-	h2 := grd[2][0] == m && grd[2][1] == m && grd[2][2] == m // - - -
-	// Vertical
-	v0 := grd[0][0] == m && grd[1][0] == m && grd[2][0] == m
-	v1 := grd[0][1] == m && grd[1][1] == m && grd[2][1] == m
-	v2 := grd[0][2] == m && grd[1][2] == m && grd[2][2] == m
-	// Diagonal
-	d0 := grd[0][0] == m && grd[1][1] == m && grd[2][2] == m
-	d1 := grd[0][2] == m && grd[1][1] == m && grd[2][0] == m
-
-	return h0 || h1 || h2 || v0 || v1 || v2 || d0 || d1
 }

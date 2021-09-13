@@ -1,5 +1,7 @@
 package internal
 
+// Anti-pattern :)
+
 // Bools
 
 type Empty = bool

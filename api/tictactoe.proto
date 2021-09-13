@@ -15,6 +15,8 @@ message CommandRequest {
 
 message QueryRequest {
   Querys query = 1;
+  string boardId = 2;
+  string key = 3;
 }
 
 /*
@@ -37,6 +39,8 @@ message StatusReply {
   Outcome outcome = 8; // optional
 
   bool isFilled = 9; // optional
+
+  repeated Querys querys = 16;
 }
 
 message Player {
@@ -47,6 +51,7 @@ message Player {
 enum Querys {
   EMPTY = 0;
   IS_FILLED = 1;
+  GET_STATUS = 2;
 }
 
 // State
@@ -66,7 +71,6 @@ enum For {
 
 enum Actions {
   NOOP = 0; // safe default
-  GET_STATUS = 1;
   START_GAME = 2;
   LOG_IN = 3;
   SET_MARK = 4;

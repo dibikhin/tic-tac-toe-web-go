@@ -6,9 +6,10 @@ import (
 	. "tictactoeweb/internal"
 )
 
-// Globals
+// App
 
-// Private
+// Globals, Private
+// TODO: wrap with struct
 var (
 	_reader Reader
 	_client api.GameClient
@@ -16,13 +17,24 @@ var (
 
 // Public
 
+func SetupReader(rs ...Reader) error {
+	alt, err := ExtractReader(rs...)
+	if err != nil {
+		return err
+	}
+	if alt != nil {
+		return SetReader(alt)
+	}
+	return SetReader(DefaultReader)
+}
+
 // Props
 
-func Client() api.GameClient {
+func GameClient() api.GameClient {
 	return _client
 }
 
-func SetClient(c api.GameClient) error {
+func SetGameClient(c api.GameClient) error {
 	// TODO: WARN nil check interface
 	// if c == nil {
 	// 	return err
@@ -31,8 +43,7 @@ func SetClient(c api.GameClient) error {
 	return nil
 }
 
-// Reader
-// to prevent a name collision
+// to prevent the name collision
 func GetReader() Reader {
 	return _reader
 }

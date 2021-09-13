@@ -13,9 +13,9 @@ import (
 
 func RunStatusLoop(ctx Ctx) error {
 	for {
-		args := &api.CommandRequest{Action: api.Actions_GET_STATUS}
+		args := &api.QueryRequest{Query: api.Querys_GET_STATUS}
 		log.Printf("Client: calling remote. args: %v...", args)
-		resp, err := Client().RunCommand(ctx, args)
+		resp, err := GameClient().RunQuery(ctx, args)
 		// TODO:
 		// if resp == nil {
 		// 	return nilerr
@@ -34,44 +34,53 @@ func RunStatusLoop(ctx Ctx) error {
 }
 
 func react(ctx Ctx, sr *api.StatusReply) error {
+	fmt.Printf("%v %v \n", sr.State, sr.For)
+
 	switch sr.State {
 	case api.Is_UNDEFINED:
 		return errors.New("default state found: " + sr.State.String())
 	case api.Is_WAITING:
-		switch sr.For {
-		case api.For_NOTHING:
-			return errors.New("default 'for' found: " + sr.For.String())
-		case api.For_MARK:
-			fmt.Printf("%v %v \n", sr.State, sr.For)
-
-			SetupMarks(ctx)
-		case api.For_TURN:
-			fmt.Printf("%v %v \n", sr.State, sr.For)
-
-			Play(ctx)
-		default:
-			return errors.New("unknown 'for': " + sr.For.String())
-		}
+		return play(ctx, sr)
 	case api.Is_GAME_OVER:
-		switch sr.Outcome {
-		case api.Outcome_DEFAULT:
-			return errors.New("default outcome found: " + sr.Outcome.String())
-		case api.Outcome_DRAW:
-			fmt.Printf("%v %v \n", sr.Outcome, sr.Player)
-
-			Domain.PrintDraw()
-		case api.Outcome_WON:
-			fmt.Printf("%v %v \n", sr.Outcome, sr.Player)
-
-			p := game.NewPlayer(sr.Player.Mark, int32(sr.Player.Num))
-			Domain.PrintWinner(p)
-		default:
-			return errors.New("unknown outcome: " + sr.Outcome.String())
-		}
+		fmt.Printf("%v %v \n", sr.Outcome, sr.Player)
+		return gameOver(sr)
 	default:
 		return errors.New("unknown state: " + sr.State.String())
 	}
-	return nil
+}
+
+func play(ctx Ctx, sr *api.StatusReply) error {
+	switch sr.For {
+	case api.For_NOTHING:
+		return errors.New("default 'for' found: " + sr.For.String())
+	case api.For_MARK:
+		_, err := SetupMarks(ctx)
+		return err
+	case api.For_TURN:
+		return Play(ctx, sr) // TODO: parse players
+	default:
+		return errors.New("unknown 'for': " + sr.For.String())
+	}
+}
+
+func gameOver(sr *api.StatusReply) error {
+	switch sr.Outcome {
+	case api.Outcome_DEFAULT:
+		return errors.New("default outcome found: " + sr.Outcome.String())
+	case api.Outcome_DRAW:
+		Domain.PrintDraw()
+		return nil
+	case api.Outcome_WON:
+		// TODO:
+		// if sr.Player == nil {
+		// 	return nilerr
+		// }
+		p := game.NewPlayer(sr.Player.Mark, int32(sr.Player.Num))
+		Domain.PrintWinner(p)
+		return nil
+	default:
+		return errors.New("unknown outcome: " + sr.Outcome.String())
+	}
 }
 
 // fmt.Println(sr.Message)

@@ -6,7 +6,7 @@ type (
 		key  Key
 		mark Mark
 	}
-	Key string // "1".."9" | "No"
+	Key = string // "1".."9" | "No"
 )
 
 // Public

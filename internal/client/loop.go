@@ -46,7 +46,6 @@ func turn(ctx Ctx, plr Player, game CliGame) (CliGame, again) {
 	if err != nil {
 		return gm, No
 	}
-
 	return gm, Yes
 }
 
@@ -64,13 +63,8 @@ func takeTurn(ctx Ctx, plr Player, g CliGame) Turn {
 
 func readTurn(ctx Ctx, plr Player, game CliGame) (Turn, again) {
 	read := GetReader() // checked on top
-	key := CliKey(read())
-	turn := NewTurn(plr.Mark(), Key(key))
-	if !key.IsIn(game.Keys()) {
-		Domain.PrintBoard(game.Board())
-		Domain.Prompt(plr)
-		return turn, Yes
-	}
+	key := read()
+	turn := NewTurn(plr.Mark(), key)
 	isFilled, err := Domain.Boards.IsFilled(ctx, game.Board().Id(), key)
 	if err != nil {
 		return turn, Yes

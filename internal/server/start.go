@@ -9,24 +9,9 @@ import (
 	api "tictactoeweb/api"
 
 	cfg "tictactoeweb/configs"
-
-	. "tictactoeweb/internal"
 )
 
-func Serve(teardown func()) error {
-	lis, srv, err := prepareServer()
-	if err != nil {
-		return err
-	}
-	defer stopServer(srv, teardown)
-	// because have to stop server here
-	OnExit(func() {
-		stopServer(srv, teardown)
-	})
-	return startServer(srv, lis)
-}
-
-func prepareServer() (net.Listener, *grpc.Server, error) {
+func Prepare() (net.Listener, *grpc.Server, error) {
 	lis, err := net.Listen("tcp", cfg.Port)
 	if err != nil {
 		return nil, nil, err
@@ -38,17 +23,8 @@ func prepareServer() (net.Listener, *grpc.Server, error) {
 	return lis, s, nil
 }
 
-func stopServer(s *grpc.Server, teardown func()) {
-	log.Print("gRPC: stopping...")
-	s.GracefulStop()
-	log.Print("gRPC: stopped.")
-
-	log.Print("App: tearing down...")
-	teardown()
-	log.Print("App: teared down.")
-}
-
-func startServer(srv *grpc.Server, lis net.Listener) error {
+// NOTE: srv == nil will crash on start anyway
+func Start(srv *grpc.Server, lis net.Listener) error {
 	api.RegisterGameServer(srv, &server{})
 
 	log.Print("gRPC: serving...")
@@ -56,4 +32,18 @@ func startServer(srv *grpc.Server, lis net.Listener) error {
 		return err
 	}
 	return nil
+}
+
+func Stop(s *grpc.Server, teardown func()) {
+	log.Print("gRPC: stopping...")
+	if s == nil {
+		log.Print("gRPC: server == nil, ignored")
+	} else {
+		log.Print("gRPC: stopping...")
+		s.GracefulStop()
+		log.Print("gRPC: stopped.")
+	}
+	log.Print("App: tearing down...")
+	teardown()
+	log.Print("App: teared down.")
 }

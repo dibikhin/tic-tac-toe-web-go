@@ -15,10 +15,10 @@ type Game struct {
 	player2 Player
 }
 
-func NewGame(id Id, bs ...Board) Game {
-	if len(bs) == 1 {
+func NewGame(id Id, gs ...string) Game {
+	if len(gs) == 1 {
 		return Game{
-			id, bs[0], NoPlayer(), NoPlayer(),
+			id, NewBoard(NewId(), gs[0]), NoPlayer(), NoPlayer(),
 		}
 	}
 	return Game{

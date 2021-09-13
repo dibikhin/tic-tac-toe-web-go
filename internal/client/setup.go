@@ -42,7 +42,7 @@ func SetupMarks(ctx Ctx) (CliGame, error) {
 // Private
 
 func chooseMarks(ctx Ctx, game CliGame) (CliGame, error) {
-	mark, err := Domain.Games.ReadMark(game)
+	mark, err := Domain.Games.ReadMark()
 	if err != nil {
 		return game, err
 	}

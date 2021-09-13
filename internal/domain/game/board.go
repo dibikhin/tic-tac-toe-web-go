@@ -16,7 +16,7 @@ type (
 	Mark = string // "X" or "O" (or "No")
 )
 
-type grid string
+type grid = string
 
 // Constants, Public
 const (
@@ -59,10 +59,6 @@ func (b Board) Grid() grid {
 
 // Checks
 
-func (g grid) IsEmpty() Empty {
-	return g == ""
-}
-
 func (b Board) IsEmpty() Empty {
-	return b == Board{} || b.grid.IsEmpty()
+	return b == Board{} || b.grid != ""
 }

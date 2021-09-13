@@ -10,12 +10,8 @@ type CliGame struct {
 	Game
 }
 
-func NewCliGame(id Id) CliGame {
-	return CliGame{Game: NewGame(id)}
-}
-
-// Props:
-
-func (g CliGame) Keys() []CliKey {
-	return []CliKey{}
+func NewCliGame(id Id, gs ...string) CliGame {
+	return CliGame{
+		NewGame(id, gs...),
+	}
 }

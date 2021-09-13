@@ -9,11 +9,11 @@ import (
 	"syscall"
 )
 
-// Other
+// CLI
+
+// Puclic
 
 type Ctx = context.Context
-
-// App
 
 func OnExit(done func()) {
 	chos := make(chan os.Signal, 1)
@@ -37,6 +37,8 @@ func SayBye() {
 	fmt.Println("Bye!")
 	fmt.Println()
 }
+
+// Private
 
 func handleExit(exit func(), c chan os.Signal) {
 	s := <-c
