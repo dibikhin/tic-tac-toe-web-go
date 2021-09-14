@@ -40,15 +40,15 @@ func BlankBoard() ServBoard {
 	}
 }
 
-// func DeadBoard() ServBoard {
-// 	return NewServBoard{
-// 		grid: grid{
-// 			{X_x, X_x, X_x},
-// 			{X_x, X_x, X_x},
-// 			{X_x, X_x, X_x},
-// 		},
-// 	}
-// }
+func DeadBoard() ServBoard {
+	return ServBoard{
+		grid: grid{
+			{X_x, X_x, X_x},
+			{X_x, X_x, X_x},
+			{X_x, X_x, X_x},
+		},
+	}
+}
 
 // Other
 

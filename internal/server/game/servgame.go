@@ -8,6 +8,7 @@ type (
 	ServGame struct {
 		Game
 		board ServBoard
+		state State
 	}
 	State = string
 )
@@ -23,10 +24,28 @@ var (
 
 // Public
 
+func BlankGame() ServGame {
+	return ServGame{
+		Game:  NewGame(Gap),
+		board: BlankBoard(),
+	}
+}
+
+func DeadGame() ServGame {
+	return ServGame{
+		Game:  NewGame(X_x),
+		board: DeadBoard(),
+	}
+}
+
 // Props
 
 func (g ServGame) Board() ServBoard {
 	return g.board
+}
+
+func (g ServGame) State() State {
+	return g.state
 }
 
 // // if brd.IsWinner(plr.Mark()) {

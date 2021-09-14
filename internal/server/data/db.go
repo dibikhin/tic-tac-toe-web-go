@@ -16,8 +16,11 @@ type (
 
 // NOTE: Simplified injection. It's global anyway
 var _db = &_DB{
+	Games: _GamesDB{
+		"123": BlankGame(),
+	},
 	Boards: _BoardsDB{
-		"123": BlankBoard(),
+		"567": BlankBoard(),
 	},
 }
 

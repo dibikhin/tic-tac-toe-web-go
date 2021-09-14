@@ -1,6 +1,10 @@
 package internal
 
+import "context"
+
 // Anti-pattern :)
+
+type Ctx = context.Context
 
 // Bools
 

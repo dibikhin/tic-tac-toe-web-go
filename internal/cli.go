@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"os"
@@ -13,22 +12,18 @@ import (
 
 // Puclic
 
-type Ctx = context.Context
-
-func OnExit(done func()) {
+func OnExit(exit func()) {
 	chos := make(chan os.Signal, 1)
 	signal.Notify(chos, os.Interrupt, syscall.SIGTERM)
-	go handleExit(done, chos)
+	go doExit(exit, chos)
 }
 
-func WrapTeardown(cancel context.CancelFunc, done func()) func() {
+func WrapCancel(cancel func()) func() {
 	return func() {
 		log.Print("Context: cancelling...")
 		cancel()
 		log.Print("Context: cancelled.")
-
 		SayBye()
-		done()
 	}
 }
 
@@ -40,10 +35,13 @@ func SayBye() {
 
 // Private
 
-func handleExit(exit func(), c chan os.Signal) {
+func doExit(exit func(), c chan os.Signal) {
 	s := <-c
 	log.Printf("App: got signal: %v. Exiting...", s)
+	log.Print("App: tearing down...")
 	exit()
+	log.Print("App: teared down.")
+
 	log.Print("App: exited.")
 	os.Exit(0)
 }

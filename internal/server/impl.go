@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"log"
 
 	api "tictactoeweb/api"
@@ -19,20 +20,36 @@ func (s *server) RunCommand(ctx Ctx, cr *api.CommandRequest) (*api.StatusReply, 
 	log.Printf("Recieved command: args: %v", cr)
 
 	switch cr.Action {
-	// case api.Actions_NOOP:
-	// 	return errors.New("default state found: " + sr.State.String())
+	case api.Actions_NOOP:
+		err := errors.New("default action found: " + cr.Action.String())
+		rep := &api.StatusReply{
+			State: api.Is_UNDEFINED,
+		}
+		log.Print(rep)
+		return rep, err
 	case api.Actions_SET_MARK:
+		return nil, nil
+	case api.Actions_DO_TURN:
+		return nil, nil
+	default:
+		err := errors.New("unknown action found: " + cr.Action.String())
+		rep := &api.StatusReply{
+			State: api.Is_UNDEFINED,
+		}
+		log.Print(rep)
+		return rep, err
+		// state, err := Domain.Games.GetState(cr.GameId)
+		// if err != nil {
+		// 	return nil, err
+		// }
+		// sr := &api.StatusReply{
+		// 	State: api.Is_WAITING,
+		// 	For:   api.For_MARK,
+		// 	// Actions: []api.Actions{
+		// 	// 	api.Actions_GET_STATUS,
+		// 	// },
+		// }
 	}
-	// default:
-	sr := &api.StatusReply{
-		State: api.Is_WAITING,
-		For:   api.For_MARK,
-		// Actions: []api.Actions{
-		// 	api.Actions_GET_STATUS,
-		// },
-	}
-	log.Print(sr)
-	return sr, nil
 }
 
 func (s *server) RunQuery(ctx Ctx, cr *api.QueryRequest) (*api.StatusReply, error) {

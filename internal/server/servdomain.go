@@ -28,6 +28,14 @@ var Domain = _Domain{} // to call like `Domain.Games.ArrangePlayers(m)`
 
 // Querys
 
+func (_Games) GetState(gameId Id) (State, error) {
+	g, err := Repos.Games.GetById(gameId)
+	if err != nil {
+		return UNDEFINED, err
+	}
+	return g.State(), nil
+}
+
 func (_Boards) IsFilled(boardId Id, key ServKey) (bool, error) {
 	b, err := Repos.Boards.GetById(boardId)
 	if err != nil {
