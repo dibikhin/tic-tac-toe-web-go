@@ -79,7 +79,7 @@ func (b ServBoard) Grid() grid {
 // Checks, Validation
 
 func (b ServBoard) IsFilled(c Cell) bool {
-	// WARN: possible out of range
+	// TODO: WARN: possible out of range
 	return b.grid[c.Row()][c.Col()] != Gap
 }
 

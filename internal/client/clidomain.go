@@ -51,13 +51,13 @@ func (_Games) ReadMark() (Mark, error) {
 
 func (_Games) ArrangePlayers(ctx Ctx, m Mark) (CliGame, error) {
 	cr := &api.CommandRequest{Action: api.Actions_SET_MARK}
-	resp, err := GameClient().RunCommand(ctx, cr)
+	resp, err := Api().RunCommand(ctx, cr)
 	return NewCliGame(resp.Board.Id, resp.Board.Grid), err // TODO: parse players
 }
 
 func (_Boards) Turn(ctx Ctx, boardId Id, trn Turn) (CliGame, error) {
 	cr := &api.CommandRequest{Action: api.Actions_DO_TURN}
-	resp, err := GameClient().RunCommand(ctx, cr)
+	resp, err := Api().RunCommand(ctx, cr)
 	return NewCliGame(resp.Board.Id, resp.Board.Grid), err
 }
 
@@ -68,7 +68,7 @@ func (_Boards) IsFilled(ctx Ctx, boardId Id, key Key) (bool, error) {
 		BoardId: boardId,
 		Key:     key,
 	}
-	resp, err := GameClient().RunQuery(ctx, cr)
+	resp, err := Api().RunQuery(ctx, cr)
 	return resp.IsFilled, err
 }
 

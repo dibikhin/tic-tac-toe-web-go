@@ -14,6 +14,7 @@ import (
 func main() {
 	log.Print("App: starting...")
 
+	// Reader
 	log.Print("App: setting up input reader...")
 	err := client.SetupReader()
 	if err != nil {
@@ -21,37 +22,36 @@ func main() {
 	}
 	log.Print("App: input reader ok.")
 
-	var wg sync.WaitGroup
-	ctx, cncl := context.WithCancel(context.Background())
-	cancel := func() {
-		wg.Add(1)
-		cncl()
-		wg.Done()
-	}
+	// Connect
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	connectWithTeardown(cancel, ctx)
+	var wg sync.WaitGroup
+	ConnectWithTeardown(cancel, ctx, &wg)
 	wg.Wait()
 }
 
-func connectWithTeardown(cancel func(), ctx context.Context) {
+func ConnectWithTeardown(cancel func(), ctx context.Context, wg *sync.WaitGroup) {
 	teardown := WrapCancel(cancel)
+	err := Connect(teardown, ctx, wg)
+	if err != nil {
+		log.Fatalf("App: failed to connect: %v", err)
+	}
+}
 
-	log.Print("Client: connecting...")
+func Connect(teardown func(), ctx context.Context, wg *sync.WaitGroup) error {
 	conn, err := client.Start()
 	if err != nil {
-		log.Fatalf("Client: failed to start: %v", err)
+		return err
 	}
 	// Global
-	client.SetGameClient(api.NewGameClient(conn))
+	client.SetApi(api.NewGameClient(conn))
 
 	OnExit(func() {
-		client.Stop(conn, teardown)
+		wg.Add(1)
+		client.Stop(conn)
+		teardown()
+		wg.Done()
 	})
-
-	log.Print("App: running status loop...")
-	err = client.RunStatusLoop(ctx)
-	if err != nil {
-		log.Fatalf("App: status loop broke: %v", err)
-	}
+	return client.RunStatusLoop(ctx)
 }

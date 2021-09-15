@@ -9,11 +9,12 @@ import (
 // App
 
 // Globals, Private
-// TODO: wrap with struct
-var (
-	_reader Reader
-	_client api.GameClient
-)
+type _App struct {
+	reader Reader
+	client api.GameClient
+}
+
+var _app *_App
 
 // Public
 
@@ -30,28 +31,28 @@ func SetupReader(rs ...Reader) error {
 
 // Props
 
-func GameClient() api.GameClient {
-	return _client
+func Api() api.GameClient {
+	return _app.client
 }
 
-func SetGameClient(c api.GameClient) error {
+func SetApi(c api.GameClient) error {
 	// TODO: WARN nil check interface
 	// if c == nil {
 	// 	return err
 	// }
-	_client = c
+	_app.client = c
 	return nil
 }
 
 // to prevent the name collision
 func GetReader() Reader {
-	return _reader
+	return _app.reader
 }
 
 func SetReader(rdr Reader) error {
 	if rdr == nil {
 		return ErrNilReader()
 	}
-	_reader = rdr
+	_app.reader = rdr
 	return nil
 }

@@ -16,7 +16,7 @@ type (
 	Mark = string // "X" or "O" (or "No")
 )
 
-type grid = string
+type grid string
 
 // Constants, Public
 const (

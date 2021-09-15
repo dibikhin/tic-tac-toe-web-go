@@ -11,17 +11,23 @@ import (
 	. "tictactoeweb/internal"
 )
 
+// Constants
+
+func ErrNilArgument() error {
+	return errors.New("status loop: cannot react on nil argument")
+}
+
 func RunStatusLoop(ctx Ctx) error {
+	log.Print("Client: running status loop...")
 	for {
 		args := &api.QueryRequest{Query: api.Querys_GET_STATUS}
 		log.Printf("Client: calling remote. args: %v...", args)
-		resp, err := GameClient().RunQuery(ctx, args)
-		// TODO:
-		// if resp == nil {
-		// 	return nilerr
-		// }
+		resp, err := Api().RunQuery(ctx, args)
 		if err != nil {
 			return err
+		}
+		if resp == nil {
+			return ErrNilArgument()
 		}
 		log.Printf("Client: remote call done. args: %T{%v}, res: %v", args, args, resp)
 
@@ -57,7 +63,7 @@ func play(ctx Ctx, sr *api.StatusReply) error {
 		_, err := SetupMarks(ctx)
 		return err
 	case api.For_TURN:
-		return Play(ctx, sr) // TODO: parse players
+		return Play(ctx, *sr.Player(), *sr.Board()) // TODO: parse players
 	default:
 		return errors.New("unknown 'for': " + sr.For.String())
 	}
@@ -71,10 +77,9 @@ func gameOver(sr *api.StatusReply) error {
 		Domain.PrintDraw()
 		return nil
 	case api.Outcome_WON:
-		// TODO:
-		// if sr.Player == nil {
-		// 	return nilerr
-		// }
+		if sr.Player == nil {
+			return ErrNilArgument()
+		}
 		p := game.NewPlayer(sr.Player.Mark, int32(sr.Player.Num))
 		Domain.PrintWinner(p)
 		return nil
@@ -82,21 +87,3 @@ func gameOver(sr *api.StatusReply) error {
 		return errors.New("unknown outcome: " + sr.Outcome.String())
 	}
 }
-
-// fmt.Println(sr.Message)
-// fmt.Println(sr.Actions)
-
-// Play(ctx, sr)
-
-// log.Printf("Calling remote: Run()...")
-// cr := &api.CommandRequest{Action: api.Actions_START_GAME}
-// log.Printf("Run() args: %v", cr)
-// return Client().RunCommand(ctx, cr)
-
-// case "do auth":
-// 	fmt.Println("Are you Player1 or Player2?")
-// case "ask mark":
-// 	fmt.Println("Choose your mark: 'X' or 'O'")
-
-// case "ask turn":
-// 	fmt.Println("Player 123, choose turn from 1 to 9:")

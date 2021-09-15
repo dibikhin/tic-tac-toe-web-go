@@ -11,6 +11,7 @@ import (
 )
 
 func Start() (*grpc.ClientConn, error) {
+	log.Print("Client: connecting...")
 	log.Print("gRPC: dialing address...")
 	conn, err := grpc.Dial(cfg.Address, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(time.Second*8))
 
@@ -23,7 +24,7 @@ func Start() (*grpc.ClientConn, error) {
 	return conn, nil
 }
 
-func Stop(c *grpc.ClientConn, teardown func()) {
+func Stop(c *grpc.ClientConn) {
 	if c == nil {
 		log.Print("Client: connection == nil, ignored")
 	} else {
@@ -31,5 +32,4 @@ func Stop(c *grpc.ClientConn, teardown func()) {
 		c.Close()
 		log.Print("Client: disconnected.")
 	}
-	teardown()
 }

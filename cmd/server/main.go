@@ -13,9 +13,10 @@ import (
 func main() {
 	log.Print("App: starting...")
 
-	var wg sync.WaitGroup
 	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	var wg sync.WaitGroup
 	ServeWithTeardown(cancel, &wg)
 	wg.Wait()
 }
@@ -24,7 +25,7 @@ func ServeWithTeardown(cancel func(), wg *sync.WaitGroup) {
 	teardown := WrapCancel(cancel)
 	err := Serve(teardown, wg)
 	if err != nil {
-		log.Fatalf("App: failed to start: %v", err)
+		log.Fatalf("App: failed to serve: %v", err)
 	}
 }
 

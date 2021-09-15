@@ -7,8 +7,6 @@ import (
 	. "tictactoeweb/internal/client/game"
 )
 
-var MakeDeadGame = Domain.Games.MakeDead
-
 // Constants
 func Logo() game.Board {
 	return game.NewBoard(
@@ -46,6 +44,5 @@ func chooseMarks(ctx Ctx, game CliGame) (CliGame, error) {
 	if err != nil {
 		return game, err
 	}
-	gm, err := Domain.Games.ArrangePlayers(ctx, mark)
-	return gm, err
+	return Domain.Games.ArrangePlayers(ctx, mark)
 }

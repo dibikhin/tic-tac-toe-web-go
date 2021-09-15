@@ -7,8 +7,8 @@ import (
 
 type (
 	_DB struct {
-		Boards _BoardsDB
-		Games  _GamesDB
+		boards _BoardsDB
+		games  _GamesDB
 	}
 	_BoardsDB map[Id]ServBoard
 	_GamesDB  map[Id]ServGame
@@ -16,14 +16,22 @@ type (
 
 // NOTE: Simplified injection. It's global anyway
 var _db = &_DB{
-	Games: _GamesDB{
+	games: _GamesDB{
 		"123": BlankGame(),
 	},
-	Boards: _BoardsDB{
+	boards: _BoardsDB{
 		"567": BlankBoard(),
 	},
 }
 
 func DB() *_DB {
 	return _db
+}
+
+func (db *_DB) Games() _GamesDB {
+	return db.games
+}
+
+func (db *_DB) Boards() _BoardsDB {
+	return db.boards
 }

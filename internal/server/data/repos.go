@@ -1,6 +1,7 @@
 package data
 
 import (
+	"fmt"
 	. "tictactoeweb/internal"
 	. "tictactoeweb/internal/server/game"
 )
@@ -18,20 +19,28 @@ type (
 
 // Globals
 
+// Constants
+
+func ErrNotFound(id Id) error {
+	return fmt.Errorf("Repo: cannot find by id: %w", id)
+}
+
+// Repos
+
 var Repos = _Repos{} // to call like `Repos.Games.GetById(id)`
 
-func (_Games) GetById(boardId Id) (ServGame, error) {
-	g, ok := DB().Games[boardId]
+func (_Games) GetById(id Id) (ServGame, error) {
+	g, ok := DB().Games()[id]
 	if !ok {
-		return DeadGame(), nil // TODO: errNotFound
+		return DeadGame(), ErrNotFound(id)
 	}
 	return g, nil
 }
 
-func (_Boards) GetById(boardId Id) (ServBoard, error) {
-	b, ok := DB().Boards[boardId]
+func (_Boards) GetById(id Id) (ServBoard, error) {
+	b, ok := DB().Boards()[id]
 	if !ok {
-		return DeadBoard(), nil // TODO: errNotFound
+		return DeadBoard(), ErrNotFound(id)
 	}
 	return b, nil
 }
