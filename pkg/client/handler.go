@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"tictactoe/pkg/api"
 	"time"
+
+	"tictactoe/pkg/api"
 )
 
 type GameService interface {
@@ -41,9 +42,12 @@ func RunGameLoop(s GameService) {
 		case api.GameStatus_DRAW:
 			fmt.Println("\nDraw")
 			s.StartGame(context.TODO(), playerName)
+		case api.GameStatus_SHUTDOWN_CLIENT:
+			fmt.Println("\nGot shutdown command from server")
+			return
 		default:
 			fmt.Printf("\nUnknown status: %v\n", game.status)
-			return
+			time.Sleep(time.Second)
 		}
 	}
 }

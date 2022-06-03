@@ -15,17 +15,6 @@ type game struct {
 	board string
 }
 
-type player struct {
-	mark mark
-	name string
-}
-
-type mark = string
-
-func (p *player) String() string {
-	return fmt.Sprintf("name: %v, mark: %v", p.name, p.mark)
-}
-
 func printGame(g game) {
 	fmt.Println("\nGame:")
 	fmt.Printf("\nPlayer 1: %v\n", g.player1.String())
