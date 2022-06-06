@@ -11,8 +11,7 @@ import (
 )
 
 func MakeServer() *grpc.Server {
-	var games []Game // In-mem storage
-	gr := NewGameRepo(games)
+	gr := NewGameRepo()
 	s := NewGameService(gr)
 	gs := grpc.NewServer()
 

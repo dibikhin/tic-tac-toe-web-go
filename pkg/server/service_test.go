@@ -11,8 +11,7 @@ import (
 )
 
 func Test_gameService(t *testing.T) {
-	var games []Game
-	repo := NewGameRepo(games)
+	repo := NewGameRepo()
 	s := NewGameService(repo)
 
 	t.Run("Game loop", func(t *testing.T) {
@@ -172,8 +171,7 @@ func Test_gameService_Turn(t *testing.T) {
 	}{
 		{"Player has no game", args{&api.TurnRequest{PlayerName: "name3", Turn: "1"}}, (*api.EmptyResponse)(nil), true},
 	}
-	var games []Game
-	s := NewGameService(NewGameRepo(games))
+	s := NewGameService(NewGameRepo())
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := s.Turn(context.TODO(), tt.args.req)
