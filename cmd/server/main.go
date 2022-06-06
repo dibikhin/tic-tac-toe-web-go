@@ -12,13 +12,13 @@ import (
 
 func main() {
 	log.Println("Starting...")
-	log.Println("Started")
 
 	cfg := app.LoadConfig()
 	lis := server.StartListen(cfg)
 	srv := server.MakeServer()
 
 	go server.RunServer(srv, lis)
+	log.Println("Started")
 
 	waitForExit()
 	srv.GracefulStop()

@@ -12,6 +12,8 @@ lint:
 test:
 	@echo "\nTesting client..."
 	go test -v -coverpkg=./pkg/client ./pkg/client
+	@echo "\nTesting server..."
+	go test -v -coverpkg=./pkg/server ./pkg/server
 
 server serv serve:
 	@echo "\nServer:"

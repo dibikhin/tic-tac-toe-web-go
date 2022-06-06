@@ -13,8 +13,8 @@ import (
 
 func main() {
 	log.Println("Starting...")
+
 	cfg := app.LoadConfig()
-	log.Println("Started")
 
 	teardown := func() {}
 	onExit := func() {
@@ -23,6 +23,7 @@ func main() {
 		fmt.Println("\nBye!")
 	}
 	go waitForExit(onExit)
+	log.Println("Started")
 
 	fmt.Print("\nWelcome to web 3x3 Tic-tac-toe for 2 friends :)\n\n")
 

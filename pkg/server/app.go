@@ -11,11 +11,10 @@ import (
 )
 
 func MakeServer() *grpc.Server {
-	// In-mem storage
-	var games []Game
+	var games []Game // In-mem storage
 	gr := NewGameRepo(games)
-	gs := grpc.NewServer()
 	s := NewGameService(gr)
+	gs := grpc.NewServer()
 
 	api.RegisterGameServer(gs, s)
 	return gs
