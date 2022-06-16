@@ -12,18 +12,18 @@ import (
 )
 
 func main() {
-	log.Println("Starting...")
+	log.Println("app: starting...")
 
 	cfg := app.LoadConfig()
 
 	teardown := func() {}
 	onExit := func() {
 		teardown()
-		log.Println("Stopped")
+		log.Println("app: stopped")
 		fmt.Println("\nBye!")
 	}
 	go waitForExit(onExit)
-	log.Println("Started")
+	log.Println("app: started")
 
 	fmt.Print("\nWelcome to web 3x3 Tic-tac-toe for 2 friends :)\n\n")
 
@@ -39,7 +39,7 @@ func waitForExit(onExit func()) {
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 	sig := <-c
 
-	log.Printf("Got signal: %v. Stopping...", sig)
+	log.Printf("app: got signal %v. Stopping...", sig)
 	onExit()
 	os.Exit(0)
 }

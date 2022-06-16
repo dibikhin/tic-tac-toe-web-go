@@ -10,14 +10,15 @@ import (
 )
 
 func Connect(cfg config.Config) (api.GameClient, func()) {
-	log.Println("Connecting...")
+	log.Println("client: connecting...")
 	conn := grpcDial(cfg)
 	client := api.NewGameClient(conn)
-	log.Println("Connected")
+	log.Println("client: connected")
 
 	return client, func() {
-		log.Println("Disconnected")
+		log.Println("client: disconnecting...")
 		conn.Close()
+		log.Println("client: disconnected")
 	}
 }
 
