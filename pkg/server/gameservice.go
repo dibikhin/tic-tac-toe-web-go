@@ -6,6 +6,9 @@ import (
 	"log"
 
 	"tictactoe/pkg/api"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type GameRepo interface {
@@ -27,7 +30,7 @@ func NewGameService(gs GameRepo) *gameService {
 }
 
 func (s *gameService) GetGame(ctx context.Context, req *api.GameRequest) (*api.GameResponse, error) {
-	log.Printf("srv: get game %v", req)
+	log.Printf("server: get game %v", req)
 	fmt.Printf("games: %+v\n", s.repo.GetAll())
 
 	g := s.repo.FindByPlayerName(req.PlayerName)
@@ -49,7 +52,7 @@ func newGameResp(g Game) *api.GameResponse {
 }
 
 func (s *gameService) StartGame(ctx context.Context, req *api.GameRequest) (*api.EmptyResponse, error) {
-	log.Printf("srv: start game %v", req)
+	log.Printf("server: start game %v", req)
 	fmt.Printf("games: %+v\n", s.repo.GetAll())
 
 	g := s.repo.FindByPlayerName(req.PlayerName)
@@ -77,12 +80,12 @@ func (s *gameService) StartGame(ctx context.Context, req *api.GameRequest) (*api
 }
 
 func (s *gameService) Turn(ctx context.Context, req *api.TurnRequest) (*api.EmptyResponse, error) {
-	log.Printf("srv: turn %v", req)
+	log.Printf("server: turn %v", req)
 	fmt.Printf("games: %+v\n", s.repo.GetAll())
 
 	g := s.repo.FindByPlayerName(req.PlayerName)
 	if g.id == "" {
-		return nil, fmt.Errorf("Player has no game")
+		return nil, status.Errorf(codes.FailedPrecondition, "Player has no game")
 	}
 	turn := key(req.Turn)
 	if !turn.isKey() {

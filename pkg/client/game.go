@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+
 	"tictactoe/pkg/api"
 )
 
@@ -16,6 +17,9 @@ type game struct {
 }
 
 func printGame(g game) {
+	if g.status == api.GameStatus_NOT_STARTED {
+		return
+	}
 	fmt.Println("\nGame:")
 	fmt.Printf("\nPlayer 1: %v\n", g.player1.String())
 	fmt.Printf("Player 2: %v\n", g.player2.String())

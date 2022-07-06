@@ -13,7 +13,7 @@ type Config struct {
 		Timeout time.Duration `env:"SERVER_TIMEOUT"`
 	}
 	Server struct {
-		Port string `env:"SERVER_PORT"`
+		Port uint16 `env:"SERVER_PORT"`
 	}
 }
 

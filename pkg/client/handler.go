@@ -23,32 +23,35 @@ func RunGameLoop(s GameService) {
 
 	for {
 		game := s.GetGame(context.TODO(), playerName)
-		if game.status == api.GameStatus_NOT_STARTED {
-			s.StartGame(context.TODO(), playerName)
-			continue
-		}
 		printGame(game)
 
-		switch game.status {
-		case api.GameStatus_WAITING_P2_JOIN:
-			startOrSleep(s, game, playerName)
-		case api.GameStatus_WAITING_P1_TO_TURN:
-			turnOrWaitPlayer1(s, game, playerName)
-		case api.GameStatus_WAITING_P2_TO_TURN:
-			turnOrWaitPlayer2(s, game, playerName)
-		case api.GameStatus_WON:
-			fmt.Printf("\nPlayer %v won!\n", game.playerWon.String())
-			s.StartGame(context.TODO(), playerName)
-		case api.GameStatus_DRAW:
-			fmt.Println("\nDraw")
-			s.StartGame(context.TODO(), playerName)
-		case api.GameStatus_SHUTDOWN_CLIENT:
+		if game.status == api.GameStatus_SHUTDOWN_CLIENT {
 			fmt.Println("\nGot shutdown command from server")
 			return
-		default:
-			fmt.Printf("\nUnknown status: %v\n", game.status)
-			time.Sleep(time.Second)
 		}
+		processStatus(s, game, playerName)
+	}
+}
+
+func processStatus(s GameService, game game, playerName string) {
+	switch game.status {
+	case api.GameStatus_NOT_STARTED:
+		s.StartGame(context.TODO(), playerName)
+	case api.GameStatus_WAITING_P2_JOIN:
+		startOrSleep(s, game, playerName)
+	case api.GameStatus_WAITING_P1_TO_TURN:
+		turnOrWaitPlayer1(s, game, playerName)
+	case api.GameStatus_WAITING_P2_TO_TURN:
+		turnOrWaitPlayer2(s, game, playerName)
+	case api.GameStatus_WON:
+		fmt.Printf("\nPlayer %v won!\n", game.playerWon.String())
+		s.StartGame(context.TODO(), playerName)
+	case api.GameStatus_DRAW:
+		fmt.Println("\nDraw")
+		s.StartGame(context.TODO(), playerName)
+	default:
+		fmt.Printf("\nUnknown status: %v\n", game.status)
+		time.Sleep(time.Second)
 	}
 }
 

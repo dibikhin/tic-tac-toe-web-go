@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net"
 
@@ -20,15 +21,16 @@ func MakeServer() *grpc.Server {
 }
 
 func StartListen(cfg config.Config) net.Listener {
-	lis, err := net.Listen("tcp", cfg.Server.Port)
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.Server.Port))
 	if err != nil {
-		log.Fatalf("net: %v", err)
+		log.Fatalf("server: %v", err)
 	}
 	return lis
 }
 
 func RunServer(srv *grpc.Server, lis net.Listener) {
 	if err := srv.Serve(lis); err != nil {
-		log.Fatalf("srv: %v", err)
+		log.Fatalf("server: serve %v", err)
 	}
+	log.Println("server: stopped")
 }

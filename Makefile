@@ -1,7 +1,6 @@
 .PHONY: fmt lint test serve connect regen list
 
 fmt format:
-	# go fmt ./...
 	goimports -l -w .
 	@echo "Done."
 
