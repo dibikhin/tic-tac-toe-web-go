@@ -15,7 +15,7 @@ func LoadConfig() config.Config {
 	file := ".env"
 	cfg, err := config.Load(file)
 	if err != nil {
-		log.Fatalf("app: config loading %v", err)
+		log.Fatalf("app: load config: %v", err)
 	}
 	log.Printf("config: %+v", cfg)
 	return cfg

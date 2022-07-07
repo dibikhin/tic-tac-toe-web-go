@@ -30,7 +30,7 @@ func grpcDial(cfg config.Config) *grpc.ClientConn {
 		grpc.WithTimeout(cfg.GameServer.Timeout),
 	)
 	if err != nil {
-		log.Fatalf("client: grpc dial %v", err)
+		log.Fatalf("client: grpc dial: %v", err)
 	}
 	return conn
 }

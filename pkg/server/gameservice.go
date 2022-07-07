@@ -30,7 +30,7 @@ func NewGameService(gs GameRepo) *gameService {
 }
 
 func (s *gameService) GetGame(ctx context.Context, req *api.GameRequest) (*api.GameResponse, error) {
-	log.Printf("server: get game %v", req)
+	log.Printf("server: get game: %v", req)
 	fmt.Printf("games: %+v\n", s.repo.GetAll())
 
 	g := s.repo.FindByPlayerName(req.PlayerName)
@@ -52,7 +52,7 @@ func newGameResp(g Game) *api.GameResponse {
 }
 
 func (s *gameService) StartGame(ctx context.Context, req *api.GameRequest) (*api.EmptyResponse, error) {
-	log.Printf("server: start game %v", req)
+	log.Printf("server: start game: %v", req)
 	fmt.Printf("games: %+v\n", s.repo.GetAll())
 
 	g := s.repo.FindByPlayerName(req.PlayerName)
@@ -80,7 +80,7 @@ func (s *gameService) StartGame(ctx context.Context, req *api.GameRequest) (*api
 }
 
 func (s *gameService) Turn(ctx context.Context, req *api.TurnRequest) (*api.EmptyResponse, error) {
-	log.Printf("server: turn %v", req)
+	log.Printf("server: turn: %v", req)
 	fmt.Printf("games: %+v\n", s.repo.GetAll())
 
 	g := s.repo.FindByPlayerName(req.PlayerName)

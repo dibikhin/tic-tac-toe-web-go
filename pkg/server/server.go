@@ -30,7 +30,7 @@ func StartListen(cfg config.Config) net.Listener {
 
 func RunServer(srv *grpc.Server, lis net.Listener) {
 	if err := srv.Serve(lis); err != nil {
-		log.Fatalf("server: serve %v", err)
+		log.Fatalf("server: serve: %v", err)
 	}
 	log.Println("server: stopped")
 }

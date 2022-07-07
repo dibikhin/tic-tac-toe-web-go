@@ -29,7 +29,7 @@ func (s *gameService) GetGame(ctx context.Context, name string) game {
 	for {
 		r, err := s.c.GetGame(ctx, &api.GameRequest{PlayerName: name})
 		if err != nil {
-			log.Printf("client: get game %v", err)
+			log.Printf("client: get game: %v", err)
 			time.Sleep(time.Second)
 			continue
 		}
@@ -69,7 +69,7 @@ func (s *gameService) StartGame(ctx context.Context, playerName string) {
 		if cmd == "p" {
 			_, err := s.c.StartGame(ctx, &api.GameRequest{PlayerName: playerName})
 			if err != nil {
-				log.Printf("client: start game %v", err)
+				log.Printf("client: start game: %v", err)
 				continue
 			}
 			break
@@ -82,7 +82,7 @@ func (s *gameService) Turn(ctx context.Context, p player) {
 		t := readTurn(s.read, p)
 		_, err := s.c.Turn(ctx, &api.TurnRequest{PlayerName: p.name, Turn: t})
 		if err != nil {
-			log.Printf("client: turn %v", err)
+			log.Printf("client: turn: %v", err)
 			status, _ := status.FromError(err)
 			if status.Code() != codes.FailedPrecondition {
 				continue
