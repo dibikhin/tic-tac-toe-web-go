@@ -4,8 +4,12 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"tictactoe/pkg/api"
 	"time"
+
+	"tictactoe/pkg/api"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type gameService struct {
@@ -25,7 +29,7 @@ func (s *gameService) GetGame(ctx context.Context, name string) game {
 	for {
 		r, err := s.c.GetGame(ctx, &api.GameRequest{PlayerName: name})
 		if err != nil {
-			log.Printf("client: %v", err)
+			log.Printf("client: get game: %v", err)
 			time.Sleep(time.Second)
 			continue
 		}
@@ -65,7 +69,7 @@ func (s *gameService) StartGame(ctx context.Context, playerName string) {
 		if cmd == "p" {
 			_, err := s.c.StartGame(ctx, &api.GameRequest{PlayerName: playerName})
 			if err != nil {
-				log.Printf("client: %v", err)
+				log.Printf("client: start game: %v", err)
 				continue
 			}
 			break
@@ -78,8 +82,11 @@ func (s *gameService) Turn(ctx context.Context, p player) {
 		t := readTurn(s.read, p)
 		_, err := s.c.Turn(ctx, &api.TurnRequest{PlayerName: p.name, Turn: t})
 		if err != nil {
-			log.Printf("client: %v", err)
-			continue
+			log.Printf("client: turn: %v", err)
+			status, _ := status.FromError(err)
+			if status.Code() != codes.FailedPrecondition {
+				continue
+			}
 		}
 		break
 	}
@@ -87,7 +94,7 @@ func (s *gameService) Turn(ctx context.Context, p player) {
 
 func readTurn(read func() string, p player) string {
 	for {
-		fmt.Printf("\nYour mark: %v. Waiting your turn...\n", p.mark)
+		fmt.Printf("\nYour mark: %v. Press 1 to 9 (5 is center) and press ENTER: ", p.mark)
 		turn := read()
 		if turn == "" {
 			continue
@@ -99,7 +106,7 @@ func readTurn(read func() string, p player) string {
 func readCommand(read func() string, name string) string {
 	fmt.Println()
 	for {
-		fmt.Println("Type 'p' to play new game and press ENTER:")
+		fmt.Print("Type 'p' to play new game and press ENTER: ")
 		cmd := read()
 		if cmd == "" {
 			continue
@@ -111,7 +118,7 @@ func readCommand(read func() string, name string) string {
 func readName(read func() string) string {
 	fmt.Println()
 	for {
-		fmt.Println("What's your name? Type and press ENTER:")
+		fmt.Print("What's your name? Type and press ENTER: ")
 		name := read()
 		if name == "" {
 			continue

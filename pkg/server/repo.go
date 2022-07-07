@@ -6,9 +6,9 @@ type gameRepo struct {
 	games []Game
 }
 
-func NewGameRepo(gs []Game) *gameRepo {
+func NewGameRepo() *gameRepo {
 	return &gameRepo{
-		games: gs,
+		games: []Game{},
 	}
 }
 

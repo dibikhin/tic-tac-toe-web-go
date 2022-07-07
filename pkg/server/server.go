@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net"
 
@@ -11,26 +12,25 @@ import (
 )
 
 func MakeServer() *grpc.Server {
-	// In-mem storage
-	var games []Game
-	gr := NewGameRepo(games)
-	gs := grpc.NewServer()
+	gr := NewGameRepo()
 	s := NewGameService(gr)
+	gs := grpc.NewServer()
 
 	api.RegisterGameServer(gs, s)
 	return gs
 }
 
 func StartListen(cfg config.Config) net.Listener {
-	lis, err := net.Listen("tcp", cfg.Server.Port)
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.Server.Port))
 	if err != nil {
-		log.Fatalf("net: %v", err)
+		log.Fatalf("server: %v", err)
 	}
 	return lis
 }
 
 func RunServer(srv *grpc.Server, lis net.Listener) {
 	if err := srv.Serve(lis); err != nil {
-		log.Fatalf("srv: %v", err)
+		log.Fatalf("server: serve: %v", err)
 	}
+	log.Println("server: stopped")
 }

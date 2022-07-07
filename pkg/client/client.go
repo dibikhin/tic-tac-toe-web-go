@@ -2,6 +2,7 @@ package client
 
 import (
 	"log"
+
 	"tictactoe/pkg/api"
 	"tictactoe/pkg/config"
 
@@ -9,24 +10,27 @@ import (
 )
 
 func Connect(cfg config.Config) (api.GameClient, func()) {
-	log.Println("Connecting...")
+	log.Println("client: connecting...")
 	conn := grpcDial(cfg)
 	client := api.NewGameClient(conn)
-	log.Println("Connected")
+	log.Println("client: connected")
 
 	return client, func() {
-		log.Println("Disconnected")
+		log.Println("client: disconnecting...")
 		conn.Close()
+		log.Println("client: disconnected")
 	}
 }
 
 func grpcDial(cfg config.Config) *grpc.ClientConn {
 	conn, err := grpc.Dial(
 		cfg.GameServer.Address,
-		grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(cfg.GameServer.Timeout),
+		grpc.WithInsecure(),
+		grpc.WithBlock(),
+		grpc.WithTimeout(cfg.GameServer.Timeout),
 	)
 	if err != nil {
-		log.Fatalf("grpc: %v", err)
+		log.Fatalf("client: grpc dial: %v", err)
 	}
 	return conn
 }

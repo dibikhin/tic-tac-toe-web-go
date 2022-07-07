@@ -20,8 +20,22 @@ $ go mod download
 $ cp example.env .env
 ```
 
+### Testing
+```
+$ cd tic-tac-toe-web-go/
+$ make test
+Testing client...
+...
+PASS
+...
+Testing server...
+...
+PASS
+...
+```
+
 ## Running
-Run as is, no compilation neaded. Running locally assumed below.
+Run as is, no compilation neaded. Running locally assumed.
 
 ### Server
 Open first terminal, then:
@@ -58,7 +72,7 @@ NOTE: Hit `ctrl+c` to exit.
 - `/cmd` — Entry points
 - `/pkg` — The game packages
 - `.env` — config
-- `example.env` — config example 
+- `example.env` — config example
 - etc.
 
 ### Features

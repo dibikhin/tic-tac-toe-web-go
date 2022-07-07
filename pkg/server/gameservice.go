@@ -4,7 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+
 	"tictactoe/pkg/api"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type GameRepo interface {
@@ -16,20 +20,20 @@ type GameRepo interface {
 }
 
 type gameService struct {
-	gameRepo GameRepo
+	repo GameRepo
 
 	api.UnimplementedGameServer
 }
 
 func NewGameService(gs GameRepo) *gameService {
-	return &gameService{gameRepo: gs}
+	return &gameService{repo: gs}
 }
 
-func (s *gameService) GetGame(ctx context.Context, sr *api.GameRequest) (*api.GameResponse, error) {
-	log.Printf("srv: get game %v", sr)
-	fmt.Printf("games: %+v\n", s.gameRepo.GetAll())
+func (s *gameService) GetGame(ctx context.Context, req *api.GameRequest) (*api.GameResponse, error) {
+	log.Printf("server: get game: %v", req)
+	fmt.Printf("games: %+v\n", s.repo.GetAll())
 
-	g := s.gameRepo.FindByPlayerName(sr.PlayerName)
+	g := s.repo.FindByPlayerName(req.PlayerName)
 	if g.id == "" {
 		return &api.GameResponse{Status: api.GameStatus_NOT_STARTED}, nil
 	}
@@ -47,40 +51,43 @@ func newGameResp(g Game) *api.GameResponse {
 	}
 }
 
-func (s *gameService) StartGame(ctx context.Context, sr *api.GameRequest) (*api.EmptyResponse, error) {
-	log.Printf("srv: start game %v", sr)
-	fmt.Printf("games: %+v\n", s.gameRepo.GetAll())
+func (s *gameService) StartGame(ctx context.Context, req *api.GameRequest) (*api.EmptyResponse, error) {
+	log.Printf("server: start game: %v", req)
+	fmt.Printf("games: %+v\n", s.repo.GetAll())
 
-	g := s.gameRepo.FindByPlayerName(sr.PlayerName)
+	g := s.repo.FindByPlayerName(req.PlayerName)
 	if g.id != "" {
 		if g.status != api.GameStatus_WON && g.status != api.GameStatus_DRAW {
 			return &api.EmptyResponse{}, nil
 		}
-		s.gameRepo.DeleteById(g.id)
+		s.repo.DeleteById(g.id)
 
-		newGame := NewGame(sr.PlayerName)
-		s.gameRepo.Add(newGame)
+		newGame := NewGame(req.PlayerName)
+		s.repo.Add(newGame)
 		return &api.EmptyResponse{}, nil
 	}
-	gg := s.gameRepo.FindByPlayerName("")
+	gg := s.repo.FindByPlayerName("")
 	if gg.id != "" && gg.player2.name == "" {
 		gg.status = api.GameStatus_WAITING_P1_TO_TURN
-		gg.player2 = player{mark: "O", name: sr.PlayerName}
-		gg.players[sr.PlayerName] = "O"
-		s.gameRepo.UpdateById(gg.id, gg)
+		gg.player2 = player{mark: "O", name: req.PlayerName}
+		gg.players[req.PlayerName] = "O"
+		s.repo.UpdateById(gg.id, gg)
 		return &api.EmptyResponse{}, nil
 	}
-	newGame := NewGame(sr.PlayerName)
-	s.gameRepo.Add(newGame)
+	newGame := NewGame(req.PlayerName)
+	s.repo.Add(newGame)
 	return &api.EmptyResponse{}, nil
 }
 
-func (s *gameService) Turn(ctx context.Context, tr *api.TurnRequest) (*api.EmptyResponse, error) {
-	g := s.gameRepo.FindByPlayerName(tr.PlayerName)
+func (s *gameService) Turn(ctx context.Context, req *api.TurnRequest) (*api.EmptyResponse, error) {
+	log.Printf("server: turn: %v", req)
+	fmt.Printf("games: %+v\n", s.repo.GetAll())
+
+	g := s.repo.FindByPlayerName(req.PlayerName)
 	if g.id == "" {
-		return nil, fmt.Errorf("Player has no game")
+		return nil, status.Errorf(codes.FailedPrecondition, "Player has no game")
 	}
-	turn := key(tr.Turn)
+	turn := key(req.Turn)
 	if !turn.isKey() {
 		return &api.EmptyResponse{}, nil
 	}
@@ -88,28 +95,29 @@ func (s *gameService) Turn(ctx context.Context, tr *api.TurnRequest) (*api.Empty
 	if g.board.isFilled(cel) {
 		return &api.EmptyResponse{}, nil
 	}
-	mark := g.players[tr.PlayerName]
+	mark := g.players[req.PlayerName]
 	g.board = setCell(g.board, cel, mark)
-	s.gameRepo.UpdateById(g.id, g)
+	s.repo.UpdateById(g.id, g)
+
 	if g.board.isWinner(mark) {
 		g.status = api.GameStatus_WON
-		g.playerWon = player{mark, tr.PlayerName}
-		s.gameRepo.UpdateById(g.id, g)
+		g.playerWon = player{mark, req.PlayerName}
+		s.repo.UpdateById(g.id, g)
 		return &api.EmptyResponse{}, nil
 	}
 	if !g.board.hasEmpty() {
 		g.status = api.GameStatus_DRAW
-		s.gameRepo.UpdateById(g.id, g)
+		s.repo.UpdateById(g.id, g)
 		return &api.EmptyResponse{}, nil
 	}
-	if g.player1.name == tr.PlayerName {
+	if g.player1.name == req.PlayerName {
 		g.status = api.GameStatus_WAITING_P2_TO_TURN
-		s.gameRepo.UpdateById(g.id, g)
+		s.repo.UpdateById(g.id, g)
 		return &api.EmptyResponse{}, nil
 	}
-	if g.player2.name == tr.PlayerName {
+	if g.player2.name == req.PlayerName {
 		g.status = api.GameStatus_WAITING_P1_TO_TURN
-		s.gameRepo.UpdateById(g.id, g)
+		s.repo.UpdateById(g.id, g)
 		return &api.EmptyResponse{}, nil
 	}
 	return &api.EmptyResponse{}, nil
