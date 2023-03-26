@@ -1,4 +1,4 @@
-package server
+package gameserver
 
 import (
 	"context"
@@ -11,11 +11,14 @@ import (
 )
 
 func Test_gameService(t *testing.T) {
-	repo := NewGameRepo()
-	s := NewGameService(repo)
+	repo := MakeGameRepo()
+	s := NewService(repo)
 
 	t.Run("Game loop", func(t *testing.T) {
-		got1, err := s.GetGame(context.TODO(), &api.GameRequest{PlayerName: "name1"})
+		name1 := "name1"
+		name2 := "name2"
+
+		got1, err := s.GetGame(context.TODO(), &api.GameRequest{PlayerName: name1})
 		if (err != nil) != false {
 			t.Errorf("gameService.GetGame() error = %v, wantErr %v", err, false)
 			return
@@ -25,7 +28,7 @@ func Test_gameService(t *testing.T) {
 			t.Errorf("gameService.GetGame() = %v, want %v", got1, r1)
 		}
 
-		got2, err := s.StartGame(context.TODO(), &api.GameRequest{PlayerName: "name1"})
+		got2, err := s.StartGame(context.TODO(), &api.GameRequest{PlayerName: name1})
 		if (err != nil) != false {
 			t.Errorf("gameService.StartGame() error = %v, wantErr %v", err, false)
 			return
@@ -35,16 +38,16 @@ func Test_gameService(t *testing.T) {
 			t.Errorf("gameService.StartGame() = %v, want %v", got2, r2)
 		}
 
-		got3, err := s.GetGame(context.TODO(), &api.GameRequest{PlayerName: "name1"})
+		got3, err := s.GetGame(context.TODO(), &api.GameRequest{PlayerName: name1})
 		if (err != nil) != false {
 			t.Errorf("gameService.GetGame() error = %v, wantErr %v", err, false)
 			return
 		}
-		if got3.Player1.Mark != "X" || got3.Player1.Name != "name1" || got3.Status != api.GameStatus_WAITING_P2_JOIN {
-			t.Errorf("gameService.GetGame() = %v, want %v %v %v", got3, "name1", "X", api.GameStatus_WAITING_P2_JOIN)
+		if got3.Player1.Mark != "X" || got3.Player1.Name != name1 || got3.Status != api.GameStatus_WAITING_P2_JOIN {
+			t.Errorf("gameService.GetGame() = %v, want %v %v %v", got3, name1, "X", api.GameStatus_WAITING_P2_JOIN)
 		}
 
-		got4, err := s.StartGame(context.TODO(), &api.GameRequest{PlayerName: "name2"})
+		got4, err := s.StartGame(context.TODO(), &api.GameRequest{PlayerName: name2})
 		if (err != nil) != false {
 			t.Errorf("gameService.StartGame() error = %v, wantErr %v", err, false)
 			return
@@ -54,18 +57,18 @@ func Test_gameService(t *testing.T) {
 			t.Errorf("gameService.StartGame() = %v, want %v", got4, r4)
 		}
 
-		got5, err := s.GetGame(context.TODO(), &api.GameRequest{PlayerName: "name2"})
+		got5, err := s.GetGame(context.TODO(), &api.GameRequest{PlayerName: name2})
 		if (err != nil) != false {
 			t.Errorf("gameService.GetGame() error = %v, wantErr %v", err, false)
 			return
 		}
-		if got5.Player1.Mark != "X" || got5.Player1.Name != "name1" ||
-			got5.Player2.Mark != "O" || got5.Player2.Name != "name2" ||
+		if got5.Player1.Mark != "X" || got5.Player1.Name != name1 ||
+			got5.Player2.Mark != "O" || got5.Player2.Name != name2 ||
 			got5.Status != api.GameStatus_WAITING_P1_TO_TURN {
-			t.Errorf("gameService.GetGame() = %v, want %v %v %v %v %v", got5, "name1", "name2", "X", "O", api.GameStatus_WAITING_P1_TO_TURN)
+			t.Errorf("gameService.GetGame() = %v, want %v %v %v %v %v", got5, name1, name2, "X", "O", api.GameStatus_WAITING_P1_TO_TURN)
 		}
 
-		got6, err := s.Turn(context.TODO(), &api.TurnRequest{PlayerName: "name1", Turn: "1"})
+		got6, err := s.Turn(context.TODO(), &api.TurnRequest{PlayerName: name1, Turn: "1"})
 		if (err != nil) != false {
 			t.Errorf("gameService.Turn() error = %v, wantErr %v", err, false)
 			return
@@ -75,7 +78,7 @@ func Test_gameService(t *testing.T) {
 			t.Errorf("gameService.Turn() = %v, want %v", got6, r6)
 		}
 
-		got7, err := s.GetGame(context.TODO(), &api.GameRequest{PlayerName: "name2"})
+		got7, err := s.GetGame(context.TODO(), &api.GameRequest{PlayerName: name2})
 		if (err != nil) != false {
 			t.Errorf("gameService.GetGame() error = %v, wantErr %v", err, false)
 			return
@@ -84,7 +87,7 @@ func Test_gameService(t *testing.T) {
 			t.Errorf("gameService.GetGame() = %v, want %v", got7, api.GameStatus_WAITING_P2_TO_TURN)
 		}
 
-		got8, err := s.Turn(context.TODO(), &api.TurnRequest{PlayerName: "name2", Turn: "2"})
+		got8, err := s.Turn(context.TODO(), &api.TurnRequest{PlayerName: name2, Turn: "2"})
 		if (err != nil) != false {
 			t.Errorf("gameService.Turn() error = %v, wantErr %v", err, false)
 			return
@@ -94,7 +97,7 @@ func Test_gameService(t *testing.T) {
 			t.Errorf("gameService.Turn() = %v, want %v", got8, r7)
 		}
 
-		got9, err := s.GetGame(context.TODO(), &api.GameRequest{PlayerName: "name2"})
+		got9, err := s.GetGame(context.TODO(), &api.GameRequest{PlayerName: name2})
 		if (err != nil) != false {
 			t.Errorf("gameService.GetGame() error = %v, wantErr %v", err, false)
 			return
@@ -103,7 +106,7 @@ func Test_gameService(t *testing.T) {
 			t.Errorf("gameService.GetGame() = %v, want %v", got9, api.GameStatus_WAITING_P1_TO_TURN)
 		}
 
-		got10, err := s.Turn(context.TODO(), &api.TurnRequest{PlayerName: "name2", Turn: "111"})
+		got10, err := s.Turn(context.TODO(), &api.TurnRequest{PlayerName: name2, Turn: "111"})
 		if (err != nil) != false {
 			t.Errorf("gameService.Turn() error = %v, wantErr %v", err, false)
 			return
@@ -113,7 +116,7 @@ func Test_gameService(t *testing.T) {
 			t.Errorf("gameService.Turn() = %v, want %v", got10, r8)
 		}
 
-		got11, err := s.StartGame(context.TODO(), &api.GameRequest{PlayerName: "name1"})
+		got11, err := s.StartGame(context.TODO(), &api.GameRequest{PlayerName: name1})
 		if (err != nil) != false {
 			t.Errorf("gameService.StartGame() error = %v, wantErr %v", err, false)
 			return
@@ -123,16 +126,16 @@ func Test_gameService(t *testing.T) {
 			t.Errorf("gameService.StartGame() = %v, want %v", got11, r9)
 		}
 
-		gs1 := repo.GetAll()
+		gs1, _ := repo.GetAll()
 		g1 := gs1[0]
 		g1.board = board{
 			{__, __, "X"},
 			{__, "X", __},
 			{__, __, __},
 		}
-		repo.UpdateById(g1.id, g1)
+		repo.UpdateByID(g1.id, g1)
 
-		got13, err := s.Turn(context.TODO(), &api.TurnRequest{PlayerName: "name1", Turn: "7"})
+		got13, err := s.Turn(context.TODO(), &api.TurnRequest{PlayerName: name1, Turn: "7"})
 		if (err != nil) != false {
 			t.Errorf("gameService.Turn() error = %v, wantErr %v", err, false)
 			return
@@ -142,12 +145,12 @@ func Test_gameService(t *testing.T) {
 			t.Errorf("gameService.Turn() = %v, want %v", got13, r11)
 		}
 
-		gs2 := repo.GetAll()
+		gs2, _ := repo.GetAll()
 		g2 := gs2[0]
 		g2.status = api.GameStatus_DRAW
-		repo.UpdateById(g2.id, g2)
+		repo.UpdateByID(g2.id, g2)
 
-		got12, err := s.StartGame(context.TODO(), &api.GameRequest{PlayerName: "name1"})
+		got12, err := s.StartGame(context.TODO(), &api.GameRequest{PlayerName: name1})
 		if (err != nil) != false {
 			t.Errorf("gameService.StartGame() error = %v, wantErr %v", err, false)
 			return
@@ -171,7 +174,10 @@ func Test_gameService_Turn(t *testing.T) {
 	}{
 		{"Player has no game", args{&api.TurnRequest{PlayerName: "name3", Turn: "1"}}, (*api.EmptyResponse)(nil), true},
 	}
-	s := NewGameService(NewGameRepo())
+	gamesDB := []game{}
+	repo := MakeGameRepo(gamesDB...)
+	s := NewService(repo)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := s.Turn(context.TODO(), tt.args.req)

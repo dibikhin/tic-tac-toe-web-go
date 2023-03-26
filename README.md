@@ -2,8 +2,14 @@
 
 A web version of 3x3 Tic-tac-toe on Go: server + terminal client.
 
+## Other versions
+- [Funcional programming, in terminal](https://github.com/dibikhin/tic-tac-toe-cli-fp-go)
+- [Object-oriented programming, in terminal](https://github.com/dibikhin/tic-tac-toe-cli-oop-go)
+
 ## How to
 Start server and clients, get a friend. Play in terminal using keyboard only. See how to run below.
+
+TODO: server restart survival, unlimited games, players' waiting queue
 
 ## Getting Started
 
@@ -69,8 +75,10 @@ NOTE: Hit `ctrl+c` to exit.
 ## Internals
 
 ### Project Structure
-- `/cmd` — Entry points
+- `/cmd` — Entry points for client and server
 - `/pkg` — The game packages
+- `/scripts`
+-
 - `.env` — config
 - `example.env` — config example
 - etc.

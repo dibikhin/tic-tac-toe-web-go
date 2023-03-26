@@ -1,4 +1,4 @@
-package server
+package gameserver
 
 import "strings"
 
@@ -15,9 +15,12 @@ func reduce(board board, rows []string) ([][]string, []string) {
 	if len(board) == 0 {
 		return [][]string{}, rows
 	}
+	rowz := make([]string, len(rows))
+	copy(rowz, rows)
+
 	row := strings.Join(board[0][:], " ")
-	d := append(rows, row)
-	return reduce(board[1:], d)
+	rowz = append(rowz, row)
+	return reduce(board[1:], rowz)
 }
 
 func blankBoard() board {

@@ -1,15 +1,15 @@
-package client
+package gameclient
 
 import (
 	"log"
 
+	"tictactoe/app"
 	"tictactoe/pkg/api"
-	"tictactoe/pkg/config"
 
 	"google.golang.org/grpc"
 )
 
-func Connect(cfg config.Config) (api.GameClient, func()) {
+func Connect(cfg app.Config) (api.GameClient, func()) {
 	log.Println("client: connecting...")
 	conn := grpcDial(cfg)
 	client := api.NewGameClient(conn)
@@ -22,12 +22,12 @@ func Connect(cfg config.Config) (api.GameClient, func()) {
 	}
 }
 
-func grpcDial(cfg config.Config) *grpc.ClientConn {
+func grpcDial(cfg app.Config) *grpc.ClientConn {
 	conn, err := grpc.Dial(
-		cfg.GameServer.Address,
+		cfg.Server.Address,
 		grpc.WithInsecure(),
 		grpc.WithBlock(),
-		grpc.WithTimeout(cfg.GameServer.Timeout),
+		grpc.WithTimeout(cfg.Server.Timeout),
 	)
 	if err != nil {
 		log.Fatalf("client: grpc dial: %v", err)

@@ -1,4 +1,4 @@
-package client
+package gameclient
 
 import (
 	"context"
@@ -6,31 +6,33 @@ import (
 	"log"
 	"time"
 
+	"tictactoe/app"
 	"tictactoe/pkg/api"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-type gameService struct {
+type service struct {
 	c    api.GameClient
+	cfg  app.Config
 	read func() string
 }
 
-func NewGameService(c api.GameClient, r func() string) *gameService {
-	return &gameService{c, r}
+func NewService(c api.GameClient, cfg app.Config, r func() string) *service {
+	return &service{c, cfg, r}
 }
 
-func (s *gameService) ReadName() string {
+func (s *service) ReadPlayerName() name {
 	return readName(s.read)
 }
 
-func (s *gameService) GetGame(ctx context.Context, name string) game {
+func (s *service) GetGame(ctx context.Context, nam name) game {
 	for {
-		r, err := s.c.GetGame(ctx, &api.GameRequest{PlayerName: name})
+		r, err := s.c.GetGame(ctx, &api.GameRequest{PlayerName: nam})
 		if err != nil {
 			log.Printf("client: get game: %v", err)
-			time.Sleep(time.Second)
+			time.Sleep(s.cfg.Server.LoopDelay)
 			continue
 		}
 		return makeGame(r)
@@ -63,9 +65,9 @@ func makeGame(r *api.GameResponse) game {
 	}
 }
 
-func (s *gameService) StartGame(ctx context.Context, playerName string) {
+func (s *service) StartGame(ctx context.Context, playerName name) {
 	for {
-		cmd := readCommand(s.read, playerName)
+		cmd := readCommand(s.read)
 		if cmd == "p" {
 			_, err := s.c.StartGame(ctx, &api.GameRequest{PlayerName: playerName})
 			if err != nil {
@@ -77,9 +79,9 @@ func (s *gameService) StartGame(ctx context.Context, playerName string) {
 	}
 }
 
-func (s *gameService) Turn(ctx context.Context, p player) {
+func (s *service) Turn(ctx context.Context, p player) {
 	for {
-		t := readTurn(s.read, p)
+		t := readTurn(s.read, p.mark)
 		_, err := s.c.Turn(ctx, &api.TurnRequest{PlayerName: p.name, Turn: t})
 		if err != nil {
 			log.Printf("client: turn: %v", err)
@@ -92,9 +94,9 @@ func (s *gameService) Turn(ctx context.Context, p player) {
 	}
 }
 
-func readTurn(read func() string, p player) string {
+func readTurn(read func() string, mark mark) string {
 	for {
-		fmt.Printf("\nYour mark: %v. Press 1 to 9 (5 is center) and press ENTER: ", p.mark)
+		fmt.Printf("\nYour mark: %v. Press 1 to 9 (5 is center) and press ENTER: ", mark)
 		turn := read()
 		if turn == "" {
 			continue
@@ -103,7 +105,7 @@ func readTurn(read func() string, p player) string {
 	}
 }
 
-func readCommand(read func() string, name string) string {
+func readCommand(read func() string) string {
 	fmt.Println()
 	for {
 		fmt.Print("Type 'p' to play new game and press ENTER: ")
@@ -115,7 +117,7 @@ func readCommand(read func() string, name string) string {
 	}
 }
 
-func readName(read func() string) string {
+func readName(read func() string) name {
 	fmt.Println()
 	for {
 		fmt.Print("What's your name? Type and press ENTER: ")

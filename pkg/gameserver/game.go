@@ -1,4 +1,4 @@
-package server
+package gameserver
 
 import (
 	"strconv"
@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type Game struct {
+type game struct {
 	status api.GameStatus
 
 	id string
@@ -14,26 +14,32 @@ type Game struct {
 	player1   player
 	player2   player
 	playerWon player
-	players   map[string]mark
+	players   map[name]mark
 
 	board board
 }
 
 type player struct {
 	mark mark
-	name string
+	name name
 }
 
 type mark = string
+type name = string
 
-func NewGame(playerName string) Game {
-	return Game{
+func MakeGame(nam name) game {
+	return game{
 		status:    api.GameStatus_WAITING_P2_JOIN,
 		id:        strconv.Itoa(time.Now().Nanosecond()),
-		player1:   player{mark: "X", name: playerName},
+		player1:   player{mark: "X", name: nam},
 		player2:   player{},
 		playerWon: player{},
-		players:   map[string]mark{playerName: "X"},
+		players:   map[name]mark{nam: "X"},
 		board:     blankBoard(),
 	}
+}
+
+func (g game) isEnded() bool {
+	return g.status == api.GameStatus_DRAW ||
+		g.status == api.GameStatus_WON
 }

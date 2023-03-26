@@ -7,13 +7,10 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
-
-	"tictactoe/pkg/config"
 )
 
-func LoadConfig() config.Config {
-	file := ".env"
-	cfg, err := config.Load(file)
+func LoadConfigFrom(file string) Config {
+	cfg, err := load(file)
 	if err != nil {
 		log.Fatalf("app: load config: %v", err)
 	}

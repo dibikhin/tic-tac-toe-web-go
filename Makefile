@@ -10,9 +10,9 @@ lint:
 
 test:
 	@echo "\nTesting client..."
-	go test -v -coverpkg=./pkg/client ./pkg/client
+	go test -v -coverpkg=./pkg/gameclient ./pkg/gameclient
 	@echo "\nTesting server..."
-	go test -v -coverpkg=./pkg/server ./pkg/server
+	go test -v -coverpkg=./pkg/gameserver ./pkg/gameserver
 
 server serv serve:
 	@echo "\nServer:"

@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"tictactoe/pkg/app"
-	"tictactoe/pkg/client"
+	"tictactoe/app"
+	"tictactoe/pkg/api"
+	"tictactoe/pkg/gameclient"
 )
 
 func main() {
@@ -22,11 +23,12 @@ func main() {
 
 	fmt.Print("\nWelcome to web 3x3 Tic-tac-toe for 2 friends :)\n\n")
 
-	cfg := app.LoadConfig()
-	cl, teardown := client.Connect(cfg)
-	s := client.NewGameService(cl, app.DefaultRead)
+	cfg := app.LoadConfigFrom("cmd/client/.env")
+	var cl api.GameClient
+	cl, teardown = gameclient.Connect(cfg)
 
-	client.RunGameLoop(s)
+	s := gameclient.NewService(cl, cfg, app.DefaultRead)
+	gameclient.RunLoop(s, cfg)
 
 	onExit()
 }

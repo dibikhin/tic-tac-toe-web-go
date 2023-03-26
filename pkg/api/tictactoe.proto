@@ -10,6 +10,7 @@ service Game {
     rpc Turn (TurnRequest) returns (EmptyResponse);
 }
 
+// TODO one of OK | Error
 message EmptyResponse {}
 
 message GameRequest {

@@ -1,12 +1,13 @@
-package client
+package gameclient
 
 import "fmt"
 
 type mark = string
+type name = string
 
 type player struct {
 	mark mark
-	name string
+	name name
 }
 
 func (p *player) String() string {

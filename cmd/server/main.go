@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"tictactoe/pkg/app"
-	"tictactoe/pkg/server"
+	"tictactoe/app"
+	"tictactoe/pkg/gameserver"
 )
 
 func main() {
@@ -20,13 +20,13 @@ func main() {
 	go app.WaitForExit(onExit)
 	log.Println("app: started")
 
-	cfg := app.LoadConfig()
-	lis := server.StartListen(cfg)
-	srv := server.MakeServer()
+	cfg := app.LoadConfigFrom("cmd/server/.env")
+	lis := gameserver.StartListen(cfg)
+	s := gameserver.Make()
 
 	teardown = func() {
 		log.Println("app: gracefully stopping...")
-		srv.GracefulStop()
+		s.GracefulStop()
 	}
-	server.RunServer(srv, lis)
+	gameserver.Run(s, lis)
 }

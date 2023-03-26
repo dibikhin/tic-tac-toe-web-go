@@ -1,13 +1,15 @@
-package client
+package gameclient
 
 import (
 	"context"
 	"fmt"
 	"log"
 	"testing"
+	"time"
 
 	grpc "google.golang.org/grpc"
 
+	"tictactoe/app"
 	"tictactoe/pkg/api"
 )
 
@@ -16,16 +18,21 @@ func TestRunGameLoop(t *testing.T) {
 
 	p1, p2 := makePlayers()
 	cs := makeClientStub(p1, p2)
+	cfg := app.Config{
+		Server: app.Server{
+			LoopDelay: time.Second,
+		},
+	}
 
 	c := -2
 	m := makeKeySeq()
-	s := NewGameService(cs, func() string {
+	s := NewService(cs, cfg, func() string {
 		c++
 		return m[c]
 	})
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			RunGameLoop(s)
+			RunLoop(s, cfg)
 		})
 	}
 }
