@@ -6,40 +6,42 @@ import (
 	"time"
 )
 
-type game struct {
+type Game struct {
 	status api.GameStatus
 
-	id string
+	id ID
 
-	player1   player
-	player2   player
-	playerWon player
-	players   map[name]mark
+	player1   Player
+	player2   Player
+	playerWon Player
+	players   map[Name]Mark
 
-	board board
+	board Board
 }
 
-type player struct {
-	mark mark
-	name name
+type ID string
+
+type Player struct {
+	mark Mark
+	name Name
 }
 
-type mark = string
-type name = string
+type Mark string
+type Name string
 
-func MakeGame(nam name) game {
-	return game{
+func MakeGame(name Name) Game {
+	return Game{
 		status:    api.GameStatus_WAITING_P2_JOIN,
-		id:        strconv.Itoa(time.Now().Nanosecond()),
-		player1:   player{mark: "X", name: nam},
-		player2:   player{},
-		playerWon: player{},
-		players:   map[name]mark{nam: "X"},
+		id:        ID(strconv.Itoa(time.Now().Nanosecond())),
+		player1:   Player{mark: "X", name: name},
+		player2:   Player{},
+		playerWon: Player{},
+		players:   map[Name]Mark{name: "X"},
 		board:     blankBoard(),
 	}
 }
 
-func (g game) isEnded() bool {
+func (g Game) isEnded() bool {
 	return g.status == api.GameStatus_DRAW ||
 		g.status == api.GameStatus_WON
 }

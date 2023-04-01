@@ -20,7 +20,7 @@ func Make() *grpc.Server {
 	return gs
 }
 
-func StartListen(cfg app.Config) net.Listener {
+func Listen(cfg app.Config) net.Listener {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.GameServer.Port))
 	if err != nil {
 		log.Fatalf("server: %v", err)

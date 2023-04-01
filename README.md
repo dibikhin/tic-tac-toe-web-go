@@ -91,6 +91,9 @@ NOTE: Hit `ctrl+c` to exit.
 - Server handles unlimited games
 - Games are stored in memory only
 - Client handles loosing connection well
+- Dead game detection
+- auto-reconnect by client due to gRPC
+- Multiple clients for the same player name
 
 ## Authors
 - [Roman Dibikhin](https://github.com/dibikhin)

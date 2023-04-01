@@ -20,8 +20,8 @@ func main() {
 	go app.WaitForExit(onExit)
 	log.Println("app: started")
 
-	cfg := app.LoadConfigFrom("cmd/server/.env")
-	lis := gameserver.StartListen(cfg)
+	cfg := app.LoadConfigFrom("./cmd/server/.env")
+	lis := gameserver.Listen(cfg)
 	s := gameserver.Make()
 
 	teardown = func() {

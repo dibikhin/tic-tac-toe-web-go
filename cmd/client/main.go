@@ -23,7 +23,7 @@ func main() {
 
 	fmt.Print("\nWelcome to web 3x3 Tic-tac-toe for 2 friends :)\n\n")
 
-	cfg := app.LoadConfigFrom("cmd/client/.env")
+	cfg := app.LoadConfigFrom("./cmd/client/.env")
 	var cl api.GameClient
 	cl, teardown = gameclient.Connect(cfg)
 

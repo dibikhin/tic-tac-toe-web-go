@@ -1,15 +1,25 @@
 package gameclient
 
-import "fmt"
+import (
+	"fmt"
+	"tictactoe/pkg/api"
+)
 
-type mark = string
-type name = string
+type Mark string
+type Name string
 
-type player struct {
-	mark mark
-	name name
+type Player struct {
+	mark Mark
+	name Name
 }
 
-func (p *player) String() string {
+func NewPlayer(r *api.Player) Player {
+	return Player{
+		mark: Mark(r.Mark),
+		name: Name(r.Name),
+	}
+}
+
+func (p *Player) String() string {
 	return fmt.Sprintf("name: %v, mark: %v", p.name, p.mark)
 }

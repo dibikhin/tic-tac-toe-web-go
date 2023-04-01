@@ -128,7 +128,7 @@ func Test_gameService(t *testing.T) {
 
 		gs1, _ := repo.GetAll()
 		g1 := gs1[0]
-		g1.board = board{
+		g1.board = Board{
 			{__, __, "X"},
 			{__, "X", __},
 			{__, __, __},
@@ -174,7 +174,7 @@ func Test_gameService_Turn(t *testing.T) {
 	}{
 		{"Player has no game", args{&api.TurnRequest{PlayerName: "name3", Turn: "1"}}, (*api.EmptyResponse)(nil), true},
 	}
-	gamesDB := []game{}
+	gamesDB := []Game{}
 	repo := MakeGameRepo(gamesDB...)
 	s := NewService(repo)
 

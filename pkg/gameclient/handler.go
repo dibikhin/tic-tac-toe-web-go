@@ -11,30 +11,30 @@ import (
 )
 
 type Service interface {
-	GetGame(context.Context, name) game
-	StartGame(context.Context, name)
-	Turn(context.Context, player)
+	GetGame(context.Context, Name) Game
+	StartGame(context.Context, Name)
+	Turn(context.Context, Player)
 
-	ReadPlayerName() name
+	ReadPlayerName() Name
 }
 
 func RunLoop(s Service, cfg app.Config) {
-	gotName := s.ReadPlayerName()
-	fmt.Printf("Hey %v!\n", gotName)
+	currentPlayer := s.ReadPlayerName()
+	fmt.Printf("Hey %v!\n", currentPlayer)
 
 	for {
-		game := s.GetGame(context.TODO(), gotName)
+		game := s.GetGame(context.TODO(), currentPlayer)
 		printGame(game)
 
 		if game.status == api.GameStatus_SHUTDOWN_CLIENT {
 			fmt.Println("\nGot shutdown command from server")
 			return
 		}
-		react(s, cfg, game, gotName)
+		react(s, cfg, game, currentPlayer)
 	}
 }
 
-func react(s Service, cfg app.Config, game game, playerName name) {
+func react(s Service, cfg app.Config, game Game, playerName Name) {
 	switch game.status {
 	case api.GameStatus_NOT_STARTED:
 		s.StartGame(context.TODO(), playerName)
@@ -62,22 +62,24 @@ func react(s Service, cfg app.Config, game game, playerName name) {
 	}
 }
 
-func startOrWait(s Service, cfg app.Config, p player, playerName name) {
+func startOrWait(s Service, cfg app.Config, p Player, playerName Name) {
 	if p.name != playerName {
 		s.StartGame(context.TODO(), playerName)
 		return
 	}
 	fmt.Println("\nWaiting Player 2 to join...")
 	log.Println()
+
 	time.Sleep(cfg.Server.LoopDelay)
 }
 
-func turnOrWait(s Service, cfg app.Config, p player, playerName name, playerNum int) {
+func turnOrWait(s Service, cfg app.Config, p Player, playerName Name, playerNum int) {
 	if p.name == playerName {
 		s.Turn(context.TODO(), p)
 		return
 	}
 	fmt.Printf("\nWaiting Player %v to turn...\n", playerNum)
 	log.Println()
+
 	time.Sleep(cfg.Server.LoopDelay)
 }

@@ -19,19 +19,20 @@ type service struct {
 	read func() string
 }
 
-func NewService(c api.GameClient, cfg app.Config, r func() string) *service {
-	return &service{c, cfg, r}
+func NewService(c api.GameClient, cfg app.Config, read func() string) *service {
+	return &service{c, cfg, read}
 }
 
-func (s *service) ReadPlayerName() name {
+func (s *service) ReadPlayerName() Name {
 	return readName(s.read)
 }
 
-func (s *service) GetGame(ctx context.Context, nam name) game {
+func (s *service) GetGame(ctx context.Context, name Name) Game {
 	for {
-		r, err := s.c.GetGame(ctx, &api.GameRequest{PlayerName: nam})
+		r, err := s.c.GetGame(ctx, &api.GameRequest{PlayerName: string(name)})
 		if err != nil {
 			log.Printf("client: get game: %v", err)
+
 			time.Sleep(s.cfg.Server.LoopDelay)
 			continue
 		}
@@ -39,37 +40,40 @@ func (s *service) GetGame(ctx context.Context, nam name) game {
 	}
 }
 
-func makeGame(r *api.GameResponse) game {
+func makeGame(r *api.GameResponse) Game {
+	// New game
 	if r.Player1 == nil {
-		return game{
+		return Game{
 			status:  r.Status,
-			player1: player{},
-			player2: player{},
-			board:   r.Board,
+			player1: Player{},
+			player2: Player{},
+			board:   Board(r.Board),
 		}
 	}
+	// Player1 only
 	if r.Player2 == nil {
-		return game{
+		return Game{
 			status:  r.Status,
-			player1: player{mark: mark(r.Player1.Mark), name: r.Player1.Name},
-			player2: player{},
-			board:   r.Board,
+			player1: NewPlayer(r.Player1),
+			player2: Player{},
+			board:   Board(r.Board),
 		}
 	}
-	return game{
+	// Two players
+	return Game{
 		status:    r.Status,
-		player1:   player{mark: mark(r.Player1.Mark), name: r.Player1.Name},
-		player2:   player{mark: mark(r.Player2.Mark), name: r.Player2.Name},
-		playerWon: player{mark: mark(r.PlayerWon.Mark), name: r.PlayerWon.Name},
-		board:     r.Board,
+		player1:   NewPlayer(r.Player1),
+		player2:   NewPlayer(r.Player2),
+		playerWon: NewPlayer(r.PlayerWon),
+		board:     Board(r.Board),
 	}
 }
 
-func (s *service) StartGame(ctx context.Context, playerName name) {
+func (s *service) StartGame(ctx context.Context, playerName Name) {
 	for {
 		cmd := readCommand(s.read)
 		if cmd == "p" {
-			_, err := s.c.StartGame(ctx, &api.GameRequest{PlayerName: playerName})
+			_, err := s.c.StartGame(ctx, &api.GameRequest{PlayerName: string(playerName)})
 			if err != nil {
 				log.Printf("client: start game: %v", err)
 				continue
@@ -79,22 +83,25 @@ func (s *service) StartGame(ctx context.Context, playerName name) {
 	}
 }
 
-func (s *service) Turn(ctx context.Context, p player) {
+func (s *service) Turn(ctx context.Context, p Player) {
 	for {
 		t := readTurn(s.read, p.mark)
-		_, err := s.c.Turn(ctx, &api.TurnRequest{PlayerName: p.name, Turn: t})
+		_, err := s.c.Turn(ctx, &api.TurnRequest{PlayerName: string(p.name), Turn: t})
 		if err != nil {
 			log.Printf("client: turn: %v", err)
+
 			status, _ := status.FromError(err)
-			if status.Code() != codes.FailedPrecondition {
-				continue
+			if status.Code() == codes.NotFound {
+				return
 			}
+			// For transient errors, retry
+			continue
 		}
-		break
+		return
 	}
 }
 
-func readTurn(read func() string, mark mark) string {
+func readTurn(read func() string, mark Mark) string {
 	for {
 		fmt.Printf("\nYour mark: %v. Press 1 to 9 (5 is center) and press ENTER: ", mark)
 		turn := read()
@@ -117,7 +124,7 @@ func readCommand(read func() string) string {
 	}
 }
 
-func readName(read func() string) name {
+func readName(read func() string) Name {
 	fmt.Println()
 	for {
 		fmt.Print("What's your name? Type and press ENTER: ")
@@ -125,6 +132,6 @@ func readName(read func() string) name {
 		if name == "" {
 			continue
 		}
-		return name
+		return Name(name)
 	}
 }

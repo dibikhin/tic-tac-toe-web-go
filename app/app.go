@@ -14,6 +14,9 @@ func LoadConfigFrom(file string) Config {
 	if err != nil {
 		log.Fatalf("app: load config: %v", err)
 	}
+	if !cfg.isValid() {
+		log.Fatal("app: load config: invalid config")
+	}
 	log.Printf("config: %+v", cfg)
 	return cfg
 }

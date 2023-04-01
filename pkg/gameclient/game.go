@@ -6,17 +6,19 @@ import (
 	"tictactoe/pkg/api"
 )
 
-type game struct {
+type Game struct {
 	status api.GameStatus
 
-	player1   player
-	player2   player
-	playerWon player
+	player1   Player
+	player2   Player
+	playerWon Player
 
-	board string
+	board Board
 }
 
-func printGame(g game) {
+type Board string
+
+func printGame(g Game) {
 	if g.status == api.GameStatus_NOT_STARTED {
 		return
 	}
