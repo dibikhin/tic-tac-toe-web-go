@@ -32,13 +32,17 @@ type Name string
 func MakeGame(name Name) Game {
 	return Game{
 		status:    api.GameStatus_WAITING_P2_JOIN,
-		id:        ID(strconv.Itoa(time.Now().Nanosecond())),
+		id:        genID(),
 		player1:   Player{mark: "X", name: name},
 		player2:   Player{},
 		playerWon: Player{},
 		players:   map[Name]Mark{name: "X"},
 		board:     blankBoard(),
 	}
+}
+
+func genID() ID {
+	return ID(strconv.Itoa(time.Now().Nanosecond()))
 }
 
 func (g Game) isEnded() bool {

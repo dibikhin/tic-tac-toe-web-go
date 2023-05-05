@@ -70,7 +70,7 @@ func (s *service) StartGame(ctx context.Context, req *api.GameRequest) (*api.Emp
 
 	game, _ := s.gamerepo.FindByPlayerName(Name(req.PlayerName))
 
-	// TODO
+	// TODO:
 	// if err != nil {
 	// 	return &api.EmptyResponse{}, errors.Wrap(err, "start game")
 	// }
@@ -89,7 +89,7 @@ func (s *service) StartGame(ctx context.Context, req *api.GameRequest) (*api.Emp
 
 	gg, _ := s.gamerepo.FindByPlayerName("")
 
-	// TODO
+	// TODO:
 	// if err != nil {
 	// 	return &api.EmptyResponse{}, nil
 	// }
@@ -125,11 +125,20 @@ func (s *service) Turn(ctx context.Context, req *api.TurnRequest) (*api.EmptyRes
 		return &api.EmptyResponse{}, nil
 	}
 	cel := turn.toCell()
-	if game.board.isFilled(cel) {
-		return &api.EmptyResponse{}, nil
+	if isFilled, err := game.board.isFilled(cel); err != nil {
+		if err != nil {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
+		if isFilled {
+			return &api.EmptyResponse{}, nil
+		}
 	}
 	mark := game.players[Name(req.PlayerName)]
-	game.board = setCell(game.board, cel, mark)
+	b, err := setCell(game.board, cel, mark)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+	game.board = b
 
 	s.gamerepo.UpdateByID(game.id, game)
 
