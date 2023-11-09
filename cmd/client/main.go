@@ -5,12 +5,7 @@ import (
 	"log"
 
 	"tictactoe/app"
-<<<<<<< Updated upstream
-	"tictactoe/pkg/api"
-	"tictactoe/pkg/gameclient"
-=======
 	"tictactoe/client"
->>>>>>> Stashed changes
 )
 
 func main() {
@@ -24,27 +19,16 @@ func main() {
 		fmt.Println("\nBye!")
 	}
 	go app.WaitForExit(onExit)
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 	log.Println("app: started")
 
 	fmt.Print("\nWelcome to web 3x3 Tic-tac-toe for 2 friends :)\n\n")
 
-	cfg := app.LoadConfigFrom("./cmd/client/.env")
-<<<<<<< Updated upstream
-	var cl api.GameClient
-	cl, teardown = gameclient.Connect(cfg)
-
-	s := gameclient.NewService(cl, cfg, app.DefaultRead)
-	gameclient.RunLoop(s, cfg)
-=======
+	cfg := app.LoadConfig("./cmd/client/.env")
 	cl, teardown := Connect(cfg)
-	s := client.NewService(cl, cfg, app.DefaultRead)
+	s := client.NewGameService(cfg, cl, app.DefaultRead)
 
-	client.RunLoop(s, cfg)
->>>>>>> Stashed changes
+	client.RunGameLoop(s, cfg)
 
 	onExit()
 }

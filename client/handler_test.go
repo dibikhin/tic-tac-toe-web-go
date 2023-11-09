@@ -23,7 +23,7 @@ func TestRunGameLoop(t *testing.T) {
 
 	c := -2
 	m := makeKeySeq()
-	s := NewService(cs, cfg, func() string {
+	s := NewGameService(cfg, cs, func() string {
 		c++
 		return m[c]
 	})
@@ -32,7 +32,7 @@ func TestRunGameLoop(t *testing.T) {
 		// WARN: Don't run in parallel
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			RunLoop(s, cfg)
+			RunGameLoop(s, cfg)
 		})
 	}
 }

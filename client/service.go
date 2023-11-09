@@ -14,23 +14,23 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type service struct {
-	c    api.GameClient
-	cfg  app.Config
-	read func() string
+type gameService struct {
+	read  func() string
+	games api.GameClient
+	cfg   app.Config
 }
 
-func NewService(c api.GameClient, cfg app.Config, read func() string) *service {
-	return &service{c, cfg, read}
+func NewGameService(cfg app.Config, cl api.GameClient, read func() string) *gameService {
+	return &gameService{read, cl, cfg}
 }
 
-func (s *service) ReadPlayerName() game.Name {
+func (s *gameService) ReadPlayerName() game.Name {
 	return readName(s.read)
 }
 
-func (s *service) GetGame(ctx context.Context, name game.Name) game.Game {
+func (s *gameService) GetGame(ctx context.Context, name game.Name) game.Game {
 	for {
-		r, err := s.c.GetGame(ctx, &api.GameRequest{PlayerName: string(name)})
+		r, err := s.games.GetGame(ctx, &api.GameRequest{PlayerName: string(name)})
 		if err != nil {
 			log.Printf("client: get game: %v", err)
 
@@ -41,11 +41,11 @@ func (s *service) GetGame(ctx context.Context, name game.Name) game.Game {
 	}
 }
 
-func (s *service) StartGame(ctx context.Context, playerName game.Name) error {
+func (s *gameService) StartGame(ctx context.Context, playerName game.Name) error {
 	for {
 		cmd := readCommand(s.read)
 		if cmd == "p" {
-			_, err := s.c.StartGame(ctx, &api.GameRequest{PlayerName: string(playerName)})
+			_, err := s.games.StartGame(ctx, &api.GameRequest{PlayerName: string(playerName)})
 			if err != nil {
 				log.Printf("client: start game: %v", err)
 				continue
@@ -56,10 +56,10 @@ func (s *service) StartGame(ctx context.Context, playerName game.Name) error {
 	return nil
 }
 
-func (s *service) Turn(ctx context.Context, p game.Player) {
+func (s *gameService) Turn(ctx context.Context, p game.Player) {
 	for {
 		t := readTurn(s.read, p.Mark)
-		_, err := s.c.Turn(ctx, &api.TurnRequest{PlayerName: string(p.Name), Turn: t})
+		_, err := s.games.Turn(ctx, &api.TurnRequest{PlayerName: string(p.Name), Turn: t})
 		if err != nil {
 			log.Printf("client: turn: %v", err)
 

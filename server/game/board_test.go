@@ -226,7 +226,7 @@ func Test_SetCell(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := SetCell(tt.args.b, tt.args.c, tt.args.m)
+			got, err := tt.args.b.WithCell(tt.args.c, tt.args.m)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("setCell() error = %v, wantErr %v", err, tt.wantErr)
 				return

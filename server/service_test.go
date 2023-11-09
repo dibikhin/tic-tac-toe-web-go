@@ -17,7 +17,7 @@ func TestGameService(t *testing.T) {
 	t.Parallel()
 
 	repo := MakeGameRepo()
-	s := NewService(repo)
+	s := NewGameService(repo)
 
 	t.Run("Game loop", func(t *testing.T) {
 		name1 := "name1"
@@ -48,7 +48,8 @@ func TestGameService(t *testing.T) {
 			t.Errorf("gameService.GetGame() error = %v, wantErr %v", err, false)
 			return
 		}
-		if got3.Player1.Mark != "X" || got3.Player1.Name != name1 || got3.Status != api.GameStatus_WAITING_P2_JOIN {
+		if got3.Player1.Mark != "X" || got3.Player1.Name != name1 ||
+			got3.Status != api.GameStatus_WAITING_P2_JOIN {
 			t.Errorf("gameService.GetGame() = %v, want %v %v %v", got3, name1, "X", api.GameStatus_WAITING_P2_JOIN)
 		}
 
@@ -138,7 +139,7 @@ func TestGameService(t *testing.T) {
 			{__, "X", __},
 			{__, __, __},
 		}
-		repo.UpdateByID(g1.ID, g1)
+		_ = repo.UpdateByID(g1.ID, g1)
 
 		got13, err := s.Turn(context.TODO(), &api.TurnRequest{PlayerName: name1, Turn: "7"})
 		if (err != nil) != false {
@@ -152,8 +153,8 @@ func TestGameService(t *testing.T) {
 
 		gs2, _ := repo.GetAll()
 		g2 := gs2[0]
-		g2.Status = api.GameStatus_DRAW
-		repo.UpdateByID(g2.ID, g2)
+		g2 = g2.WithStatus(api.GameStatus_DRAW)
+		_ = repo.UpdateByID(g2.ID, g2)
 
 		got12, err := s.StartGame(context.TODO(), &api.GameRequest{PlayerName: name1})
 		if (err != nil) != false {
@@ -188,7 +189,7 @@ func Test_GameService_Turn(t *testing.T) {
 	}
 	gamesDB := []game.Game{}
 	repo := MakeGameRepo(gamesDB...)
-	s := NewService(repo)
+	s := NewGameService(repo)
 
 	for _, tt := range tests {
 		tt := tt

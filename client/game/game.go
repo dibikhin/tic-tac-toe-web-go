@@ -20,12 +20,12 @@ type Board string
 
 func MakeGame(r *api.GameResponse) Game {
 	switch {
-	// A new game
 	case r.Player1 == nil:
+		// A new game
 		return Game{
 			Status:  r.Status,
-			Player1: Player{},
-			Player2: Player{},
+			Player1: emptyPlayer(),
+			Player2: emptyPlayer(),
 			Board:   Board(r.Board),
 		}
 	case r.Player2 == nil:
@@ -33,7 +33,7 @@ func MakeGame(r *api.GameResponse) Game {
 		return Game{
 			Status:  r.Status,
 			Player1: ToPlayer(r.Player1),
-			Player2: Player{},
+			Player2: emptyPlayer(),
 			Board:   Board(r.Board),
 		}
 	default:
@@ -46,6 +46,10 @@ func MakeGame(r *api.GameResponse) Game {
 			Board:     Board(r.Board),
 		}
 	}
+}
+
+func emptyPlayer() Player {
+	return Player{}
 }
 
 func PrintGame(g Game) {

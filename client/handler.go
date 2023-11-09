@@ -19,7 +19,7 @@ type Service interface {
 	ReadPlayerName() game.Name
 }
 
-func RunLoop(s Service, cfg app.Config) {
+func RunGameLoop(s Service, cfg app.Config) {
 	currentPlayer := s.ReadPlayerName()
 	fmt.Printf("Hey %v!\n", currentPlayer)
 
@@ -54,11 +54,11 @@ func react(s Service, cfg app.Config, gam game.Game, playerName game.Name) error
 
 	case api.GameStatus_WON:
 		fmt.Printf("\nPlayer %v won!\n", gam.PlayerWon.String())
-		s.StartGame(context.TODO(), playerName)
+		_ = s.StartGame(context.TODO(), playerName)
 
 	case api.GameStatus_DRAW:
 		fmt.Println("\nDraw")
-		s.StartGame(context.TODO(), playerName)
+		_ = s.StartGame(context.TODO(), playerName)
 
 	default:
 		fmt.Printf("\nUnknown status: %v\n", gam.Status)
@@ -69,7 +69,7 @@ func react(s Service, cfg app.Config, gam game.Game, playerName game.Name) error
 
 func startOrWait(s Service, cfg app.Config, p game.Player, playerName game.Name) {
 	if p.Name != playerName {
-		s.StartGame(context.TODO(), playerName)
+		_ = s.StartGame(context.TODO(), playerName)
 		return
 	}
 	fmt.Println("\nWaiting Player 2 to join...")

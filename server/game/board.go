@@ -45,6 +45,14 @@ func (b Board) HasEmpty() bool {
 	return false
 }
 
+func (b Board) WithCell(c Cell, m Mark) (Board, error) {
+	if !c.isInRange(b) {
+		return blankBoard(), ErrorOutOfRange
+	}
+	b[c.row][c.col] = m
+	return b, nil
+}
+
 // TODO: simplify?
 func (b Board) IsWinner(m Mark) bool {
 	// WARN: possible out of range
@@ -65,15 +73,6 @@ func (b Board) IsWinner(m Mark) bool {
 
 	return h0 || h1 || h2 || v0 || v1 || v2 || d0 || d1
 }
-
-func SetCell(b Board, c Cell, m Mark) (Board, error) {
-	if !c.isInRange(b) {
-		return blankBoard(), ErrorOutOfRange
-	}
-	b[c.row][c.col] = m
-	return b, nil
-}
-
 func reduce(board Board, rows []string) ([][]string, []string) {
 	if len(board) == 0 {
 		return [][]string{}, rows
