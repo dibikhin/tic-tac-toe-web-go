@@ -21,9 +21,24 @@ TODO: server restart survival, unlimited games, players' waiting queue
 ```
 $ cd my_projects/
 $ git clone https://github.com/dibikhin/tic-tac-toe-web-go.git
-$ cd tic-tac-toe-web-go/
+$ cd ./tic-tac-toe-web-go/
 $ go mod download
-$ cp example.env .env
+$ cp ./cmd/client/example.env ./cmd/client/.env
+$ cp ./cmd/server/example.env ./cmd/server/.env
+```
+
+### Testing
+```
+$ cd tic-tac-toe-web-go/
+$ make test
+Testing client...
+...
+PASS
+...
+Testing server...
+...
+PASS
+...
 ```
 
 ### Testing
@@ -90,10 +105,19 @@ NOTE: Hit `ctrl+c` to exit.
 - Dirty input tolerant
 - Server handles unlimited games
 - Games are stored in memory only
+<<<<<<< Updated upstream
 - Client handles loosing connection well
 - Dead game detection
 - auto-reconnect by client due to gRPC
 - Multiple clients for the same player name
+=======
+- Client handles loosing connection well (reconnects automatically)
+- Dead game detection
+- Multiple clients for the same player name
+- Game survives restarting client
+- No soft limit for games' count
+- A first player waits a second one
+>>>>>>> Stashed changes
 
 ## Authors
 - [Roman Dibikhin](https://github.com/dibikhin)

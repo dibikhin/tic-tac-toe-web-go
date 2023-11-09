@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package tictactoe;
+
+option go_package = "githab.com/dibikhin/tic-tac-toe-web-go/api";
+
+service Game {
+    rpc GetGame (GameRequest) returns (GameResponse);
+    rpc StartGame (GameRequest) returns (EmptyResponse);
+    rpc Turn (TurnRequest) returns (EmptyResponse);
+}
+
+message EmptyResponse {}
+
+message GameRequest {
+    string playerName = 1;
+}
+
+message GameResponse {
+    GameStatus status = 1;
+    Player player1 = 2;
+    Player player2 = 3;
+    Player playerWon = 4;
+    string board = 5;
+}
+
+message TurnRequest {
+    string playerName = 1;
+    string turn = 2;
+}
+
+message Player {
+    string mark = 1;
+    string name = 2;
+}
+
+enum GameStatus {
+    UNKNOWN = 0;
+    NOT_STARTED = 1;
+    WAITING_P2_JOIN = 2;
+    WAITING_P1_TO_TURN = 3;
+    WAITING_P2_TO_TURN = 4;
+    WON = 5;
+    DRAW = 6;
+    DELETED = 7;
+    SHUTDOWN_CLIENT = 8;
+}
