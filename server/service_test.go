@@ -6,12 +6,14 @@ import (
 	"testing"
 
 	"tictactoe/api"
-	"tictactoe/server/game"
+	"tictactoe/server/domain"
 
 	"github.com/stretchr/testify/assert"
 )
 
-const __ = game.Empty
+const (
+	__ = domain.Empty // Just an alias
+)
 
 func TestGameService(t *testing.T) {
 	t.Parallel()
@@ -134,7 +136,7 @@ func TestGameService(t *testing.T) {
 
 		gs1, _ := repo.GetAll()
 		g1 := gs1[0]
-		g1.Board = game.Board{
+		g1.Board = domain.Board{
 			{__, __, "X"},
 			{__, "X", __},
 			{__, __, __},
@@ -187,7 +189,7 @@ func Test_GameService_Turn(t *testing.T) {
 			true,
 		},
 	}
-	gamesDB := []game.Game{}
+	gamesDB := []domain.Game{}
 	repo := MakeGameRepo(gamesDB...)
 	s := NewGameService(repo)
 

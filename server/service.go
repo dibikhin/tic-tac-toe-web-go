@@ -6,18 +6,18 @@ import (
 	"log"
 
 	"tictactoe/api"
-	"tictactoe/server/game"
+	"tictactoe/server/domain"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type GameRepo interface {
-	Add(game.Game) error
-	GetAll() ([]game.Game, error)
-	FindByPlayerName(game.PlayerName) (game.Game, error)
-	UpdateByID(game.ID, game.Game) error
-	DeleteByID(game.ID) error
+	Add(domain.Game) error
+	GetAll() ([]domain.Game, error)
+	FindByPlayerName(domain.PlayerName) (domain.Game, error)
+	UpdateByID(domain.ID, domain.Game) error
+	DeleteByID(domain.ID) error
 }
 
 type service struct {
@@ -35,7 +35,7 @@ func (s *service) GetGame(ctx context.Context, req *api.GameRequest) (*api.GameR
 	if games, err := s.games.GetAll(); err == nil {
 		fmt.Printf("games: %+v\n", games)
 	}
-	game, _ := s.games.FindByPlayerName(game.PlayerName(req.PlayerName))
+	game, _ := s.games.FindByPlayerName(domain.PlayerName(req.PlayerName))
 	// if err != nil {
 	// 	return &api.GameResponse{}, errors.Wrap(err, "get game")
 	// }
@@ -48,11 +48,12 @@ func (s *service) GetGame(ctx context.Context, req *api.GameRequest) (*api.GameR
 
 func (s *service) StartGame(ctx context.Context, req *api.GameRequest) (*api.EmptyResponse, error) {
 	log.Printf("server: start game: %v", req)
+
 	if allGames, err := s.games.GetAll(); err == nil {
 		fmt.Printf("games: %+v\n", allGames)
 	}
 
-	gam, _ := s.games.FindByPlayerName(game.PlayerName(req.PlayerName))
+	gam, _ := s.games.FindByPlayerName(domain.PlayerName(req.PlayerName))
 
 	// TODO:
 	// if err != nil {
@@ -68,31 +69,31 @@ func (s *service) StartGame(ctx context.Context, req *api.GameRequest) (*api.Emp
 			return nil, err
 		}
 
-		newGame := game.MakeGame(game.PlayerName(req.PlayerName))
+		newGame := domain.MakeGame(domain.PlayerName(req.PlayerName))
 		if err := s.games.Add(newGame); err != nil {
 			return nil, err
 		}
 		return &api.EmptyResponse{}, nil
 	}
 
-	// Find a game without second player
-	gm, err := s.games.FindByPlayerName("") // Due to a game w/ empty Player's name
-	if err != nil {
-		return nil, err
-	}
+	// Find a game without 2nd player
+	gm, _ := s.games.FindByPlayerName("") // Due to a game w/ empty Player's name
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	// Otherwise, add 2nd player
 	if gm.ID != "" && gm.Player2.Name == "" {
 		g := gm.WithStatus(api.GameStatus_WAITING_P1_TO_TURN)
-		g.Player2 = game.MakePlayer2(req)
-		g.Players[game.PlayerName(req.PlayerName)] = "O"
+		g.Player2 = domain.MakePlayer2(req)
+		g.Players[domain.PlayerName(req.PlayerName)] = domain.O
 
 		if err := s.games.UpdateByID(g.ID, g); err != nil {
 			return nil, err
 		}
 		return &api.EmptyResponse{}, nil
 	}
-	newGame := game.MakeGame(game.PlayerName(req.PlayerName))
+	newGame := domain.MakeGame(domain.PlayerName(req.PlayerName))
 	if err := s.games.Add(newGame); err != nil {
 		return nil, err
 	}
@@ -106,7 +107,7 @@ func (s *service) Turn(ctx context.Context, req *api.TurnRequest) (*api.EmptyRes
 		fmt.Printf("games: %+v\n", allGames)
 	}
 
-	gam, err := s.games.FindByPlayerName(game.PlayerName(req.PlayerName))
+	gam, err := s.games.FindByPlayerName(domain.PlayerName(req.PlayerName))
 	if err != nil {
 		return nil, err
 	}
@@ -114,27 +115,24 @@ func (s *service) Turn(ctx context.Context, req *api.TurnRequest) (*api.EmptyRes
 		return nil, status.Error(codes.NotFound, "Player has no game")
 	}
 
-	turn := game.Key(req.Turn)
+	turn := domain.Key(req.Turn)
 	if !turn.IsKey() {
 		return &api.EmptyResponse{}, nil
 	}
 	cel := turn.ToCell()
 	if isFilled, err := gam.Board.IsFilled(cel); err != nil {
-		if err != nil {
+		if err != nil || isFilled {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
-		}
-		if isFilled {
-			return &api.EmptyResponse{}, nil
 		}
 	}
 
 	// TODO: may not be found
-	mark := gam.Players[game.PlayerName(req.PlayerName)]
+	mark := gam.Players[domain.PlayerName(req.PlayerName)]
 	b, err := gam.Board.WithCell(cel, mark)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
-	gam.Board = b
+	gam.Board = b // todo: with board
 
 	if err := s.games.UpdateByID(gam.ID, gam); err != nil {
 		return nil, err
@@ -143,10 +141,10 @@ func (s *service) Turn(ctx context.Context, req *api.TurnRequest) (*api.EmptyRes
 	// Ending the game
 	if gam.Board.IsWinner(mark) {
 		g := gam.WithStatus(api.GameStatus_WON)
-		g.PlayerWon = game.Player{
+		g.PlayerWon = domain.Player{
 			Mark: mark,
-			Name: game.PlayerName(req.PlayerName),
-		}
+			Name: domain.PlayerName(req.PlayerName),
+		} // todo: with player won
 
 		if err := s.games.UpdateByID(g.ID, g); err != nil {
 			return nil, err
@@ -163,7 +161,7 @@ func (s *service) Turn(ctx context.Context, req *api.TurnRequest) (*api.EmptyRes
 	}
 
 	// Waiting for turns
-	if gam.Player1.Name == game.PlayerName(req.PlayerName) {
+	if gam.Player1.Name == domain.PlayerName(req.PlayerName) {
 		g := gam.WithStatus(api.GameStatus_WAITING_P2_TO_TURN)
 
 		if err := s.games.UpdateByID(g.ID, g); err != nil {
@@ -171,7 +169,7 @@ func (s *service) Turn(ctx context.Context, req *api.TurnRequest) (*api.EmptyRes
 		}
 		return &api.EmptyResponse{}, nil
 	}
-	if gam.Player2.Name == game.PlayerName(req.PlayerName) {
+	if gam.Player2.Name == domain.PlayerName(req.PlayerName) {
 		g := gam.WithStatus(api.GameStatus_WAITING_P1_TO_TURN)
 
 		if err := s.games.UpdateByID(g.ID, g); err != nil {

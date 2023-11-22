@@ -15,7 +15,7 @@ func TestRunGameLoop(t *testing.T) {
 
 	p1, p2 := makeTestPlayers()
 	cs := makeAPIClientStub(p1, p2)
-	cfg := app.Config{
+	cfg := &app.Config{
 		Server: app.ServerConfig{
 			LoopDelay: time.Second,
 		},

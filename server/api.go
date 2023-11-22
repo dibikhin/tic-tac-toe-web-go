@@ -2,10 +2,10 @@ package server
 
 import (
 	"tictactoe/api"
-	"tictactoe/server/game"
+	"tictactoe/server/domain"
 )
 
-func makeGameResp(g game.Game) *api.GameResponse {
+func makeGameResp(g domain.Game) *api.GameResponse {
 	return &api.GameResponse{
 		Status:    api.GameStatus(g.Status),
 		Player1:   toAPIPlayer(g.Player1),
@@ -15,7 +15,7 @@ func makeGameResp(g game.Game) *api.GameResponse {
 	}
 }
 
-func toAPIPlayer(p game.Player) *api.Player {
+func toAPIPlayer(p domain.Player) *api.Player {
 	return &api.Player{
 		Mark: string(p.Mark),
 		Name: string(p.Name),

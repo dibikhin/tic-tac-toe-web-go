@@ -15,6 +15,7 @@ func main() {
 
 	onExit := func() {
 		teardown()
+
 		log.Println("app: stopped")
 		fmt.Println("\nBye!")
 	}

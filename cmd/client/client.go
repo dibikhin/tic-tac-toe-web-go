@@ -1,15 +1,17 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"tictactoe/api"
 	"tictactoe/app"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
-func Connect(cfg app.Config) (api.GameClient, func()) {
+func Connect(cfg *app.Config) (api.GameClient, func()) {
 	log.Println("client: connecting...")
 	conn := grpcDial(cfg)
 	client := api.NewGameClient(conn)
@@ -23,12 +25,15 @@ func Connect(cfg app.Config) (api.GameClient, func()) {
 	return client, teardown
 }
 
-func grpcDial(cfg app.Config) *grpc.ClientConn {
-	conn, err := grpc.Dial(
+func grpcDial(cfg *app.Config) *grpc.ClientConn {
+	ctx, cancel := context.WithTimeout(context.TODO(), cfg.Server.Timeout)
+	defer cancel()
+
+	conn, err := grpc.DialContext(
+		ctx,
 		cfg.Server.Address,
-		grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithBlock(),
-		grpc.WithTimeout(cfg.Server.Timeout),
 	)
 	if err != nil {
 		log.Fatalf("client: grpc dial: %v", err)

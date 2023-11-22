@@ -1,4 +1,4 @@
-package game
+package domain
 
 import (
 	"errors"
@@ -8,11 +8,13 @@ import (
 type Board [][]Mark
 
 const (
-	Empty = Mark("-")
-	__    = Empty
+	Empty = Mark("-") // Public
+	__    = Empty     // Private
 )
 
-var ErrorOutOfRange = errors.New("cell out of range")
+var (
+	ErrorCellOutOfRange = errors.New("cell out of range")
+)
 
 func (b Board) String() string {
 	_, dump := reduce(b[:], []string{})
@@ -29,7 +31,7 @@ func blankBoard() Board {
 
 func (b Board) IsFilled(c Cell) (bool, error) {
 	if !c.isInRange(b) {
-		return false, ErrorOutOfRange
+		return false, ErrorCellOutOfRange
 	}
 	return b[c.row][c.col] != __, nil
 }
@@ -47,7 +49,7 @@ func (b Board) HasEmpty() bool {
 
 func (b Board) WithCell(c Cell, m Mark) (Board, error) {
 	if !c.isInRange(b) {
-		return blankBoard(), ErrorOutOfRange
+		return blankBoard(), ErrorCellOutOfRange
 	}
 	b[c.row][c.col] = m
 	return b, nil
@@ -73,18 +75,19 @@ func (b Board) IsWinner(m Mark) bool {
 
 	return h0 || h1 || h2 || v0 || v1 || v2 || d0 || d1
 }
+
 func reduce(board Board, rows []string) ([][]string, []string) {
 	if len(board) == 0 {
 		return [][]string{}, rows
 	}
-	rowz := make([]string, len(rows))
-	copy(rowz, rows)
+	rowsCopy := make([]string, len(rows))
+	copy(rowsCopy, rows)
 
 	ss := toStringSlice(board[0][:])
 	row := strings.Join(ss, " ")
-	rowz = append(rowz, row)
+	rowsCopy = append(rowsCopy, row)
 
-	return reduce(board[1:], rowz)
+	return reduce(board[1:], rowsCopy)
 }
 
 func toStringSlice(marks []Mark) []string {

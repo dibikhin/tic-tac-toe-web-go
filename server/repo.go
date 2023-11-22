@@ -4,51 +4,47 @@ import (
 	"sync"
 	"tictactoe/api"
 
-	"tictactoe/server/game"
+	"tictactoe/server/domain"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-type gameRepo struct {
-	games []game.Game
+type repo struct {
+	games []domain.Game
 	mu    sync.Mutex
 }
 
-func MakeGameRepo(games ...game.Game) *gameRepo {
-	if len(games) == 0 {
-		return &gameRepo{
-			games: nil,
-		}
-	}
-	return &gameRepo{
+func MakeGameRepo(games ...domain.Game) *repo {
+	return &repo{
 		games: games,
 	}
 }
 
-func (r *gameRepo) Add(g game.Game) error {
+func (r *repo) Add(g domain.Game) error {
 	r.mu.Lock()
+	defer r.mu.Unlock()
+
 	r.games = append(r.games, g)
-	r.mu.Unlock()
 
 	return nil
 }
 
-func (r *gameRepo) GetAll() ([]game.Game, error) {
+func (r *repo) GetAll() ([]domain.Game, error) {
 	return r.games, nil
 }
 
-func (r *gameRepo) FindByPlayerName(name game.PlayerName) (game.Game, error) {
+func (r *repo) FindByPlayerName(name domain.PlayerName) (domain.Game, error) {
 	for _, g := range r.games {
 		if !g.IsDeleted() &&
 			(g.Player1.Name == name || g.Player2.Name == name) {
 			return g, nil
 		}
 	}
-	return game.Game{}, status.Error(codes.NotFound, "game not found")
+	return domain.Game{}, status.Error(codes.NotFound, "game not found")
 }
 
-func (r *gameRepo) UpdateByID(id game.ID, update game.Game) error {
+func (r *repo) UpdateByID(id domain.ID, update domain.Game) error {
 	for i := range r.games {
 		g := r.games[i]
 		if g.ID == id && !g.IsDeleted() {
@@ -62,7 +58,7 @@ func (r *gameRepo) UpdateByID(id game.ID, update game.Game) error {
 	return nil
 }
 
-func (r *gameRepo) DeleteByID(id game.ID) error {
+func (r *repo) DeleteByID(id domain.ID) error {
 	for i := range r.games {
 		gam := r.games[i]
 		if gam.ID == id {

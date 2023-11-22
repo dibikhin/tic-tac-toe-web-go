@@ -22,18 +22,18 @@ type ServerConfig struct {
 	LoopDelay time.Duration `env:"GAME_CLIENT_LOOP_DELAY"`
 }
 
-func (cfg Config) isValid() bool {
-	return !(cfg.GameServer == GameServerConfig{} &&
-		cfg.Server == ServerConfig{})
+func (cfg *Config) isValid() bool {
+	allEmpty := cfg.GameServer == GameServerConfig{} && cfg.Server == ServerConfig{}
+	return !allEmpty
 }
 
-func load(path string) (Config, error) {
+func load(path string) (*Config, error) {
 	if err := godotenv.Load(path); err != nil {
-		return Config{}, err
+		return nil, err
 	}
-	var cfg Config
-	if err := env.Parse(&cfg); err != nil {
-		return Config{}, err
+	cfg := &Config{}
+	if err := env.Parse(cfg); err != nil {
+		return nil, err
 	}
 	return cfg, nil
 }

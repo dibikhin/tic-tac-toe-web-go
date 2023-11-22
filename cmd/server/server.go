@@ -17,6 +17,7 @@ func MakeServer() (*grpc.Server, func()) {
 	s := grpc.NewServer()
 
 	api.RegisterGameServer(s, gs)
+
 	teardown := func() {
 		log.Println("app: gracefully stopping...")
 		s.GracefulStop()

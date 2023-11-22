@@ -9,7 +9,7 @@ import (
 	"syscall"
 )
 
-func LoadConfig(file string) Config {
+func LoadConfig(file string) *Config {
 	cfg, err := load(file)
 	if err != nil {
 		log.Fatalf("app: load file: %v", err)

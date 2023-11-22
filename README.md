@@ -26,6 +26,8 @@ $ cp ./cmd/server/example.env ./cmd/server/.env
 ```
 
 ### Testing
+Run and look how tests play themselves.
+
 ```
 $ cd tic-tac-toe-web-go/
 $ make test
@@ -73,21 +75,13 @@ NOTE: Hit `ctrl+c` to exit.
 
 ## Internals
 
-### Project Structure
-- `/cmd` — Entry points for client and server
-- `/pkg` — The game packages
-- `/scripts`
--
-- `.env` — config
-- `example.env` — config example
-- etc.
-
 ### Features
 - The UI is CLI
 - The 3x3 size is hardcoded
 - No timeouts for turns
 - Dirty input tolerant
 - Server handles unlimited games
+- State refresh via short-polling
 - Games are stored in memory only
 - Client handles loosing connection well (reconnects automatically)
 - Dead game detection
@@ -105,4 +99,4 @@ This project is licensed under the MIT License — see the [LICENSE](./LICENSE) 
 ## Acknowledgments
 Thanks to:
 - [A Tour of Go](https://tour.golang.org/welcome/1) — For the idea
-- [Tic-tac-toe](https://en.wikipedia.org/wiki/Tic-tac-toe) — A lot of insights about the game
+- [Tic-tac-toe](https://en.wikipedia.org/wiki/Tic-tac-toe) — Some insights about the game
