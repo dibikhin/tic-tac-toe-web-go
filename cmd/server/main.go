@@ -1,37 +1,30 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
 
-	"tictactoe/pkg/app"
-	"tictactoe/pkg/server"
+	"tictactoe/app"
 )
 
 func main() {
-	log.Println("Starting...")
-	log.Println("Started")
+	log.Println("app: starting...")
 
-	cfg := app.LoadConfig()
-	lis := server.StartListen(cfg)
-	srv := server.MakeServer()
+	teardown := func() {}
 
-	go server.RunServer(srv, lis)
+	onExit := func() {
+		teardown()
 
-	waitForExit()
-	srv.GracefulStop()
-	lis.Close()
+		log.Println("app: stopped")
+		fmt.Println("\nBye!")
+	}
+	go app.WaitForExit(onExit)
 
-	log.Println("Stopped")
-	log.Println("Bye!")
-}
+	log.Println("app: started")
 
-func waitForExit() {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-	sig := <-c
+	cfg := app.LoadConfig("./cmd/server/.env")
+	lis := Listen(cfg.GameServer.Port)
 
-	log.Printf("Got signal: %v. Stopping...", sig)
+	s, teardown := MakeServer()
+	RunServer(s, lis)
 }

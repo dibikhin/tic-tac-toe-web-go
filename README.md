@@ -2,6 +2,10 @@
 
 A web version of 3x3 Tic-tac-toe on Go: server + terminal client.
 
+## Other versions
+- [Funcional programming, in terminal](https://github.com/dibikhin/tic-tac-toe-cli-fp-go)
+- [Object-oriented programming, in terminal](https://github.com/dibikhin/tic-tac-toe-cli-oop-go)
+
 ## How to
 Start server and clients, get a friend. Play in terminal using keyboard only. See how to run below.
 
@@ -15,13 +19,30 @@ Start server and clients, get a friend. Play in terminal using keyboard only. Se
 ```
 $ cd my_projects/
 $ git clone https://github.com/dibikhin/tic-tac-toe-web-go.git
-$ cd tic-tac-toe-web-go/
+$ cd ./tic-tac-toe-web-go/
 $ go mod download
-$ cp example.env .env
+$ cp ./cmd/client/example.env ./cmd/client/.env
+$ cp ./cmd/server/example.env ./cmd/server/.env
+```
+
+### Testing
+Run and look how tests play themselves.
+
+```
+$ cd tic-tac-toe-web-go/
+$ make test
+Testing client...
+...
+PASS
+...
+Testing server...
+...
+PASS
+...
 ```
 
 ## Running
-Run as is, no compilation neaded. Running locally assumed below.
+Run as is, no compilation neaded. Running locally assumed.
 
 ### Server
 Open first terminal, then:
@@ -54,21 +75,20 @@ NOTE: Hit `ctrl+c` to exit.
 
 ## Internals
 
-### Project Structure
-- `/cmd` — Entry points
-- `/pkg` — The game packages
-- `.env` — config
-- `example.env` — config example 
-- etc.
-
 ### Features
 - The UI is CLI
 - The 3x3 size is hardcoded
 - No timeouts for turns
 - Dirty input tolerant
 - Server handles unlimited games
+- State refresh via short-polling
 - Games are stored in memory only
-- Client handles loosing connection well
+- Client handles loosing connection well (reconnects automatically)
+- Dead game detection
+- Multiple clients for the same player name
+- Game survives restarting client
+- No soft limit for games' count
+- A first player waits a second one
 
 ## Authors
 - [Roman Dibikhin](https://github.com/dibikhin)
@@ -79,4 +99,4 @@ This project is licensed under the MIT License — see the [LICENSE](./LICENSE) 
 ## Acknowledgments
 Thanks to:
 - [A Tour of Go](https://tour.golang.org/welcome/1) — For the idea
-- [Tic-tac-toe](https://en.wikipedia.org/wiki/Tic-tac-toe) — A lot of insights about the game
+- [Tic-tac-toe](https://en.wikipedia.org/wiki/Tic-tac-toe) — Some insights about the game

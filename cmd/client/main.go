@@ -3,42 +3,33 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
 
-	"tictactoe/pkg/app"
-	"tictactoe/pkg/client"
+	"tictactoe/app"
+	"tictactoe/client"
 )
 
 func main() {
-	log.Println("Starting...")
-	cfg := app.LoadConfig()
-	log.Println("Started")
+	log.Println("app: starting...")
 
 	teardown := func() {}
+
 	onExit := func() {
 		teardown()
-		log.Println("Stopped")
+
+		log.Println("app: stopped")
 		fmt.Println("\nBye!")
 	}
-	go waitForExit(onExit)
+	go app.WaitForExit(onExit)
+
+	log.Println("app: started")
 
 	fmt.Print("\nWelcome to web 3x3 Tic-tac-toe for 2 friends :)\n\n")
 
-	cl, teardown := client.Connect(cfg)
-	s := client.NewGameService(cl, app.DefaultRead)
-	client.RunGameLoop(s)
+	cfg := app.LoadConfig("./cmd/client/.env")
+	cl, teardown := Connect(cfg)
+	s := client.NewGameService(cfg, cl, app.DefaultRead)
+
+	client.RunGameLoop(s, cfg)
 
 	onExit()
-}
-
-func waitForExit(onExit func()) {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-	sig := <-c
-
-	log.Printf("Got signal: %v. Stopping...", sig)
-	onExit()
-	os.Exit(0)
 }

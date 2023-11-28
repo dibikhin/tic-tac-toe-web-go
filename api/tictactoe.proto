@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package tictactoe;
 
-option go_package = "githab.com/dibikhin/tic-tac-toe-web-go/pkg/api";
+option go_package = "githab.com/dibikhin/tic-tac-toe-web-go/api";
 
 service Game {
     rpc GetGame (GameRequest) returns (GameResponse);
@@ -20,7 +20,7 @@ message GameResponse {
     GameStatus status = 1;
     Player player1 = 2;
     Player player2 = 3;
-    Player playerWon = 4; 
+    Player playerWon = 4;
     string board = 5;
 }
 
@@ -43,4 +43,5 @@ enum GameStatus {
     WON = 5;
     DRAW = 6;
     DELETED = 7;
+    SHUTDOWN_CLIENT = 8;
 }

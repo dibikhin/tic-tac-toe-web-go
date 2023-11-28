@@ -1,7 +1,6 @@
-.PHONY: fmt lint serve connect regen list
+.PHONY: fmt lint test serve connect regen list
 
 fmt format:
-	# go fmt ./...
 	goimports -l -w .
 	@echo "Done."
 
@@ -9,13 +8,24 @@ lint:
 	golangci-lint run -v
 	@echo "Done."
 
+test:
+	@echo "\nTesting client..."
+	go test -v -coverpkg=./client ./client
+	@echo "\nTesting server..."
+	go test -v -coverpkg=./server ./server
+
+ci:
+	make fmt
+	make lint
+	make test
+
 server serv serve:
 	@echo "\nServer:"
-	@go run ./cmd/server/main.go
+	@go run ./cmd/server
 
 client cli connect conn:
 	@echo "\nClient:"
-	@go run ./cmd/client/main.go
+	@go run ./cmd/client
 
 regen regenerate:
 	@echo "\nRegenerating .proto..."
