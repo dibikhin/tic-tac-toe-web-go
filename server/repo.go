@@ -60,12 +60,12 @@ func (r *repo) UpdateByID(id domain.ID, update domain.Game) error {
 
 func (r *repo) DeleteByID(id domain.ID) error {
 	for i := range r.games {
-		gam := r.games[i]
-		if gam.ID == id {
-			g := gam.WithStatus(api.GameStatus_DELETED)
+		game := r.games[i]
+		if game.ID == id {
+			deleted := game.WithStatus(api.GameStatus_DELETED)
 
 			r.mu.Lock()
-			r.games[i] = g
+			r.games[i] = deleted
 			r.mu.Unlock()
 
 			break

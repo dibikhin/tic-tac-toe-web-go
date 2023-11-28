@@ -36,9 +36,7 @@ func (s *service) GetGame(ctx context.Context, req *api.GameRequest) (*api.GameR
 		fmt.Printf("games: %+v\n", games)
 	}
 	game, _ := s.games.FindByPlayerName(domain.PlayerName(req.PlayerName))
-	// if err != nil {
-	// 	return &api.GameResponse{}, errors.Wrap(err, "get game")
-	// }
+
 	if game.ID == "" {
 		return &api.GameResponse{Status: api.GameStatus_NOT_STARTED}, nil
 	}
@@ -53,19 +51,14 @@ func (s *service) StartGame(ctx context.Context, req *api.GameRequest) (*api.Emp
 		fmt.Printf("games: %+v\n", allGames)
 	}
 
-	gam, _ := s.games.FindByPlayerName(domain.PlayerName(req.PlayerName))
-
-	// TODO:
-	// if err != nil {
-	// 	return &api.EmptyResponse{}, errors.Wrap(err, "start game")
-	// }
+	game, _ := s.games.FindByPlayerName(domain.PlayerName(req.PlayerName))
 
 	// First, try to end the game
-	if gam.ID != "" {
-		if !gam.IsEnded() {
+	if game.ID != "" {
+		if !game.IsEnded() {
 			return &api.EmptyResponse{}, nil
 		}
-		if err := s.games.DeleteByID(gam.ID); err != nil {
+		if err := s.games.DeleteByID(game.ID); err != nil {
 			return nil, err
 		}
 
@@ -78,14 +71,12 @@ func (s *service) StartGame(ctx context.Context, req *api.GameRequest) (*api.Emp
 
 	// Find a game without 2nd player
 	gm, _ := s.games.FindByPlayerName("") // Due to a game w/ empty Player's name
-	// if err != nil {
-	// 	return nil, err
-	// }
 
 	// Otherwise, add 2nd player
 	if gm.ID != "" && gm.Player2.Name == "" {
 		g := gm.WithStatus(api.GameStatus_WAITING_P1_TO_TURN)
-		g.Player2 = domain.MakePlayer2(req)
+		g = g.WithPlayer2(domain.NewPlayer2(req))
+
 		g.Players[domain.PlayerName(req.PlayerName)] = domain.O
 
 		if err := s.games.UpdateByID(g.ID, g); err != nil {
@@ -107,11 +98,11 @@ func (s *service) Turn(ctx context.Context, req *api.TurnRequest) (*api.EmptyRes
 		fmt.Printf("games: %+v\n", allGames)
 	}
 
-	gam, err := s.games.FindByPlayerName(domain.PlayerName(req.PlayerName))
+	game, err := s.games.FindByPlayerName(domain.PlayerName(req.PlayerName))
 	if err != nil {
 		return nil, err
 	}
-	if gam.ID == "" {
+	if game.ID == "" {
 		return nil, status.Error(codes.NotFound, "Player has no game")
 	}
 
@@ -120,39 +111,39 @@ func (s *service) Turn(ctx context.Context, req *api.TurnRequest) (*api.EmptyRes
 		return &api.EmptyResponse{}, nil
 	}
 	cel := turn.ToCell()
-	if isFilled, err := gam.Board.IsFilled(cel); err != nil {
+	if isFilled, err := game.Board.IsFilled(cel); err != nil {
 		if err != nil || isFilled {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 	}
 
 	// TODO: may not be found
-	mark := gam.Players[domain.PlayerName(req.PlayerName)]
-	b, err := gam.Board.WithCell(cel, mark)
+	mark := game.Players[domain.PlayerName(req.PlayerName)]
+	b, err := game.Board.WithCell(cel, mark)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
-	gam.Board = b // todo: with board
-
-	if err := s.games.UpdateByID(gam.ID, gam); err != nil {
+	game = game.WithBoard(b)
+	if err := s.games.UpdateByID(game.ID, game); err != nil {
 		return nil, err
 	}
 
 	// Ending the game
-	if gam.Board.IsWinner(mark) {
-		g := gam.WithStatus(api.GameStatus_WON)
-		g.PlayerWon = domain.Player{
+	if game.Board.IsWinner(mark) {
+		g := game.WithStatus(api.GameStatus_WON)
+
+		p := domain.Player{
 			Mark: mark,
 			Name: domain.PlayerName(req.PlayerName),
-		} // todo: with player won
-
+		}
+		g = g.WithPlayerWon(p)
 		if err := s.games.UpdateByID(g.ID, g); err != nil {
 			return nil, err
 		}
 		return &api.EmptyResponse{}, nil
 	}
-	if !gam.Board.HasEmpty() {
-		g := gam.WithStatus(api.GameStatus_DRAW)
+	if !game.Board.HasEmpty() {
+		g := game.WithStatus(api.GameStatus_DRAW)
 
 		if err := s.games.UpdateByID(g.ID, g); err != nil {
 			return nil, err
@@ -161,16 +152,16 @@ func (s *service) Turn(ctx context.Context, req *api.TurnRequest) (*api.EmptyRes
 	}
 
 	// Waiting for turns
-	if gam.Player1.Name == domain.PlayerName(req.PlayerName) {
-		g := gam.WithStatus(api.GameStatus_WAITING_P2_TO_TURN)
+	if game.Player1.Name == domain.PlayerName(req.PlayerName) {
+		g := game.WithStatus(api.GameStatus_WAITING_P2_TO_TURN)
 
 		if err := s.games.UpdateByID(g.ID, g); err != nil {
 			return nil, err
 		}
 		return &api.EmptyResponse{}, nil
 	}
-	if gam.Player2.Name == domain.PlayerName(req.PlayerName) {
-		g := gam.WithStatus(api.GameStatus_WAITING_P1_TO_TURN)
+	if game.Player2.Name == domain.PlayerName(req.PlayerName) {
+		g := game.WithStatus(api.GameStatus_WAITING_P1_TO_TURN)
 
 		if err := s.games.UpdateByID(g.ID, g); err != nil {
 			return nil, err

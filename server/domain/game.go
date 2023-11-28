@@ -14,7 +14,7 @@ type Game struct {
 	Player1   Player
 	Player2   Player
 	PlayerWon Player
-	Players   map[PlayerName]Mark // todo: Players vs P1+P2
+	Players   map[PlayerName]Mark // TODO: Players vs P1+P2
 
 	Board Board
 }
@@ -33,7 +33,7 @@ type (
 	}
 )
 
-func MakePlayer2(req *api.GameRequest) Player {
+func NewPlayer2(req *api.GameRequest) Player {
 	return Player{
 		Mark: O,
 		Name: PlayerName(req.PlayerName),
@@ -44,7 +44,7 @@ func MakeGame(name PlayerName) Game {
 	return Game{
 		Status:    api.GameStatus_WAITING_P2_JOIN,
 		ID:        genID(),
-		Player1:   makePlayer1(name), // Should have at least 1st player
+		Player1:   newPlayer1(name), // Should have at least 1st player
 		Player2:   emptyPlayer(),
 		PlayerWon: emptyPlayer(),
 		Players:   map[PlayerName]Mark{name: X},
@@ -52,16 +52,24 @@ func MakeGame(name PlayerName) Game {
 	}
 }
 
-func makePlayer1(name PlayerName) Player {
-	return Player{Mark: X, Name: name}
+func (g Game) WithStatus(s api.GameStatus) Game {
+	g.Status = s
+	return g
 }
 
-func emptyPlayer() Player {
-	return Player{}
+func (g Game) WithPlayer2(p Player) Game {
+	g.Player2 = p
+	return g
 }
 
-func genID() ID {
-	return ID(strconv.Itoa(time.Now().Nanosecond()))
+func (g Game) WithBoard(b Board) Game {
+	g.Board = b
+	return g
+}
+
+func (g Game) WithPlayerWon(p Player) Game {
+	g.PlayerWon = p
+	return g
 }
 
 func (g Game) IsEnded() bool {
@@ -73,7 +81,17 @@ func (g Game) IsDeleted() bool {
 	return g.Status == api.GameStatus_DELETED
 }
 
-func (g Game) WithStatus(s api.GameStatus) Game {
-	g.Status = s
-	return g
+func newPlayer1(name PlayerName) Player {
+	return Player{
+		Mark: X,
+		Name: name,
+	}
+}
+
+func emptyPlayer() Player {
+	return Player{}
+}
+
+func genID() ID {
+	return ID(strconv.Itoa(time.Now().Nanosecond()))
 }
